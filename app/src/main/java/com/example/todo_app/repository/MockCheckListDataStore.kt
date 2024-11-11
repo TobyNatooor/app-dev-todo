@@ -147,4 +147,7 @@ class MockCheckListDataStore {
         )
     );
 
+    fun getLists(): List<CheckList> {
+        return lists;
+    }
 }
