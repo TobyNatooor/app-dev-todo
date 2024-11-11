@@ -7,6 +7,5 @@ import kotlinx.serialization.Serializable
 data class ToDo (
     var title: String,
     var isDone: Boolean? = false,
-    var deadline: Date,
     var description: String,
     )

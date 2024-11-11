@@ -12,11 +12,9 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 1.1",
-                    deadline = Date(10000),
                     description = "Lorem ipsum"),
                 ToDo(
                     title = "To Do 1.2",
-                    deadline = Date(20000),
                     description = "In facilisis volutpat"
                 )
             ),
@@ -26,17 +24,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 2.1",
-                    deadline = Date(30000),
                     description = "Sed aliquet risus a tortor"
                 ),
                 ToDo(
                     title = "To Do 2.2",
-                    deadline = Date(40000),
                     description = "Curabitur pharetra"
                 ),
                 ToDo(
                     title = "To Do 2.3",
-                    deadline = Date(50000),
                     description = "Mauris malesuada elit"
                 )
             ),
@@ -47,17 +42,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 3.1",
-                    deadline = Date(60000),
                     description = "Vestibulum ante ipsum"
                 ),
                 ToDo(
                     title = "To Do 3.2",
-                    deadline = Date(70000),
                     description = "Vivamus sagittis lacus"
                 ),
                 ToDo(
                     title = "To Do 3.3",
-                    deadline = Date(80000),
                     description = "Donec congue lacinia dui"
                 )
             ),
@@ -68,17 +60,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 4.1",
-                    deadline = Date(90000),
                     description = "Nullam dictum felis eu"
                 ),
                 ToDo(
                     title = "To Do 4.2",
-                    deadline = Date(100000),
                     description = "Nam quam nunc, blandit vel"
                 ),
                 ToDo(
                     title = "To Do 4.3",
-                    deadline = Date(110000),
                     description = "Pellentesque habitant morbi"
                 )
             ),
@@ -89,17 +78,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 5.1",
-                    deadline = Date(120000),
                     description = "Curabitur ullamcorper ultricies"
                 ),
                 ToDo(
                     title = "To Do 5.2",
-                    deadline = Date(130000),
                     description = "Etiam sit amet orci eget"
                 ),
                 ToDo(
                     title = "To Do 5.3",
-                    deadline = Date(140000),
                     description = "Fusce convallis metus"
                 )
             ),
@@ -110,17 +96,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 6.1",
-                    deadline = Date(150000),
                     description = "Donec quam felis, ultricies"
                 ),
                 ToDo(
                     title = "To Do 6.2",
-                    deadline = Date(160000),
                     description = "Vestibulum fringilla pede sit"
                 ),
                 ToDo(
                     title = "To Do 6.3",
-                    deadline = Date(170000),
                     description = "In ac felis quis tortor"
                 )
             ),
@@ -131,17 +114,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 7.1",
-                    deadline = Date(180000),
                     description = "Integer tincidunt"
                 ),
                 ToDo(
                     title = "To Do 7.2",
-                    deadline = Date(190000),
                     description = "Nullam quis ante"
                 ),
                 ToDo(
                     title = "To Do 7.3",
-                    deadline = Date(200000),
                     description = "Phasellus viverra nulla ut"
                 )
             ),
@@ -152,17 +132,14 @@ class MockCheckListDataStore {
             arrayOf(
                 ToDo(
                     title = "To Do 8.1",
-                    deadline = Date(210000),
                     description = "Vestibulum ante ipsum"
                 ),
                 ToDo(
                     title = "To Do 8.2",
-                    deadline = Date(220000),
                     description = "Fusce pretium"
                 ),
                 ToDo(
                     title = "To Do 8.3",
-                    deadline = Date(230000),
                     description = "Curabitur at lacus ac"
                 )
             ),
