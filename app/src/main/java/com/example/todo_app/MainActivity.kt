@@ -50,6 +50,33 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun HomePage(modifier: Modifier) {
+    val lists = MockCheckListDataStore().getLists()
+
+    return LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        verticalArrangement = Arrangement.spacedBy(40.dp),
+        contentPadding = PaddingValues(horizontal = 40.dp),
+        modifier = modifier.padding(bottom = 40.dp)
+    ) {
+        item(span = { GridItemSpan(2) }) {
+            Text(
+                "My Lists",
+                textAlign = TextAlign.Center,
+                fontSize = 60.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 60.dp, bottom = 30.dp)
+            )
+        }
+        items(lists.size) { index ->
+            ListCard(lists[index])
+        }
+    }
+}
+
+@Composable
 fun ListCard(list: CheckList) {
     val context = LocalContext.current
     return Card(
@@ -79,33 +106,6 @@ fun ListCard(list: CheckList) {
             if (list.toDos.size > 2) {
                 Text(list.toDos[2].title)
             }
-        }
-    }
-}
-
-@Composable
-fun HomePage(modifier: Modifier) {
-    val lists = MockCheckListDataStore().getLists()
-
-    return LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp),
-        contentPadding = PaddingValues(horizontal = 40.dp),
-        modifier = modifier.padding(bottom = 40.dp)
-    ) {
-        item(span = { GridItemSpan(2) }) {
-            Text(
-                "My Lists",
-                textAlign = TextAlign.Center,
-                fontSize = 60.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 60.dp, bottom = 30.dp)
-            )
-        }
-        items(lists.size) { index ->
-            ListCard(lists[index])
         }
     }
 }
