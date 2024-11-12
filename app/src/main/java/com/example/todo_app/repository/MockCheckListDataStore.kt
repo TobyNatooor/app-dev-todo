@@ -34,6 +34,18 @@ class MockCheckListDataStore {
                 ),
                 ToDo(
                     title = "To Do 2.3",
+                    description = "Curabitur pharetra"
+                ),
+                ToDo(
+                    title = "To Do 2.4",
+                    description = "Curabitur pharetra"
+                ),
+                ToDo(
+                    title = "To Do 2.5",
+                    description = "Curabitur pharetra"
+                ),
+                ToDo(
+                    title = "To Do 2.6",
                     description = "Mauris malesuada elit"
                 )
             ),

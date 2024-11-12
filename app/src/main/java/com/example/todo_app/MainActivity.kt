@@ -87,7 +87,7 @@ fun ListCard(list: CheckList) {
         },
         modifier = Modifier
             .width(130.dp)
-            .height(110.dp)
+            .height(180.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row {
@@ -98,14 +98,11 @@ fun ListCard(list: CheckList) {
                     contentDescription = null,
                 )
             }
-            if (list.toDos.isNotEmpty()) {
-                Text(list.toDos[0].title)
-            }
-            if (list.toDos.size > 1) {
-                Text(list.toDos[1].title)
-            }
-            if (list.toDos.size > 2) {
-                Text(list.toDos[2].title)
+            // TODO: refactor
+            var index = 0
+            while (index < 5 && index < list.toDos.size) {
+                Text(list.toDos[index].title)
+                index++
             }
         }
     }
