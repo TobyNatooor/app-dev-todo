@@ -82,6 +82,7 @@ fun ListCard(list: CheckList) {
     return Card(
         onClick = {
             val intent = Intent(context, ListActivity::class.java)
+                .putExtra("TITLE", list.title)
             context.startActivity(intent)
         },
         modifier = Modifier
