@@ -19,12 +19,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -41,8 +45,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoappTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomePage(modifier = Modifier.padding(innerPadding))
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    floatingActionButton = {
+                        ListButton()
+                    }
+                ) { innerPadding ->
+                    HomePage(
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
@@ -51,7 +62,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HomePage(modifier: Modifier) {
-    val lists = MockCheckListDataStore().getLists()
+    val dataHandler = remember { DataHandler() }
+    val lists = remember { mutableStateListOf<CheckList>() }
+
+    lists.addAll(dataHandler.load())
 
     return LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -105,5 +119,28 @@ fun ListCard(list: CheckList) {
                 index++
             }
         }
+    }
+}
+
+@Composable
+fun ListButton() {
+    val context = LocalContext.current
+    val dataHandler = DataHandler()
+    val lists = remember { mutableListOf<CheckList>() }
+
+    FloatingActionButton(
+        onClick = {
+            val newListTitle = dataHandler.createNewListName(lists)
+            val newList = CheckList(
+                title = newListTitle,
+                toDos = arrayOf(),
+                description = ""
+            )
+            lists.add(newList)
+            dataHandler.save(lists)
+        },
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list")
     }
 }

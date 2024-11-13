@@ -33,4 +33,12 @@ class DataHandler {
         return lists;
     }
 
+    fun createNewListName(lists: List<CheckList>): String {
+        var i = 1
+        while (lists.any { it.title == "new list$i" }) {
+            i++
+        }
+        return "new list$i"
+    }
+
 }
