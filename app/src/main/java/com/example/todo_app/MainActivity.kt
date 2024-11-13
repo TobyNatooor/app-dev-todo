@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.MoreVert
@@ -46,14 +48,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             TodoappTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    floatingActionButton = {
-                        ListButton()
-                    }
+                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    HomePage(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    HomePage(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -64,28 +61,32 @@ class MainActivity : ComponentActivity() {
 fun HomePage(modifier: Modifier) {
     val dataHandler = remember { DataHandler() }
     val lists = remember { mutableStateListOf<CheckList>() }
-
+    lists.clear()
     lists.addAll(dataHandler.load())
 
-    return LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp),
-        contentPadding = PaddingValues(horizontal = 40.dp),
-        modifier = modifier.padding(bottom = 40.dp)
-    ) {
-        item(span = { GridItemSpan(2) }) {
-            Text(
-                "My Lists",
-                textAlign = TextAlign.Center,
-                fontSize = 60.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 60.dp, bottom = 30.dp)
-            )
+    Scaffold(
+        floatingActionButton = {
+            ListButton(lists, dataHandler)
         }
-        items(lists.size) { index ->
-            ListCard(lists[index])
+    ) { paddingValues ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(40.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp),
+            contentPadding = PaddingValues(horizontal = 40.dp),
+            modifier = modifier.padding(paddingValues)
+        ) {
+            item(span = { GridItemSpan(2) }) {
+                Text(
+                    "My Lists",
+                    textAlign = TextAlign.Center,
+                    fontSize = 60.sp,
+                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                )
+            }
+            items(lists.size) { index ->
+                ListCard(lists[index])
+            }
         }
     }
 }
@@ -123,11 +124,7 @@ fun ListCard(list: CheckList) {
 }
 
 @Composable
-fun ListButton() {
-    val context = LocalContext.current
-    val dataHandler = DataHandler()
-    val lists = remember { mutableListOf<CheckList>() }
-
+fun ListButton(lists: MutableList<CheckList>, dataHandler: DataHandler) {
     FloatingActionButton(
         onClick = {
             val newListTitle = dataHandler.createNewListName(lists)
@@ -139,7 +136,9 @@ fun ListButton() {
             lists.add(newList)
             dataHandler.save(lists)
         },
-        modifier = Modifier.padding(16.dp)
+        // Remove shape parameter for default shape (square with rounded corners)
+        shape = RoundedCornerShape(45, 45, 45, 45),
+        modifier = Modifier.padding(20.dp)
     ) {
         Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list")
     }

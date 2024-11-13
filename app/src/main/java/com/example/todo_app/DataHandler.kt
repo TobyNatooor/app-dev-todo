@@ -35,10 +35,10 @@ class DataHandler {
 
     fun createNewListName(lists: List<CheckList>): String {
         var i = 1
-        while (lists.any { it.title == "new list$i" }) {
+        while (lists.any { it.title == "new list $i" }) {
             i++
         }
-        return "new list$i"
+        return "new list $i"
     }
 
 }
