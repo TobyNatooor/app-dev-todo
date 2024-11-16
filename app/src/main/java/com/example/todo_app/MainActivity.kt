@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -37,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.repository.MockCheckListDataStore
+import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
 import com.example.todo_app.ui.list.ListActivity
 import com.example.todo_app.ui.theme.TodoappTheme
 
@@ -50,7 +49,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    HomePage(modifier = Modifier.padding(innerPadding))
+                    //HomePage(modifier = Modifier.padding(innerPadding))
+                    ToDoListScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
