@@ -36,8 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo_app.data.DataHandler
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.repository.MockCheckListDataStore
+import com.example.todo_app.data.MockCheckListDataStore
 import com.example.todo_app.ui.list.ListActivity
 import com.example.todo_app.ui.theme.TodoappTheme
 
@@ -60,9 +61,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomePage(modifier: Modifier) {
     val dataHandler = remember { DataHandler() }
-    val lists = remember { mutableStateListOf<CheckList>() }
+    val lists = remember { HashMap<Int, CheckList>().toMutableMap() }
     lists.clear()
-    lists.addAll(dataHandler.load())
+    lists.putAll(dataHandler.load())
 
     Scaffold(
         floatingActionButton = {
