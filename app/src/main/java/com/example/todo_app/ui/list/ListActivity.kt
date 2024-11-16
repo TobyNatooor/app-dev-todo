@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 
 class ListActivity : ComponentActivity() {
@@ -35,23 +36,7 @@ class ListActivity : ComponentActivity() {
         enableEdgeToEdge()
         val title = intent.getStringExtra("TITLE") ?: "Error: no list title found"
         setContent {
-            TodoappTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                ) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        AppBar()
-                        Text(
-                            title,
-                            textAlign = TextAlign.Center,
-                            fontSize = 60.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 30.dp, bottom = 30.dp)
-                        )
-                    }
-                }
-            }
+            ToDoListScreen()
         }
     }
 }
