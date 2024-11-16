@@ -21,19 +21,5 @@ class MockToDoDataStore {
         ToDoDAO(12, "Confirm Meeting Time", false, "Double-check the meeting time with the client.", 4),
 
         ToDoDAO(13, "Complete Practice Exam", false, "Finish the practice exam for the upcoming test.", 5),
-        ToDoDAO(14, "Review Chapter 5", false, "Go over Chapter 5 for the study session.", 5),
-        ToDoDAO(15, "Make Study Notes", false, "Create detailed notes for the next exam.", 5),
-
-        ToDoDAO(16, "Start Laundry Load", false, "Put clothes in the washer.", 6),
-        ToDoDAO(17, "Transfer Clothes to Dryer", false, "Move clothes from washer to dryer.", 6),
-        ToDoDAO(18, "Fold Clothes", false, "Fold the clean laundry.", 6),
-
-        ToDoDAO(19, "Schedule Appointment", false, "Call the dentist and book an appointment.", 7),
-        ToDoDAO(20, "Confirm Insurance", false, "Ensure the insurance covers the dentist visit.", 7),
-        ToDoDAO(21, "Prepare Dental Questions", false, "Make a list of questions for the dentist visit.", 7),
-
-        ToDoDAO(22, "Prep Chicken for Cooking", false, "Marinate the chicken for dinner.", 8),
-        ToDoDAO(23, "Cook Rice", false, "Cook the rice to go with dinner.", 8),
-        ToDoDAO(24, "Steam Vegetables", false, "Steam some broccoli and carrots as a side.", 8)
-    )
+        )
 }

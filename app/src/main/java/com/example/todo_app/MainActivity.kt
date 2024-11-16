@@ -49,8 +49,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    //HomePage(modifier = Modifier.padding(innerPadding))
-                    ToDoListScreen(modifier = Modifier.padding(innerPadding))
+                    HomePage(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
