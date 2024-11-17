@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -94,7 +95,7 @@ fun AppBar() {
     return Row(
         modifier = Modifier
             .height(50.dp)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()
     ) {
         Icon(
@@ -126,6 +127,6 @@ fun AddButton(viewModel: ToDoListViewModel) {
         shape = RoundedCornerShape(45, 45, 45, 45),
         modifier = Modifier.padding(20.dp)
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new to do")
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new to do", tint = Color.Black)
     }
 }
