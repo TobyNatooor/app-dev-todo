@@ -80,7 +80,7 @@ fun HomePage(modifier: Modifier) {
                     "My Lists",
                     textAlign = TextAlign.Center,
                     fontSize = 60.sp,
-                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 100.dp, bottom = 100.dp)
                 )
             }
             items(lists.size) { index ->
@@ -101,7 +101,7 @@ fun ListCard(list: CheckList) {
         },
         modifier = Modifier
             .width(130.dp)
-            .height(180.dp)
+            .height(130.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row {
@@ -114,7 +114,7 @@ fun ListCard(list: CheckList) {
             }
             // TODO: refactor
             var index = 0
-            while (index < 5 && index < list.toDos.size) {
+            while (index < 3 && index < list.toDos.size) {
                 Text(list.toDos[index].title)
                 index++
             }

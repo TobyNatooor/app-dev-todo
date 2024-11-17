@@ -44,7 +44,7 @@ fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier
                     item.toString(),
                     textAlign = TextAlign.Center,
                     fontSize = 60.sp,
-                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 100.dp, bottom = 100.dp)
                 )
             } else {
                 ToDoItem(viewmodel, toDo = item as ToDo, index = index - 1)
@@ -57,13 +57,13 @@ fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier
 private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth()
             .background(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(16.dp) // Inner padding for the content inside the box
+            .padding(4.dp) // Inner padding for the content inside the box
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(toDo.isDone, onCheckedChange = {
@@ -71,7 +71,7 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
             })
             Text(
                 text = toDo.title,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 color = Color.Black
             )
         }
