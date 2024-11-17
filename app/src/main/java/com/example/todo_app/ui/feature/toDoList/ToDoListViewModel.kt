@@ -34,10 +34,27 @@ class ToDoListViewModel() : ViewModel() {
         }
     }
 
+    fun updateToDoItem(updatedToDo: ToDo) {
+        mutableToDosState.update { currentState ->
+            when (currentState) {
+                is ToDosUIState.Data -> {
+                    val updatedList = currentState.toDos.map { todo ->
+                        if (todo.title == updatedToDo.title) {
+                            updatedToDo
+                        } else {
+                            todo
+                        }
+                    }
+                    ToDosUIState.Data(updatedList)
+                }
+                else -> ToDosUIState.Data(listOf(updatedToDo))
+            }
+        }
+    }
 }
 
 sealed class ToDosUIState {
-    data object Empty: ToDosUIState()
-    data object Loading: ToDosUIState()
-    data class Data(val toDos: List<ToDo>): ToDosUIState()
+    data object Empty : ToDosUIState()
+    data object Loading : ToDosUIState()
+    data class Data(val toDos: List<ToDo>) : ToDosUIState()
 }

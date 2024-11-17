@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todo_app.DataHandler
 import com.example.todo_app.model.CheckList
@@ -40,20 +41,20 @@ import com.example.todo_app.ui.theme.TodoappTheme
 @Composable
 fun ToDoListScreen(
     modifier: Modifier = Modifier
-    ) {
-        val viewmodel: ToDoListViewModel = viewModel()
-        val toDosUIState = viewmodel.toDosState.collectAsState().value
+) {
+    val viewmodel: ToDoListViewModel = viewModel()
+    val toDosUIState = viewmodel.toDosState.collectAsState().value
 
     TodoappTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = { AddButton(viewmodel) }
         ) { innerPadding ->
-            Column (modifier = Modifier.padding(innerPadding)) {
+            Column(modifier = Modifier.padding(innerPadding)) {
                 AppBar()
                 Box(modifier = modifier) {
 
-                    ToDosContent(toDosUIState)
+                    ToDosContent(toDosUIState, viewmodel)
 
                 }
             }
@@ -61,28 +62,25 @@ fun ToDoListScreen(
         }
     }
 
+}
+
+@Composable
+private fun ToDosContent(
+    toDosUIState: ToDosUIState,
+    viewmodel: ToDoListViewModel,
+    modifier: Modifier = Modifier
+) {
+
+    when (toDosUIState) {
+        ToDosUIState.Empty -> EmptyScreen("No to-do items in this list yet")
+        is ToDosUIState.Loading -> LoadingScreen(modifier)
+        is ToDosUIState.Data -> ToDoList(
+            toDos = toDosUIState.toDos,
+            viewmodel = viewmodel,
+            modifier = modifier
+        )
     }
-
-    @Composable
-    private fun ToDosContent(
-        toDosUIState: ToDosUIState,
-        modifier: Modifier = Modifier
-    ) {
-
-        when (toDosUIState) {
-            ToDosUIState.Empty -> EmptyScreen("No to-do items in this list yet")
-
-
-            is ToDosUIState.Loading -> LoadingScreen(modifier)
-
-            is ToDosUIState.Data -> ToDoList(
-                toDos = toDosUIState.toDos,
-                modifier = modifier
-            )
-
-        }
-
-    }
+}
 
 
 @Composable
@@ -111,11 +109,13 @@ fun AppBar() {
 fun AddButton(viewModel: ToDoListViewModel) {
     FloatingActionButton(
         onClick = {
-            viewModel.addToDoItem(ToDo(
-                title = "New to-do",
-                isDone = false,
-                description = "Write a description"
-            ))
+            viewModel.addToDoItem(
+                ToDo(
+                    title = "New to-do",
+                    isDone = false,
+                    description = "Write a description"
+                )
+            )
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
