@@ -36,7 +36,7 @@ class ListActivity : ComponentActivity() {
         enableEdgeToEdge()
         val title = intent.getStringExtra("TITLE") ?: "Error: no list title found"
         setContent {
-            ToDoListScreen()
+            ToDoListScreen(title = title)
         }
     }
 }

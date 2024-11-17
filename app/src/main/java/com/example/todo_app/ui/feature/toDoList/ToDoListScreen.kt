@@ -30,6 +30,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.todo_app.DataHandler
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
@@ -40,7 +43,7 @@ import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
 fun ToDoListScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, title: String = ""
 ) {
     val viewmodel: ToDoListViewModel = viewModel()
     val toDosUIState = viewmodel.toDosState.collectAsState().value
@@ -52,6 +55,12 @@ fun ToDoListScreen(
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 AppBar()
+                Text(
+                    title,
+                    textAlign = TextAlign.Center,
+                    fontSize = 60.sp,
+                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                )
                 Box(modifier = modifier) {
 
                     ToDosContent(toDosUIState, viewmodel)
