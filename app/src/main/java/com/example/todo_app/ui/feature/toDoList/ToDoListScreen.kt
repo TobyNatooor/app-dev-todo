@@ -26,10 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.todo_app.DataHandler
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
@@ -40,7 +44,7 @@ import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
 fun ToDoListScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, title: String = ""
 ) {
     val viewmodel: ToDoListViewModel = viewModel()
     val toDosUIState = viewmodel.toDosState.collectAsState().value
@@ -54,7 +58,7 @@ fun ToDoListScreen(
                 AppBar()
                 Box(modifier = modifier) {
 
-                    ToDosContent(toDosUIState, viewmodel)
+                    ToDosContent(toDosUIState, viewmodel, title)
 
                 }
             }
@@ -68,6 +72,7 @@ fun ToDoListScreen(
 private fun ToDosContent(
     toDosUIState: ToDosUIState,
     viewmodel: ToDoListViewModel,
+    title: String,
     modifier: Modifier = Modifier
 ) {
 
@@ -77,7 +82,8 @@ private fun ToDosContent(
         is ToDosUIState.Data -> ToDoList(
             toDos = toDosUIState.toDos,
             viewmodel = viewmodel,
-            modifier = modifier
+            modifier = modifier,
+            title = title
         )
     }
 }
@@ -89,7 +95,7 @@ fun AppBar() {
     return Row(
         modifier = Modifier
             .height(50.dp)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()
     ) {
         Icon(
@@ -121,6 +127,6 @@ fun AddButton(viewModel: ToDoListViewModel) {
         shape = RoundedCornerShape(45, 45, 45, 45),
         modifier = Modifier.padding(20.dp)
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new to do")
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new to do", tint = Color.Black)
     }
 }

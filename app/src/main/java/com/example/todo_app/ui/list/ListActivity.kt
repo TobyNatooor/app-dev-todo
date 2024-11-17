@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,7 @@ class ListActivity : ComponentActivity() {
         enableEdgeToEdge()
         val title = intent.getStringExtra("TITLE") ?: "Error: no list title found"
         setContent {
-            ToDoListScreen()
+            ToDoListScreen(title = title)
         }
     }
 }
@@ -47,7 +48,6 @@ fun AppBar() {
     return Row(
         modifier = Modifier
             .height(50.dp)
-            .background(MaterialTheme.colorScheme.primary)
             .fillMaxWidth()
     ) {
         Icon(

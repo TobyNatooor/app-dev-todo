@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,12 +26,14 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,7 +83,7 @@ fun HomePage(modifier: Modifier) {
                     "My Lists",
                     textAlign = TextAlign.Center,
                     fontSize = 60.sp,
-                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 100.dp, bottom = 100.dp)
                 )
             }
             items(lists.size) { index ->
@@ -101,7 +104,7 @@ fun ListCard(list: CheckList) {
         },
         modifier = Modifier
             .width(130.dp)
-            .height(180.dp)
+            .height(130.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row {
@@ -114,7 +117,7 @@ fun ListCard(list: CheckList) {
             }
             // TODO: refactor
             var index = 0
-            while (index < 5 && index < list.toDos.size) {
+            while (index < 3 && index < list.toDos.size) {
                 Text(list.toDos[index].title)
                 index++
             }
@@ -139,6 +142,6 @@ fun ListButton(lists: MutableList<CheckList>, dataHandler: DataHandler) {
         shape = RoundedCornerShape(45, 45, 45, 45),
         modifier = Modifier.padding(20.dp)
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list")
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list", tint = Color.Black)
     }
 }

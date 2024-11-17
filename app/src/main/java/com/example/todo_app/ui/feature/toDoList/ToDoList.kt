@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.FontWeight
@@ -26,19 +27,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.theme.TodoappTheme
 
 
 @Composable
-fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier = Modifier) {
+fun ToDoList(
+    toDos: List<ToDo>,
+    viewmodel: ToDoListViewModel,
+    modifier: Modifier = Modifier,
+    title: String = ""
+) {
     val scrollState = rememberLazyListState()
+    val toDosWithTitle = listOf(title) + toDos
 
     LazyColumn(
         state = scrollState,
         modifier = modifier
             .fillMaxSize()
     ) {
-        itemsIndexed(toDos) { index, toDo ->
-            ToDoItem(viewmodel, toDo = toDo, index = index)
+        itemsIndexed(toDosWithTitle) { index, item ->
+            if (index == 0) {
+                Text(
+                    item.toString(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 60.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, bottom = 100.dp)
+                )
+            } else {
+                ToDoItem(viewmodel, toDo = item as ToDo, index = index - 1)
+            }
         }
     }
 }
@@ -47,22 +66,24 @@ fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier
 private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth()
             .background(
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(16.dp) // Inner padding for the content inside the box
+            .padding(4.dp) // Inner padding for the content inside the box
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(toDo.isDone, onCheckedChange = {
-                viewmodel.updateToDoItem(toDo.copy(isDone = !toDo.isDone))
-            })
+            Checkbox(
+                toDo.isDone,
+                onCheckedChange = {
+                    viewmodel.updateToDoItem(toDo.copy(isDone = !toDo.isDone))
+                })
             Text(
                 text = toDo.title,
-                fontSize = 20.sp,
-                color = Color.Black
+                fontSize = 16.sp,
+                color = Color.White
             )
         }
     }
