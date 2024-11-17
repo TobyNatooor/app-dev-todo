@@ -55,15 +55,9 @@ fun ToDoListScreen(
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 AppBar()
-                Text(
-                    title,
-                    textAlign = TextAlign.Center,
-                    fontSize = 60.sp,
-                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
-                )
                 Box(modifier = modifier) {
 
-                    ToDosContent(toDosUIState, viewmodel)
+                    ToDosContent(toDosUIState, viewmodel, title)
 
                 }
             }
@@ -77,6 +71,7 @@ fun ToDoListScreen(
 private fun ToDosContent(
     toDosUIState: ToDosUIState,
     viewmodel: ToDoListViewModel,
+    title: String,
     modifier: Modifier = Modifier
 ) {
 
@@ -86,7 +81,8 @@ private fun ToDosContent(
         is ToDosUIState.Data -> ToDoList(
             toDos = toDosUIState.toDos,
             viewmodel = viewmodel,
-            modifier = modifier
+            modifier = modifier,
+            title = title
         )
     }
 }

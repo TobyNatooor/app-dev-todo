@@ -29,16 +29,26 @@ import com.example.todo_app.model.ToDo
 
 
 @Composable
-fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier = Modifier) {
+fun ToDoList(toDos: List<ToDo>, viewmodel: ToDoListViewModel, modifier: Modifier = Modifier, title: String = "") {
     val scrollState = rememberLazyListState()
+    val toDosWithTitle = listOf(title) + toDos
 
     LazyColumn(
         state = scrollState,
         modifier = modifier
             .fillMaxSize()
     ) {
-        itemsIndexed(toDos) { index, toDo ->
-            ToDoItem(viewmodel, toDo = toDo, index = index)
+        itemsIndexed(toDosWithTitle) { index, item ->
+            if (index == 0) {
+                Text(
+                    item.toString(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 60.sp,
+                    modifier = Modifier.fillMaxWidth().padding(top = 60.dp, bottom = 30.dp)
+                )
+            } else {
+                ToDoItem(viewmodel, toDo = item as ToDo, index = index - 1)
+            }
         }
     }
 }
