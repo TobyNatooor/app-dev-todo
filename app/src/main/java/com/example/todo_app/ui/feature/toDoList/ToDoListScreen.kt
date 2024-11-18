@@ -36,9 +36,12 @@ import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
 fun ToDoListScreen(
-    modifier: Modifier = Modifier, title: String = "", listId : Int
+    modifier: Modifier = Modifier, title: String = "", listId : Int, dataHandler: DataHandler
 ) {
-    val viewmodel = ToDoListViewModel(listId)
+    val viewmodel: ToDoListViewModel = viewModel(
+        key = "ToDoListViewModel_$listId",
+        factory = ToDoListViewModelFactory(listId, dataHandler)
+    )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
 
     TodoappTheme {
@@ -107,7 +110,7 @@ fun AppBar() {
 fun AddButton(viewModel: ToDoListViewModel) {
     FloatingActionButton(
         onClick = {
-            viewModel.addToDoItem(0)
+            viewModel.addToDoItem()
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),

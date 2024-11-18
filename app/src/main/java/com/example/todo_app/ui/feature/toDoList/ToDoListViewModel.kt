@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(listId: Int) : ViewModel() {
+class ToDoListViewModel(private val listId: Int, private val dataHandler: DataHandler) : ViewModel() {
 
-    private val toDos = DataHandler().getToDos(listId)
+    private val toDos = dataHandler.getToDos(listId)
 
     private val mutableToDosState = MutableStateFlow<ToDosUIState>(
         if (toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDos)
@@ -26,9 +26,9 @@ class ToDoListViewModel(listId: Int) : ViewModel() {
         }
     }
 
-    fun addToDoItem(listId : Int) {
+    fun addToDoItem() {
         var newToDo = ToDo(
-            id = DataHandler().newToDoId(),
+            id = dataHandler.newToDoId(),
             title = "New to do item",
             isDone = false,
             description = "Add Description"
@@ -39,7 +39,7 @@ class ToDoListViewModel(listId: Int) : ViewModel() {
                 else -> ToDosUIState.Data(listOf(newToDo))
             }
         }
-        DataHandler().save(newToDo, listId)
+        dataHandler.save(newToDo, listId)
     }
 
     fun updateToDoItem(updatedToDo: ToDo) {

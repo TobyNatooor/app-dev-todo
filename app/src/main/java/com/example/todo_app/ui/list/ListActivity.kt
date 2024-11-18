@@ -39,7 +39,7 @@ class ListActivity() : ComponentActivity() {
         val listId = intent.getIntExtra("LISTID", -1)
 
         setContent {
-            ToDoListScreen(title = title, listId = listId)
+            //ToDoListScreen(title = title, listId = listId, dataHandler = )
         }
     }
 }
