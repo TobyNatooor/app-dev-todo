@@ -14,5 +14,5 @@ class MockCheckListDataStore {
         CheckListDAO(6, "Laundry", "Wash, dry, and fold clothes."),
         CheckListDAO(7, "Book Appointment", "Schedule a dentist visit for a checkup."),
         CheckListDAO(8, "Dinner Preparation", "Cook a healthy dinner with chicken, rice, and vegetables.")
-    )
+    ).toMutableList()
 }

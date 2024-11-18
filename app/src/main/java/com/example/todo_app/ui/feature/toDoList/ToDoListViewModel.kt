@@ -2,6 +2,7 @@ package com.example.todo_app.ui.feature.toDoList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo_app.data.DataHandler
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.repository.ToDoRepo
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,12 +10,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel() : ViewModel() {
+class ToDoListViewModel(listId: Int) : ViewModel() {
 
-    private val toDoRepo = ToDoRepo()
+    private val toDos = DataHandler().getToDos(listId)
 
     private val mutableToDosState = MutableStateFlow<ToDosUIState>(
-        if (toDoRepo.toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDoRepo.toDos)
+        if (toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDos)
     )
     val toDosState: StateFlow<ToDosUIState> = mutableToDosState
 
@@ -25,13 +26,20 @@ class ToDoListViewModel() : ViewModel() {
         }
     }
 
-    fun addToDoItem(newToDo: ToDo) {
+    fun addToDoItem(listId : Int) {
+        var newToDo = ToDo(
+            id = DataHandler().newToDoId(),
+            title = "New to do item",
+            isDone = false,
+            description = "Add Description"
+        )
         mutableToDosState.update { currentState ->
             when (currentState) {
                 is ToDosUIState.Data -> ToDosUIState.Data(currentState.toDos + newToDo)
                 else -> ToDosUIState.Data(listOf(newToDo))
             }
         }
+        DataHandler().save(newToDo, listId)
     }
 
     fun updateToDoItem(updatedToDo: ToDo) {
