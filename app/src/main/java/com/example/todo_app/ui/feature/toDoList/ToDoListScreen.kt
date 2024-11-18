@@ -38,7 +38,7 @@ import com.example.todo_app.ui.theme.TodoappTheme
 fun ToDoListScreen(
     modifier: Modifier = Modifier, title: String = "", listId : Int
 ) {
-    val viewmodel: ToDoListViewModel = ToDoListViewModel(listId)
+    val viewmodel = ToDoListViewModel(listId)
     val toDosUIState = viewmodel.toDosState.collectAsState().value
 
     TodoappTheme {

@@ -24,11 +24,6 @@ class ToDoRepo {
         return toDos
     }
 
-    fun add(toDo : ToDo){
-        DataHandler().saveToDo(toDo)
-        update()
-    }
-
     private fun update(){
         dataSource = DataHandler().toDoDataSource
     }

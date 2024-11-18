@@ -102,18 +102,6 @@ class DataHandler {
         }
     }
 
-    fun load(): List<CheckList>{
-        var lists: List<CheckList> = emptyList();
-        try {
-            val file = File(folderpath + "todo_data.json")
-            val listsToJson = file.readText()
-            lists = Json.decodeFromString(listsToJson)
-        } catch (e: Exception){
-            e.printStackTrace()
-        }
-        return lists;
-    }
-
     fun createNewListName(lists: List<CheckList>): String {
         var i = 1
         while (lists.any { it.title == "new list $i" }) {
@@ -127,6 +115,17 @@ class DataHandler {
         for(toDo in toDoDataSource.todoData){
             if(toDo.id > newId){
                 newId = toDo.id
+            }
+        }
+        newId++
+        return newId
+    }
+
+    fun newListId() : Int {
+        var newId = 0
+        for(list in checkListDataStore.checklistData){
+            if(list.id > newId){
+                newId = list.id
             }
         }
         newId++

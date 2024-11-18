@@ -62,7 +62,7 @@ fun HomePage(modifier: Modifier) {
     val dataHandler = remember { DataHandler() }
     val lists = remember { mutableStateListOf<CheckList>() }
     lists.clear()
-    lists.addAll(dataHandler.load())
+    lists.addAll(dataHandler.getCheckLists())
 
     Scaffold(
         floatingActionButton = {
@@ -97,7 +97,7 @@ fun ListCard(list: CheckList) {
     return Card(
         onClick = {
             val intent = Intent(context, ListActivity::class.java)
-                .putExtra("TITLE", list.title)
+                .putExtra("TITLE", list.title).putExtra("LISTID", list.id.toInt())
             context.startActivity(intent)
         },
         modifier = Modifier
@@ -114,11 +114,13 @@ fun ListCard(list: CheckList) {
                 )
             }
             // TODO: refactor
+            /*
             var index = 0
             while (index < 3 && index < list.toDos.size) {
                 Text(list.toDos[index].title)
                 index++
             }
+            */
         }
     }
 }
@@ -129,8 +131,8 @@ fun ListButton(lists: MutableList<CheckList>, dataHandler: DataHandler) {
         onClick = {
             val newListTitle = dataHandler.createNewListName(lists)
             val newList = CheckList(
+                id = dataHandler.newListId(),
                 title = newListTitle,
-                toDos = arrayOf(),
                 description = ""
             )
             lists.add(newList)
