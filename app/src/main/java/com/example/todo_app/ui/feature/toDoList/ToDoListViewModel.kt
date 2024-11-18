@@ -27,7 +27,7 @@ class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewMod
     }
 
     fun addToDoItem() {
-        var newToDo = ToDo(
+        val newToDo = ToDo(
             id = dataHandler.newToDoId(),
             title = "New to do item",
             isDone = false,
@@ -43,11 +43,12 @@ class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewMod
     }
 
     fun updateToDoItem(updatedToDo: ToDo) {
+        dataHandler.save(updatedToDo, listId)
         mutableToDosState.update { currentState ->
             when (currentState) {
                 is ToDosUIState.Data -> {
                     val updatedList = currentState.toDos.map { todo ->
-                        if (todo.title == updatedToDo.title) {
+                        if (todo.id == updatedToDo.id) {
                             updatedToDo
                         } else {
                             todo
