@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(private val listId: Int, private val dataHandler: DataHandler) : ViewModel() {
+class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewModel() {
 
     private val toDos = dataHandler.getToDos(listId)
 

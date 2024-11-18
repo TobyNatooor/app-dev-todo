@@ -49,12 +49,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val dataHandler = DataHandler()
-
         setContent {
             TodoappTheme {
                 val navController = rememberNavController()
-                    AppNavigation(dataHandler)
+                    AppNavigation()
                 }
             }
         }

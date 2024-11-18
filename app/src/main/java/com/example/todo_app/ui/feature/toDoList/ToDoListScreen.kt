@@ -36,7 +36,10 @@ import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
 fun ToDoListScreen(
-    modifier: Modifier = Modifier, title: String = "", listId : Int, dataHandler: DataHandler
+    modifier: Modifier = Modifier,
+    title: String = "", listId : Int,
+    appBar : @Composable () -> Unit,
+    dataHandler: DataHandler
 ) {
     val viewmodel: ToDoListViewModel = viewModel(
         key = "ToDoListViewModel_$listId",
@@ -47,10 +50,10 @@ fun ToDoListScreen(
     TodoappTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            floatingActionButton = { AddButton(viewmodel) }
+            floatingActionButton = { AddButton(viewmodel) },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                AppBar()
+                appBar()
                 Box(modifier = modifier) {
 
                     ToDosContent(toDosUIState, viewmodel, title)
@@ -79,29 +82,6 @@ private fun ToDosContent(
             viewmodel = viewmodel,
             modifier = modifier,
             title = title
-        )
-    }
-}
-
-
-@Composable
-fun AppBar() {
-    val activity = LocalContext.current as? Activity
-    return Row(
-        modifier = Modifier
-            .height(50.dp)
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .fillMaxWidth()
-    ) {
-        Icon(
-            Icons.AutoMirrored.Rounded.ArrowBack,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clickable {
-                    activity?.finish()
-                }
         )
     }
 }

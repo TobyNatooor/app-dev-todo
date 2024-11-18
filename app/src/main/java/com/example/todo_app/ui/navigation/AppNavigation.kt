@@ -1,7 +1,22 @@
 package com.example.todo_app.ui.navigation
 
+import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -11,17 +26,20 @@ import androidx.navigation.navArgument
 import com.example.todo_app.data.DataHandler
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
+import com.example.todo_app.ui.theme.appBar
 
 @Composable
-fun AppNavigation(dataHandler : DataHandler) {
+fun AppNavigation() {
     val navController = rememberNavController()
+    val dataHandler = remember { DataHandler() }
+    val appBar = @Composable { AppBar(navController) }
+
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            val localDataHandler = remember { dataHandler }
             HomeScreen(
                 navController = navController,
-                dataHandler = localDataHandler
+                dataHandler = dataHandler
             )
         }
         composable(
@@ -34,12 +52,11 @@ fun AppNavigation(dataHandler : DataHandler) {
             val title = backStackEntry.arguments?.getString("title") ?: "Error"
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
 
-            val localDataHandler = remember { dataHandler }
-
             ToDoListScreen(
                 title = title,
                 listId = listId,
-                dataHandler = localDataHandler
+                appBar = appBar,
+                dataHandler = dataHandler
             )
         }
     }

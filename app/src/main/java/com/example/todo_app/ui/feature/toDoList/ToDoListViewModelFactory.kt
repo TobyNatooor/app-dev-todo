@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.todo_app.data.DataHandler
 
 class ToDoListViewModelFactory(
-    private val listId: Int,
-    private val dataHandler: DataHandler
+    val listId: Int,
+    val dataHandler: DataHandler
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoListViewModel::class.java)) {
