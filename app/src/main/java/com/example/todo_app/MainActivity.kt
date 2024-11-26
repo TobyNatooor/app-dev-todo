@@ -23,9 +23,9 @@ class MainActivity : ComponentActivity() {
             AppDatabase::class.java, "ToDoDB"
         ).build()
 
-        lifecycleScope.launch {
-            MockDataStore().insertMockData(db)
-        }
+//        lifecycleScope.launch {
+//            MockDataStore().insertMockData(db)
+//        }
         enableEdgeToEdge()
 
         setContent {

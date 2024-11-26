@@ -1,12 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
     namespace = "com.example.todo_app"
     compileSdk = 34
+
+    kotlinOptions {
+        freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.RequiresOptIn")
+    }
 
     defaultConfig {
         applicationId = "com.example.todo_app"
@@ -53,7 +58,9 @@ android {
 dependencies {
 
     implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
