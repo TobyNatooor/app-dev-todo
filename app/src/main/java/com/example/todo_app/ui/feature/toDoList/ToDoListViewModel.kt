@@ -1,6 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
-import AppDatabase
+import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app.model.ToDo

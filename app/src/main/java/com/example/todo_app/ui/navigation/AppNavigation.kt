@@ -1,6 +1,6 @@
 package com.example.todo_app.ui.navigation
 
-import AppDatabase
+import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost

@@ -1,6 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
-import AppDatabase
+import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,7 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreen(
@@ -44,7 +47,15 @@ fun HomeScreen(
 ) {
     val lists = remember { mutableStateListOf<CheckList>() }
     lists.clear()
-    lists.addAll(db.checkListDao().getAll())
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val fetchedList = db.checkListDao().getAll()
+            withContext(Dispatchers.Main){
+                lists.addAll(fetchedList)
+            }
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
