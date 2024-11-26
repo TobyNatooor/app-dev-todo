@@ -1,12 +1,17 @@
 package com.example.todo_app.model
 
-import java.util.Date
-import kotlinx.serialization.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.time.LocalDateTime
 
-@Serializable
+@Entity(tableName = "ToDo")
 data class ToDo (
-    var id: Int,
-    var title: String,
-    var isDone: Boolean = false,
-    var description: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
+    val title: String,
+    val description: String,
+    val listId: Int,
+    val order: Int,
+    val status: String = "unDone",
+    val doneWhen: LocalDateTime
     )
