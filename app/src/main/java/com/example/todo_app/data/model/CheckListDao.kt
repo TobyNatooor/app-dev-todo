@@ -1,6 +1,5 @@
 package com.example.todo_app.data.model
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,6 +19,6 @@ interface CheckListDao {
     suspend fun delete(list: CheckList)
 
     @Query("SELECT * FROM CheckList")
-    fun getAllLists(): LiveData<List<CheckList>>
+    fun getAll(): List<CheckList>
 
 }

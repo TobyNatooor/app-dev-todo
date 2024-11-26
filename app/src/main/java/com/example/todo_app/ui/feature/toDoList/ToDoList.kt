@@ -2,7 +2,6 @@ package com.example.todo_app.ui.feature.toDoList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,22 +11,19 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.ViewModel
 
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.ui.theme.TodoappTheme
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -64,6 +60,7 @@ fun ToDoList(
 
 @Composable
 private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
+    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -76,9 +73,12 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
-                toDo.isDone,
+                //TODO: "status" has 3 different states. Checkbox only checks binary states
+                toDo.status.isDone(),
                 onCheckedChange = {
-                    viewmodel.updateToDoItem(toDo.copy(isDone = !toDo.isDone))
+                    coroutineScope.launch {
+                        viewmodel.updateToDoItem(toDo.copy(status = toDo.status.check()))
+                    }
                 })
             Text(
                 text = toDo.title,

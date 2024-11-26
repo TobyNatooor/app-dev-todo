@@ -1,18 +1,19 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app.data.DataHandler
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.repository.ToDoRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewModel() {
+class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
-    private val toDos = dataHandler.getToDos(listId)
+    //TODO: Make Query to get list of toDos with listId = listId, and refactor code below
+
+    private val toDos = db.toDoDao().getAll()
 
     private val mutableToDosState = MutableStateFlow<ToDosUIState>(
         if (toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDos)
@@ -26,12 +27,12 @@ class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewMod
         }
     }
 
-    fun addToDoItem() {
+    suspend fun addToDoItem() {
         val newToDo = ToDo(
-            id = dataHandler.newToDoId(),
             title = "New to do item",
-            isDone = false,
-            description = "Add Description"
+            description = "Add Description",
+            listId = listId,
+            order = 2, //TODO: Add query to find max order
         )
         mutableToDosState.update { currentState ->
             when (currentState) {
@@ -39,11 +40,11 @@ class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewMod
                 else -> ToDosUIState.Data(listOf(newToDo))
             }
         }
-        dataHandler.save(newToDo, listId)
+        db.toDoDao().insert(newToDo)
     }
 
-    fun updateToDoItem(updatedToDo: ToDo) {
-        dataHandler.save(updatedToDo, listId)
+    suspend fun updateToDoItem(updatedToDo: ToDo) {
+        db.toDoDao().update(updatedToDo)
         mutableToDosState.update { currentState ->
             when (currentState) {
                 is ToDosUIState.Data -> {

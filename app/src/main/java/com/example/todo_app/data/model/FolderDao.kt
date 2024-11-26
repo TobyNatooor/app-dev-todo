@@ -1,6 +1,5 @@
 package com.example.todo_app.data.model
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,5 +19,5 @@ interface FolderDao {
     suspend fun delete(folder: Folder)
 
     @Query("SELECT * FROM Folder")
-    fun getAllFolders(): LiveData<List<Folder>>
+    fun getAll(): List<Folder>
 }

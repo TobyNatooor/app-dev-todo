@@ -7,11 +7,12 @@ import java.time.LocalDateTime
 @Entity(tableName = "ToDo")
 data class ToDo (
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
+
     val title: String,
     val description: String,
     val listId: Int,
     val order: Int,
-    val status: String = "unDone",
-    val doneWhen: LocalDateTime
+    val status: ToDoStatus = ToDoStatus.UN_DONE,
+    val doneWhen: LocalDateTime? = null
     )

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "CheckList")
 data class CheckList(
     @PrimaryKey(autoGenerate = true)
-    val id : Int,
+    val id : Int = 0,
     val title : String,
     val description : String,
     val order: Int,
