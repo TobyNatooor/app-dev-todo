@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CheckList(
+    val id : Int,
     val title : String,
-    val toDos : Array<ToDo>,
     val description : String,
 )

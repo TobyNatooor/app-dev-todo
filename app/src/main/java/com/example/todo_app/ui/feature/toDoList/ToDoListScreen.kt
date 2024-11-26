@@ -16,26 +16,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.todo_app.DataHandler
-import com.example.todo_app.model.CheckList
+import com.example.todo_app.data.DataHandler
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.EmptyScreen
 import com.example.todo_app.ui.feature.common.LoadingScreen
@@ -44,18 +36,24 @@ import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
 fun ToDoListScreen(
-    modifier: Modifier = Modifier, title: String = ""
+    modifier: Modifier = Modifier,
+    title: String = "", listId : Int,
+    appBar : @Composable () -> Unit,
+    dataHandler: DataHandler
 ) {
-    val viewmodel: ToDoListViewModel = viewModel()
+    val viewmodel: ToDoListViewModel = viewModel(
+        key = "ToDoListViewModel_$listId",
+        factory = ToDoListViewModelFactory(listId, dataHandler)
+    )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
 
     TodoappTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            floatingActionButton = { AddButton(viewmodel) }
+            floatingActionButton = { AddButton(viewmodel) },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                AppBar()
+                appBar()
                 Box(modifier = modifier) {
 
                     ToDosContent(toDosUIState, viewmodel, title)
@@ -88,40 +86,11 @@ private fun ToDosContent(
     }
 }
 
-
-@Composable
-fun AppBar() {
-    val activity = LocalContext.current as? Activity
-    return Row(
-        modifier = Modifier
-            .height(50.dp)
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .fillMaxWidth()
-    ) {
-        Icon(
-            Icons.AutoMirrored.Rounded.ArrowBack,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clickable {
-                    activity?.finish()
-                }
-        )
-    }
-}
-
 @Composable
 fun AddButton(viewModel: ToDoListViewModel) {
     FloatingActionButton(
         onClick = {
-            viewModel.addToDoItem(
-                ToDo(
-                    title = "New to-do",
-                    isDone = false,
-                    description = "Write a description"
-                )
-            )
+            viewModel.addToDoItem()
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),

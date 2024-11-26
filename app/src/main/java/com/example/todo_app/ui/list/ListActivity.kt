@@ -31,13 +31,15 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 
-class ListActivity : ComponentActivity() {
+class ListActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val title = intent.getStringExtra("TITLE") ?: "Error: no list title found"
+        val listId = intent.getIntExtra("LISTID", -1)
+
         setContent {
-            ToDoListScreen(title = title)
+            //ToDoListScreen(title = title, listId = listId, dataHandler = )
         }
     }
 }
