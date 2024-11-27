@@ -12,14 +12,8 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
-    //TODO: Make Query to get list of toDos with listId = listId, and refactor code below
-
     private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
-
-//    private val mutableToDosState = MutableStateFlow<ToDosUIState>(
-//        if (toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDos)
-//    )
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
     init {
