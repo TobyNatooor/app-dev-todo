@@ -2,7 +2,6 @@ package com.example.todo_app.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
 
 @Entity(tableName = "ToDo")
 data class ToDo (
