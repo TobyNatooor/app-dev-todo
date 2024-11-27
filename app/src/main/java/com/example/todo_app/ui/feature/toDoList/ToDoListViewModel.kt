@@ -42,32 +42,11 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
             listId = listId,
             order = 2, //TODO: Add query to find max order
         )
-        _mutableToDosState.update { currentState ->
-            when (currentState) {
-                is ToDosUIState.Data -> ToDosUIState.Data(currentState.toDos + newToDo)
-                else -> ToDosUIState.Data(listOf(newToDo))
-            }
-        }
         db.toDoDao().insert(newToDo)
     }
 
     suspend fun updateToDoItem(updatedToDo: ToDo) {
         db.toDoDao().update(updatedToDo)
-        _mutableToDosState.update { currentState ->
-            when (currentState) {
-                is ToDosUIState.Data -> {
-                    val updatedList = currentState.toDos.map { todo ->
-                        if (todo.id == updatedToDo.id) {
-                            updatedToDo
-                        } else {
-                            todo
-                        }
-                    }
-                    ToDosUIState.Data(updatedList)
-                }
-                else -> ToDosUIState.Data(listOf(updatedToDo))
-            }
-        }
     }
 }
 
