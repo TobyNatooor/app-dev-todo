@@ -19,11 +19,7 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
     init {
         viewModelScope.launch {
             toDos.collect { list ->
-                _mutableToDosState.value = if (list.isEmpty()) {
-                    ToDosUIState.Empty
-                } else {
-                    ToDosUIState.Data(list)
-                }
+                _mutableToDosState.value = ToDosUIState.Data(list)
             }
 
         }
@@ -45,7 +41,6 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 }
 
 sealed class ToDosUIState {
-    data object Empty : ToDosUIState()
     data object Loading : ToDosUIState()
     data class Data(val toDos: List<ToDo>) : ToDosUIState()
 }

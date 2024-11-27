@@ -1,7 +1,10 @@
 package com.example.todo_app.ui.feature.toDoList
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 
 import com.example.todo_app.model.ToDo
@@ -33,25 +37,45 @@ fun ToDoList(
     title: String = ""
 ) {
     val scrollState = rememberLazyListState()
-    val toDosWithTitle = listOf(title) + toDos
 
-    LazyColumn(
-        state = scrollState,
+    Column(
+        verticalArrangement = Arrangement.Top,
         modifier = modifier
             .fillMaxSize()
     ) {
-        itemsIndexed(toDosWithTitle) { index, item ->
-            if (index == 0) {
-                Text(
-                    item.toString(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 60.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 100.dp, bottom = 100.dp)
-                )
+        // Title
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                fontSize = 60.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 75.dp, bottom = 75.dp)
+            )
+        }
+
+        // To-do elements
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            if (toDos.isEmpty()) {
+                item {
+                    Text(
+                        text = "No to-do items in this list",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             } else {
-                ToDoItem(viewmodel, toDo = item as ToDo, index = index - 1)
+                itemsIndexed(toDos) { index, item ->
+                    ToDoItem(viewmodel, toDo = item, index = index)
+                }
             }
         }
     }

@@ -18,17 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.todo_app.ui.feature.common.EmptyScreen
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun ToDoListScreen(
     modifier: Modifier = Modifier,
-    title: String = "", listId : Int,
-    appBar : @Composable () -> Unit,
+    title: String = "", listId: Int,
+    appBar: @Composable () -> Unit,
     db: AppDatabase
 ) {
     val viewmodel: ToDoListViewModel = viewModel(
@@ -48,10 +46,8 @@ fun ToDoListScreen(
                     ToDosContent(toDosUIState, viewmodel, title)
                 }
             }
-
         }
     }
-
 }
 
 @Composable
@@ -62,17 +58,15 @@ private fun ToDosContent(
     modifier: Modifier = Modifier
 ) {
     when (toDosUIState) {
-        is ToDosUIState.Empty -> EmptyScreen(
-            modifier = modifier,
-            title = title,
-            text = "No to-do items in this list yet"
+        is ToDosUIState.Loading -> LoadingScreen(
+            modifier = modifier
         )
-        is ToDosUIState.Loading -> LoadingScreen(modifier)
+
         is ToDosUIState.Data -> ToDoList(
-            modifier = modifier,
             title = title,
             toDos = toDosUIState.toDos,
-            viewmodel = viewmodel
+            viewmodel = viewmodel,
+            modifier = modifier
         )
     }
 }
@@ -89,6 +83,10 @@ fun AddButton(viewModel: ToDoListViewModel) {
         shape = RoundedCornerShape(45, 45, 45, 45),
         modifier = Modifier.padding(20.dp)
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new to do", tint = Color.Black)
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add new to do",
+            tint = Color.Black
+        )
     }
 }
