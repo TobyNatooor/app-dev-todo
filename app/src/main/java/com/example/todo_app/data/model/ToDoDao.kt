@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.todo_app.model.ToDo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ToDoDao {
@@ -19,6 +20,9 @@ interface ToDoDao {
     suspend fun delete(toDo: ToDo)
 
     @Query("SELECT * FROM ToDo")
-    fun getAll(): List<ToDo>
+    fun getAll(): Flow<List<ToDo>>
+
+    @Query("SELECT * FROM ToDo WHERE ToDo.listId = :vListId")
+    fun getAllWithListId(vListId: Int): Flow<List<ToDo>>
 
 }

@@ -65,7 +65,7 @@ private fun ToDosContent(
 ) {
 
     when (toDosUIState) {
-        ToDosUIState.Empty -> EmptyScreen("No to-do items in this list yet")
+        is ToDosUIState.Empty -> EmptyScreen("No to-do items in this list yet")
         is ToDosUIState.Loading -> LoadingScreen(modifier)
         is ToDosUIState.Data -> ToDoList(
             toDos = toDosUIState.toDos,

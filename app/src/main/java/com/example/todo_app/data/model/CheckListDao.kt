@@ -21,4 +21,7 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList")
     fun getAll(): List<CheckList>
 
+    @Query("SELECT CAST(SUBSTR(title, LENGTH('New List ') + 1) AS INTEGER) AS listNumber " +
+            "FROM CheckList WHERE title LIKE 'New List %' ORDER BY listNumber DESC LIMIT 1")
+    fun getNewListNr(): Int
 }

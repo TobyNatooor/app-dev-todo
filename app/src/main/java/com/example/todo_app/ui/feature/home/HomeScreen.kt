@@ -46,7 +46,7 @@ fun HomeScreen(
     db: AppDatabase
 ) {
     val lists = remember { mutableStateListOf<CheckList>() }
-    lists.clear()
+    // lists.clear()
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -129,8 +129,11 @@ fun ListButton(lists: MutableList<CheckList>, db: AppDatabase) {
                 order = 2, //TODO: Query to find max order
                 folderId = 2 //TODO: Implement folders
             )
-            coroutineScope.launch { db.checkListDao().insert(newList) }
-            lists.add(newList) //TODO: Refactor code so listview is updated
+            coroutineScope.launch {
+                db.checkListDao().insert(newList)
+                lists.add(newList)
+            }
+            //lists.add(newList) //TODO: Refactor code so listview is updated
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
