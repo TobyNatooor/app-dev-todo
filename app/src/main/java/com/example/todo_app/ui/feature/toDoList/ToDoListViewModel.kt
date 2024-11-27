@@ -7,7 +7,6 @@ import com.example.todo_app.model.ToDo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
