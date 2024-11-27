@@ -131,7 +131,7 @@ fun ListButton(lists: MutableList<CheckList>, db: AppDatabase) {
             )
             coroutineScope.launch {
                 db.checkListDao().insert(newList)
-                lists.add(newList)
+                //lists.add(newList)
             }
             //lists.add(newList) //TODO: Refactor code so listview is updated
         },
