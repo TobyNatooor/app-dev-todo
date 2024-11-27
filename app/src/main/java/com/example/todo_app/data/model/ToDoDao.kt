@@ -22,7 +22,16 @@ interface ToDoDao {
     @Query("SELECT * FROM ToDo")
     fun getAll(): Flow<List<ToDo>>
 
+    @Query("SELECT * FROM ToDo WHERE ToDo.id = :vId")
+    fun getWithId(vId: Int): Flow<ToDo>
+
     @Query("SELECT * FROM ToDo WHERE ToDo.listId = :vListId")
     fun getAllWithListId(vListId: Int): Flow<List<ToDo>>
+
+    @Query("SELECT * FROM ToDo WHERE description LIKE '%' || :vSearchWord || '%'")
+    fun findWithDescription(vSearchWord: String): Flow<List<ToDo>>
+
+    @Query("SELECT * FROM ToDo WHERE title LIKE '%' || :vSearchWord || '%'")
+    fun findWithTitle(vSearchWord: String): Flow<List<ToDo>>
 
 }
