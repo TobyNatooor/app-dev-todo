@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.todo_app.model.ToDo
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun ToDoList(
     toDos: List<ToDo>,
@@ -77,7 +76,11 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 toDo.status.isDone(),
                 onCheckedChange = {
                     coroutineScope.launch {
-                        viewmodel.updateToDoItem(toDo.copy(status = toDo.status.check()))
+                        viewmodel.updateToDoItem(
+                            toDo.copy(
+                                status = toDo.status.check()
+                            )
+                        )
                     }
                 })
             Text(

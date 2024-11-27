@@ -15,7 +15,6 @@ fun AppNavigation(db: AppDatabase) {
     val navController = rememberNavController()
     val appBar = @Composable { AppBar(navController) }
 
-
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(

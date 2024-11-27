@@ -15,4 +15,4 @@ data class ToDo (
     val order: Int,
     val status: ToDoStatus = ToDoStatus.UN_DONE,
     //val doneWhen: LocalDateTime? = null - TODO: Room cannot save this variable.
-    )
+)

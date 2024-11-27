@@ -45,9 +45,7 @@ fun ToDoListScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-
                     ToDosContent(toDosUIState, viewmodel, title)
-
                 }
             }
 
@@ -63,15 +61,18 @@ private fun ToDosContent(
     title: String,
     modifier: Modifier = Modifier
 ) {
-
     when (toDosUIState) {
-        is ToDosUIState.Empty -> EmptyScreen("No to-do items in this list yet")
+        is ToDosUIState.Empty -> EmptyScreen(
+            modifier = modifier,
+            title = title,
+            text = "No to-do items in this list yet"
+        )
         is ToDosUIState.Loading -> LoadingScreen(modifier)
         is ToDosUIState.Data -> ToDoList(
-            toDos = toDosUIState.toDos,
-            viewmodel = viewmodel,
             modifier = modifier,
-            title = title
+            title = title,
+            toDos = toDosUIState.toDos,
+            viewmodel = viewmodel
         )
     }
 }

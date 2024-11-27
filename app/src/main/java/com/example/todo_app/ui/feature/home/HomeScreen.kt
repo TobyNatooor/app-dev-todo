@@ -119,6 +119,8 @@ fun ListCard(list: CheckList, navController: NavController) {
 @Composable
 fun ListButton(lists: MutableList<CheckList>, db: AppDatabase) {
     val coroutineScope = rememberCoroutineScope()
+    
+    // Button - Create new to-do list
     FloatingActionButton(
         onClick = {
             //TODO: Query for getting new list name

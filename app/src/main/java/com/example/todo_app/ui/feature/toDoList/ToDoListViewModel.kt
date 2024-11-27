@@ -18,7 +18,7 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            toDos.collect{ list ->
+            toDos.collect { list ->
                 _mutableToDosState.value = if (list.isEmpty()) {
                     ToDosUIState.Empty
                 } else {
