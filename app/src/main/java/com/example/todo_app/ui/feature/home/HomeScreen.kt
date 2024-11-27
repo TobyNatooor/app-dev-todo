@@ -2,10 +2,12 @@ package com.example.todo_app.ui.feature.home
 
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,8 +36,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
+import com.example.todo_app.ui.feature.common.EmptyScreen
+import com.example.todo_app.ui.feature.common.LoadingScreen
+import com.example.todo_app.ui.feature.toDoList.AddButton
+import com.example.todo_app.ui.feature.toDoList.ToDoList
+import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
+import com.example.todo_app.ui.feature.toDoList.ToDoListViewModelFactory
+import com.example.todo_app.ui.feature.toDoList.ToDosContent
+import com.example.todo_app.ui.feature.toDoList.ToDosUIState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,16 +57,21 @@ fun HomeScreen(
     navController: NavController,
     db: AppDatabase
 ) {
-    val lists = remember { mutableStateListOf<CheckList>() }
-    // lists.clear()
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        coroutineScope.launch(Dispatchers.IO) {
-            val fetchedList = db.checkListDao().getAll()
-            withContext(Dispatchers.Main){
-                lists.addAll(fetchedList)
+    val viewmodel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(db)
+    )
+    val homeUIState = viewmodel.homeState.collectAsState().value
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = { AddButton(viewmodel) },
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Box(modifier = modifier) {
+                HomeContent(homeUIState, viewmodel)
             }
         }
+
     }
 
     Scaffold(
@@ -82,60 +99,30 @@ fun HomeScreen(
             }
         }
     }
-}
 
-@Composable
-fun ListCard(list: CheckList, navController: NavController) {
-    val context = LocalContext.current
-    return Card(
-        onClick = {
-            navController.navigate("todoList/${list.title}/${list.id}")
-        },
-        modifier = Modifier
-            .width(130.dp)
-            .height(130.dp)
-    ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row {
-                Text(list.title, fontSize = 20.sp)
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    Icons.Rounded.MoreVert,
-                    contentDescription = null,
-                )
+    /*
+    =================================================
+     */
+    val lists = remember { mutableStateListOf<CheckList>() }
+    // lists.clear()
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val fetchedList = db.checkListDao().getAll()
+            withContext(Dispatchers.Main){
+                lists.addAll(fetchedList)
             }
-            // TODO: refactor
-            /*
-            var index = 0
-            while (index < 3 && index < list.toDos.size) {
-                Text(list.toDos[index].title)
-                index++
-            }
-            */
         }
     }
 }
 
 @Composable
-fun ListButton(lists: MutableList<CheckList>, db: AppDatabase) {
+fun AddButton(viewModel: HomeViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    
-    // Button - Create new to-do list
+
     FloatingActionButton(
         onClick = {
-            //TODO: Query for getting new list name
-            val newListTitle = "New List"
-            val newList = CheckList(
-                title = newListTitle,
-                description = "",
-                order = 2, //TODO: Query to find max order
-                folderId = 2 //TODO: Implement folders
-            )
-            coroutineScope.launch {
-                db.checkListDao().insert(newList)
-                //lists.add(newList)
-            }
-            //lists.add(newList) //TODO: Refactor code so listview is updated
+            coroutineScope.launch { viewModel.addList() }
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
@@ -144,3 +131,26 @@ fun ListButton(lists: MutableList<CheckList>, db: AppDatabase) {
         Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list", tint = Color.Black)
     }
 }
+
+@Composable
+private fun HomeContent(
+    homeUIState: HomeUIState,
+    viewmodel: HomeViewModel,
+    modifier: Modifier = Modifier
+) {
+    when (homeUIState) {
+        is HomeUIState.Empty -> EmptyScreen(
+            modifier = modifier,
+            title = "Home",
+            text = "No checklists yet"
+        )
+        is HomeUIState.Loading -> LoadingScreen(modifier)
+        is HomeUIState.Data -> HomeList(
+            modifier = modifier,
+            title = "title",
+            toDos = toDosUIState.toDos,
+            viewmodel = viewmodel
+        )
+    }
+}
+
