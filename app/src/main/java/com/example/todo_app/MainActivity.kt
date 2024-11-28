@@ -1,14 +1,10 @@
 package com.example.todo_app
 
-import android.os.Build
 import com.example.todo_app.data.AppDatabase
 import android.os.Bundle
-import android.os.Debug
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
