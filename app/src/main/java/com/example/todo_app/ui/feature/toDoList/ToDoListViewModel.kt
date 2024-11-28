@@ -41,6 +41,7 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
     suspend fun updateToDoItem(updatedToDo: ToDo) {
         db.toDoDao().update(updatedToDo)
     }
+
 }
 
 sealed class ToDosUIState {
