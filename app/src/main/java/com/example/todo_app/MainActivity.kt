@@ -1,14 +1,10 @@
 package com.example.todo_app
 
-import android.os.Build
 import com.example.todo_app.data.AppDatabase
 import android.os.Bundle
-import android.os.Debug
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
@@ -23,8 +19,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Should only be used for debugging. Not for release!
-        applicationContext.deleteDatabase("ToDoDB")
+        // UNCOMMENT WHEN TESTING
+        //applicationContext.deleteDatabase("ToDoDB")
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -34,7 +30,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
-            MockDataStore().insertMockData(db)
+            // Should not be in release
+            if(db.toDoDao().numberOfToDos() == 0) {
+                MockDataStore().insertMockData(db)
+            }
             withContext(Dispatchers.Main){
                 setContent {
                     TodoappTheme {
