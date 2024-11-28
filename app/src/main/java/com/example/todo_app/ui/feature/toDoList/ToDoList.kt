@@ -37,6 +37,17 @@ fun ToDoList(
 ) {
     val scrollState = rememberLazyListState()
 
+    // Fix any unsorted To-Do's
+    val sortedToDos: MutableList<ToDo> = mutableListOf()
+
+    toDos.forEach { toDo ->
+        if (toDo.status == ToDoStatus.DONE) {
+            sortedToDos.add(toDo) // Add to the end of the list
+        } else {
+            sortedToDos.add(0, toDo) // Add to the start of the list
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = modifier
@@ -72,10 +83,15 @@ fun ToDoList(
                     )
                 }
             } else {
-                itemsIndexed(toDos) { index, item ->
+                // Unfinished to-dos
+                itemsIndexed(toDos.withoutStatus(ToDoStatus.DONE)) { index, item ->
                     ToDoItem(viewmodel, toDo = item, index = index)
                 }
 
+                // Completed to-dos
+                itemsIndexed(toDos.withStatus(ToDoStatus.DONE)) { index, item ->
+                    ToDoItem(viewmodel, toDo = item, index = index)
+                }
             }
         }
     }
@@ -118,4 +134,8 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
 
 fun List<ToDo>.withStatus(vararg statusFilters: ToDoStatus): List<ToDo> {
     return this.filter { toDo -> toDo.status in statusFilters }
+}
+
+fun List<ToDo>.withoutStatus(vararg statusFilters: ToDoStatus): List<ToDo> {
+    return this.filter { toDo -> toDo.status !in statusFilters }
 }
