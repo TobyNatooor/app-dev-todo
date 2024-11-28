@@ -23,8 +23,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Should only be used for debugging. Not for release!
-        applicationContext.deleteDatabase("ToDoDB")
+        // UNCOMMENT WHEN TESTING
+        //applicationContext.deleteDatabase("ToDoDB")
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -34,7 +34,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
-            MockDataStore().insertMockData(db)
+            // Should not be in release
+            if(db.toDoDao().numberOfToDos() == 0) {
+                MockDataStore().insertMockData(db)
+            }
             withContext(Dispatchers.Main){
                 setContent {
                     TodoappTheme {
