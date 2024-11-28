@@ -1,12 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
     namespace = "com.example.todo_app"
     compileSdk = 34
+
+    kotlinOptions {
+        freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.RequiresOptIn")
+    }
 
     defaultConfig {
         applicationId = "com.example.todo_app"
@@ -22,12 +27,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "USE_MOCK_DATA", "true")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("boolean", "USE_MOCK_DATA", "false")
         }
     }
     compileOptions {
@@ -39,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -52,6 +63,11 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.common)
+    ksp(libs.androidx.room.compiler)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

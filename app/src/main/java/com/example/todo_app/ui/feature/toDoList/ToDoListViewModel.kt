@@ -1,64 +1,45 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app.data.DataHandler
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.repository.ToDoRepo
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(val listId: Int, val dataHandler: DataHandler) : ViewModel() {
+class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
-    private val toDos = dataHandler.getToDos(listId)
-
-    private val mutableToDosState = MutableStateFlow<ToDosUIState>(
-        if (toDos.isEmpty()) ToDosUIState.Empty else ToDosUIState.Data(toDos)
-    )
-    val toDosState: StateFlow<ToDosUIState> = mutableToDosState
+    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
+    private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
+    val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
     init {
         viewModelScope.launch {
-
-
-        }
-    }
-
-    fun addToDoItem() {
-        val newToDo = ToDo(
-            id = dataHandler.newToDoId(),
-            title = "New to do item",
-            isDone = false,
-            description = "Add Description"
-        )
-        mutableToDosState.update { currentState ->
-            when (currentState) {
-                is ToDosUIState.Data -> ToDosUIState.Data(currentState.toDos + newToDo)
-                else -> ToDosUIState.Data(listOf(newToDo))
-            }
-        }
-        dataHandler.save(newToDo, listId)
-    }
-
-    fun updateToDoItem(updatedToDo: ToDo) {
-        dataHandler.save(updatedToDo, listId)
-        mutableToDosState.update { currentState ->
-            when (currentState) {
-                is ToDosUIState.Data -> {
-                    val updatedList = currentState.toDos.map { todo ->
-                        if (todo.id == updatedToDo.id) {
-                            updatedToDo
-                        } else {
-                            todo
-                        }
-                    }
-                    ToDosUIState.Data(updatedList)
+            toDos.collect { list ->
+                _mutableToDosState.value = if (list.isEmpty()) {
+                    ToDosUIState.Empty
+                } else {
+                    ToDosUIState.Data(list)
                 }
-                else -> ToDosUIState.Data(listOf(updatedToDo))
             }
+
         }
+    }
+
+    suspend fun addToDoItem() {
+        val newToDo = ToDo(
+            title = "New to do item",
+            description = "Add Description",
+            listId = listId,
+            order = 2, //TODO: Add query to find max order
+        )
+        db.toDoDao().insert(newToDo)
+    }
+
+    suspend fun updateToDoItem(updatedToDo: ToDo) {
+        db.toDoDao().update(updatedToDo)
     }
 }
 
