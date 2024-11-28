@@ -2,12 +2,9 @@ package com.example.todo_app.ui.feature.toDoList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -15,11 +12,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
@@ -79,38 +73,46 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
             )
             .padding(4.dp) // Inner padding for the content inside the box
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             ToDoCheckBox(toDo, viewmodel, coroutineScope)
-            BasicTextField(
-                value = toDo.title,
-                onValueChange = {newTitle ->
-                    coroutineScope.launch {
-                        viewmodel.updateToDoItem(toDo.copy(title = newTitle))
-                    }
-                },
-                singleLine = true,
-//                TextStyle = TextStyle(
-//                    color = Color.White,
-//                    fontSize = 16.sp
-//                ),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 0.dp)
-            )
+            CustomTextField(toDo, coroutineScope, viewmodel)
         }
 
     }
 }
 
 @Composable
+private fun CustomTextField(
+    toDo: ToDo,
+    coroutineScope: CoroutineScope,
+    viewmodel: ToDoListViewModel
+) {
+    BasicTextField(
+        value = toDo.title,
+        onValueChange = { newTitle ->
+            coroutineScope.launch {
+                viewmodel.updateToDoItem(toDo.copy(title = newTitle))
+            }
+        },
+        singleLine = true,
+        textStyle = TextStyle(
+            color = Color.White,
+            fontSize = 16.sp
+        ),
+        modifier = Modifier
+            .padding(horizontal = 20.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .background(
+                color = Color.Transparent,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(horizontal = 0.dp)
+    )
+}
+
+@Composable
 private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel, coroutineScope: CoroutineScope){
     Checkbox(
-        //TODO: "status" has 3 different states. Checkbox only checks binary states
         toDo.status.isDone(),
         onCheckedChange = {
             coroutineScope.launch {
