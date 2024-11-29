@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import androidx.compose.foundation.clickable
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.EmptyScreen
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
@@ -36,16 +40,21 @@ fun ToDoListScreen(
         factory = ToDoListViewModelFactory(listId, db)
     )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
+    val focusManager = LocalFocusManager.current
 
     TodoappTheme {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    focusManager.clearFocus()
+                },
             floatingActionButton = { AddButton(viewmodel) },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-                    ToDosContent(toDosUIState, viewmodel, title)
+                    ToDosContent(toDosUIState, viewmodel, title, focusManager)
                 }
             }
 
@@ -59,6 +68,7 @@ private fun ToDosContent(
     toDosUIState: ToDosUIState,
     viewmodel: ToDoListViewModel,
     title: String,
+    focusManager: FocusManager,
     modifier: Modifier = Modifier
 ) {
     when (toDosUIState) {

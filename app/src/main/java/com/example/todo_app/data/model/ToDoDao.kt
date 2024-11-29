@@ -34,4 +34,7 @@ interface ToDoDao {
     @Query("SELECT * FROM ToDo WHERE title LIKE '%' || :vSearchWord || '%'")
     fun findWithTitle(vSearchWord: String): Flow<List<ToDo>>
 
+    @Query("DELETE FROM ToDo WHERE TRIM(title) = '' OR title IS NULL")
+    fun deleteEmptyToDos()
+
 }

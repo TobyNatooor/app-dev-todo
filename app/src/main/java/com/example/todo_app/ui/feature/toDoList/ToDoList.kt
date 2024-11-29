@@ -18,8 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +41,7 @@ fun ToDoList(
     toDos: List<ToDo>,
     viewmodel: ToDoListViewModel,
     modifier: Modifier = Modifier,
-    title: String = ""
+    title: String = "",
 ) {
     val scrollState = rememberLazyListState()
     val toDosWithTitle = listOf(title) + toDos
@@ -75,39 +83,70 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ToDoCheckBox(toDo, viewmodel, coroutineScope)
-            CustomTextField(toDo, coroutineScope, viewmodel)
+            ToDoTextField(toDo, coroutineScope, viewmodel)
         }
 
     }
 }
 
 @Composable
-private fun CustomTextField(
+private fun ToDoTextField(
     toDo: ToDo,
     coroutineScope: CoroutineScope,
     viewmodel: ToDoListViewModel
 ) {
-    BasicTextField(
-        value = toDo.title,
-        onValueChange = { newTitle ->
-            coroutineScope.launch {
-                viewmodel.updateToDoItem(toDo.copy(title = newTitle))
-            }
-        },
-        singleLine = true,
-        textStyle = TextStyle(
-            color = Color.White,
-            fontSize = 16.sp
-        ),
+    val focusRequester = remember { FocusRequester() }
+    var isEnabled by remember { mutableStateOf(true) }
+    var title by remember { mutableStateOf(toDo.title) }
+    Box(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .background(
-                color = Color.Transparent,
-                shape = RoundedCornerShape(4.dp)
+    ) {
+        LaunchedEffect(Unit) {
+            if (title.isBlank()) {
+                isEnabled = true
+                focusRequester.requestFocus()
+            }
+            else isEnabled = false
+        }
+        BasicTextField(
+            value = title,
+            onValueChange = { newTitle ->
+                title = newTitle
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Send the updated
+                .onFocusChanged {
+                    if (title.isNotBlank()) {
+                        coroutineScope.launch {
+                            viewmodel.updateToDoItem(toDo.copy(title = title))
+                        }
+                        isEnabled = false
+                    }
+                },
+            enabled = isEnabled,
+        )
+        // Hint text when title is blank
+        if (title.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp)
             )
-            .padding(horizontal = 0.dp)
-    )
+        }
+    }
 }
 
 @Composable
