@@ -37,4 +37,7 @@ interface ToDoDao {
     @Query("DELETE FROM ToDo WHERE TRIM(title) = '' OR title IS NULL")
     fun deleteEmptyToDos()
 
+    @Query("SELECT COUNT(*) FROM ToDo")
+    fun numberOfToDos(): Int
+
 }
