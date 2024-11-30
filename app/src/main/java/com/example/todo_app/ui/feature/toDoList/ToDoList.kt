@@ -80,7 +80,15 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ToDoCheckBox(toDo, viewmodel)
-            ToDoTextField(toDo, viewmodel)
+            if (toDo.title.isBlank()) {
+                ToDoTextField(toDo, viewmodel)
+            } else {
+                Text(
+                    text = toDo.title,
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+            }
         }
 
     }
@@ -103,12 +111,9 @@ private fun ToDoTextField(
             .fillMaxWidth()
     ) {
         LaunchedEffect(Unit) {
-            if (title.isBlank()) {
-                isEnabled = true
-                isFocused = false
-                focusRequester.requestFocus()
-            }
-            else isEnabled = false
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
         }
 
         DisposableEffect(Unit) {
@@ -137,8 +142,8 @@ private fun ToDoTextField(
                 // Handle title update to Room SQL when unfocused
                 .onFocusChanged {
                     isFocused = !isFocused
-                    if(!isFocused){
-                        if(title.isBlank()){
+                    if (!isFocused) {
+                        if (title.isBlank()) {
                             title = blankTitle
                         }
                         viewmodel.updateToDoItem(
@@ -151,6 +156,10 @@ private fun ToDoTextField(
         )
         // Hint text when title is blank
         if (title.isBlank()) {
+            println("Let's go")
+            if(!isEnabled){
+                println("is not enabled")
+            }
             Text(
                 text = "Enter new title",
                 color = Color.Gray,
