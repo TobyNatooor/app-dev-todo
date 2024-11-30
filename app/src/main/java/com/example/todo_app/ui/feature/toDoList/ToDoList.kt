@@ -80,11 +80,11 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ToDoCheckBox(toDo, viewmodel)
-            if (toDo.title.isBlank()) {
+            if (toDo.title == null) {
                 ToDoTextField(toDo, viewmodel)
             } else {
                 Text(
-                    text = toDo.title,
+                    text = toDo.title.toString(),
                     fontSize = 16.sp,
                     color = Color.White
                 )
@@ -101,7 +101,7 @@ private fun ToDoTextField(
 ) {
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
-    var title by remember { mutableStateOf(toDo.title) }
+    var title by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
     val blankTitle = "Unnamed to do item"
 

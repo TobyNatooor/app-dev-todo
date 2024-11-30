@@ -9,7 +9,7 @@ data class ToDo (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val title: String = " ",
+    val title: String? = null,
     val description: String,
     val listId: Int,
     val order: Int,

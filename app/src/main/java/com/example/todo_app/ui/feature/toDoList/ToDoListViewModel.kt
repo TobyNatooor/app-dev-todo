@@ -31,7 +31,7 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
     fun addToDoItem() {
         val newToDo = ToDo(
-            title = " ",
+            title = null,
             description = "Add Description",
             listId = listId,
             order = -1, //TODO: Add query to find max order
