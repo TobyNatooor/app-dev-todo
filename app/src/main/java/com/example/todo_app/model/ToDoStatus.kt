@@ -1,17 +1,19 @@
 package com.example.todo_app.model
 
 enum class ToDoStatus(val status: String) {
-    UN_DONE("unDone"),
-    DOING("doing"),
-    DONE("done");
+    NOT_DONE("not done"),
+    DONE("done"),
+    IN_PROGRESS("in progress"),
+    CANCELED("cancelled"),
+    CANT_BE_DONE("can't be done");
+
 
     override fun toString(): String = status // Custom toString for readability
 
     fun check(): ToDoStatus{
         return when(this){
-            UN_DONE -> DOING
-            DOING -> DONE
-            DONE -> UN_DONE
+            NOT_DONE -> DONE
+            else -> NOT_DONE
         }
     }
 

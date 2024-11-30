@@ -9,10 +9,10 @@ data class ToDo (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val title: String,
+    val title: String? = null,
     val description: String,
     val listId: Int,
     val order: Int,
-    val status: ToDoStatus = ToDoStatus.UN_DONE,
+    val status: ToDoStatus = ToDoStatus.NOT_DONE,
     //val doneWhen: LocalDateTime? = null - TODO: Room cannot save this variable.
 )

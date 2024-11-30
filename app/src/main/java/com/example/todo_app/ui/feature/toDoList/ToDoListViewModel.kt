@@ -11,12 +11,13 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 
-    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
+
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
     init {
         viewModelScope.launch {
+            val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
             toDos.collect { list ->
                 _mutableToDosState.value = if (list.isEmpty()) {
                     ToDosUIState.Empty
@@ -28,18 +29,29 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
         }
     }
 
-    suspend fun addToDoItem() {
+    fun addToDoItem() {
         val newToDo = ToDo(
-            title = "New to do item",
+            title = null,
             description = "Add Description",
             listId = listId,
-            order = 2, //TODO: Add query to find max order
+            order = -1, //TODO: Add query to find max order
         )
-        db.toDoDao().insert(newToDo)
+        this.viewModelScope.launch {
+            db.toDoDao().insert(newToDo)
+        }
     }
 
-    suspend fun updateToDoItem(updatedToDo: ToDo) {
-        db.toDoDao().update(updatedToDo)
+    fun updateToDoItem(updatedToDo: ToDo) {
+        println("Updating item")
+        this.viewModelScope.launch {
+            db.toDoDao().update(updatedToDo)
+        }
+    }
+
+    fun deleteToDo(toDo: ToDo){
+        this.viewModelScope.launch {
+            db.toDoDao().delete(toDo)
+        }
     }
 }
 
