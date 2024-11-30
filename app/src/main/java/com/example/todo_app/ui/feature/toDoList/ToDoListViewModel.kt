@@ -29,22 +29,29 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
         }
     }
 
-    suspend fun addToDoItem() {
+    fun addToDoItem() {
         val newToDo = ToDo(
             title = " ",
             description = "Add Description",
             listId = listId,
             order = -1, //TODO: Add query to find max order
         )
-        db.toDoDao().insert(newToDo)
+        this.viewModelScope.launch {
+            db.toDoDao().insert(newToDo)
+        }
     }
 
-    suspend fun updateToDoItem(updatedToDo: ToDo) {
-        db.toDoDao().update(updatedToDo)
+    fun updateToDoItem(updatedToDo: ToDo) {
+        println("Updating item")
+        this.viewModelScope.launch {
+            db.toDoDao().update(updatedToDo)
+        }
     }
 
-    suspend fun deleteToDo(toDo: ToDo){
-        db.toDoDao().delete(toDo)
+    fun deleteToDo(toDo: ToDo){
+        this.viewModelScope.launch {
+            db.toDoDao().delete(toDo)
+        }
     }
 }
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,8 +34,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 
 import com.example.todo_app.model.ToDo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun ToDoList(
@@ -70,7 +69,6 @@ fun ToDoList(
 
 @Composable
 private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
-    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -82,8 +80,8 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
             .padding(4.dp) // Inner padding for the content inside the box
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ToDoCheckBox(toDo, viewmodel, coroutineScope)
-            ToDoTextField(toDo, coroutineScope, viewmodel)
+            ToDoCheckBox(toDo, viewmodel)
+            ToDoTextField(toDo, viewmodel)
         }
 
     }
@@ -92,12 +90,14 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
 @Composable
 private fun ToDoTextField(
     toDo: ToDo,
-    coroutineScope: CoroutineScope,
     viewmodel: ToDoListViewModel
 ) {
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var title by remember { mutableStateOf(toDo.title) }
+    var isFocused by remember { mutableStateOf(false) }
+    val blankTitle = "Unnamed to do item"
+
     Box(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -106,9 +106,20 @@ private fun ToDoTextField(
         LaunchedEffect(Unit) {
             if (title.isBlank()) {
                 isEnabled = true
+                isFocused = false
                 focusRequester.requestFocus()
             }
             else isEnabled = false
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    viewmodel.updateToDoItem(
+                        toDo.copy(title = blankTitle)
+                    )
+                }
+            }
         }
         BasicTextField(
             value = title,
@@ -124,12 +135,16 @@ private fun ToDoTextField(
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
                 .focusRequester(focusRequester)
-                // Send the updated
+                // Handle title update to Room SQL when unfocused
                 .onFocusChanged {
-                    if (title.isNotBlank()) {
-                        coroutineScope.launch {
-                            viewmodel.updateToDoItem(toDo.copy(title = title))
+                    isFocused = !isFocused
+                    if(!isFocused){
+                        if(title.isBlank()){
+                            title = blankTitle
                         }
+                        viewmodel.updateToDoItem(
+                            toDo.copy(title = title)
+                        )
                         isEnabled = false
                     }
                 },
@@ -150,16 +165,12 @@ private fun ToDoTextField(
 }
 
 @Composable
-private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel, coroutineScope: CoroutineScope){
+private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel){
     Checkbox(
         toDo.status.isDone(),
         onCheckedChange = {
-            coroutineScope.launch {
-                viewmodel.updateToDoItem(
-                    toDo.copy(
-                        status = toDo.status.check()
-                    )
-                )
-            }
+            viewmodel.updateToDoItem(
+                toDo.copy(status = toDo.status.check())
+            )
         })
 }
