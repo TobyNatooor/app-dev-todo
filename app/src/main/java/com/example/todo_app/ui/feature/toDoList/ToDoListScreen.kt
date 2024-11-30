@@ -56,7 +56,7 @@ fun ToDoListScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-                    ToDosContent(toDosUIState, viewmodel, title, focusManager)
+                    ToDosContent(toDosUIState, viewmodel, title)
                 }
             }
 
@@ -70,7 +70,6 @@ private fun ToDosContent(
     toDosUIState: ToDosUIState,
     viewmodel: ToDoListViewModel,
     title: String,
-    focusManager: FocusManager,
     modifier: Modifier = Modifier
 ) {
     when (toDosUIState) {
@@ -91,11 +90,10 @@ private fun ToDosContent(
 
 @Composable
 fun AddButton(viewModel: ToDoListViewModel) {
-    val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
-            coroutineScope.launch { viewModel.addToDoItem() }
+            viewModel.addToDoItem()
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
