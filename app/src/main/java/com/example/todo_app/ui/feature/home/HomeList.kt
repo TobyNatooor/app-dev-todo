@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,8 +29,7 @@ import com.example.todo_app.model.CheckList
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-){
-
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(40.dp),
@@ -44,8 +44,18 @@ fun HomeList(
                 modifier = Modifier.fillMaxWidth().padding(top = 100.dp, bottom = 100.dp)
             )
         }
-        items(lists.size) { index ->
-            ListCard(lists[index], viewModel)
+        if (lists.isEmpty()) {
+            item {
+                Text(
+                    text = "No checklists yet",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        } else {
+            items(lists.size) { index ->
+                ListCard(lists[index], viewModel)
+            }
         }
     }
 }

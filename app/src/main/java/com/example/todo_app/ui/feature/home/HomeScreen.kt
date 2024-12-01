@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.todo_app.ui.feature.common.EmptyScreen
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import kotlinx.coroutines.launch
 
@@ -70,16 +69,16 @@ private fun HomeContent(
     modifier: Modifier = Modifier
 ) {
     when (homeUIState) {
-        is HomeUIState.Empty -> EmptyScreen(
+/*        is HomeUIState.Empty -> EmptyScreen(
             modifier = modifier,
             title = "Home",
             text = "No checklists yet"
-        )
-        is HomeUIState.Loading -> LoadingScreen(modifier)
+        )*/
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel
         )
+        else -> LoadingScreen(modifier)
     }
 }
 

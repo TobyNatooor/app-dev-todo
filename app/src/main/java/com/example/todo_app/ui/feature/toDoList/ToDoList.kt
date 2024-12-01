@@ -47,17 +47,6 @@ fun ToDoList(
 ) {
     val scrollState = rememberLazyListState()
 
-    // Fix any unsorted To-Do's
-    val sortedToDos: MutableList<ToDo> = mutableListOf()
-
-    toDos.forEach { toDo ->
-        if (toDo.status == ToDoStatus.DONE) {
-            sortedToDos.add(toDo) // Add to the end of the list
-        } else {
-            sortedToDos.add(0, toDo) // Add to the start of the list
-        }
-    }
-
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = modifier
