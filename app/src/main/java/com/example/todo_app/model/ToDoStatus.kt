@@ -20,8 +20,7 @@ enum class ToDoStatus(val status: String) {
     }
 
     fun isDone(): Boolean {
-        if (this == DONE) return true
-        else return false
+        return this == DONE
     }
 }
 

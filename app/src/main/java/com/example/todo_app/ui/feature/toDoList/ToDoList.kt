@@ -35,8 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.model.ToDoStatus
-import kotlinx.coroutines.launch
 
 @Composable
 fun ToDoList(
@@ -179,10 +177,6 @@ private fun ToDoTextField(
         )
         // Hint text when title is blank
         if (title.isBlank()) {
-            println("Let's go")
-            if(!isEnabled){
-                println("is not enabled")
-            }
             Text(
                 text = "Enter new title",
                 color = Color.Gray,
