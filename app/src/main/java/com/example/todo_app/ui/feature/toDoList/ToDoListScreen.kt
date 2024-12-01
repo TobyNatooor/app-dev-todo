@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import androidx.compose.foundation.clickable
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +14,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun ToDoListScreen(
@@ -34,10 +34,15 @@ fun ToDoListScreen(
         factory = ToDoListViewModelFactory(listId, db)
     )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
+    val focusManager = LocalFocusManager.current
 
     TodoappTheme {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    focusManager.clearFocus()
+                },
             floatingActionButton = { AddButton(viewmodel) },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
@@ -73,11 +78,10 @@ private fun ToDosContent(
 
 @Composable
 fun AddButton(viewModel: ToDoListViewModel) {
-    val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
-            coroutineScope.launch { viewModel.addToDoItem() }
+            viewModel.addToDoItem()
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),

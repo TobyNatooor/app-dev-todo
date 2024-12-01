@@ -1,6 +1,7 @@
 [versions]
 agp = "8.7.2"
 foundation = "1.5.0"
+googleMaterial = "1.9.0"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -19,6 +20,7 @@ runtime = "1.7.5"
 ui = "1.5.0"
 protoliteWellKnownTypes = "18.0.0"
 roomCommon = "2.6.1"
+materialVersion = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,10 +45,12 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+material-v190 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.4" }
 protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

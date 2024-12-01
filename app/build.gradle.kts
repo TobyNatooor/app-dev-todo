@@ -65,6 +65,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.common)
+    implementation(libs.material)
     ksp(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
@@ -88,4 +89,5 @@ dependencies {
     implementation (libs.androidx.runtime)
     implementation (libs.androidx.foundation)
     implementation (libs.androidx.navigation.compose)
+    implementation (libs.material.v190)
 }
