@@ -37,7 +37,6 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Main){
                 setContent {
                     TodoappTheme {
-                        val navController = rememberNavController()
                         AppNavigation(db)
                     }
                 }

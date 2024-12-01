@@ -2,7 +2,6 @@ package com.example.todo_app.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 @Entity(tableName = "CheckList")
 data class CheckList(
