@@ -1,17 +1,21 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import android.util.Log
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
-
-
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
@@ -19,13 +23,10 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
         viewModelScope.launch {
             val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
             toDos.collect { list ->
-                _mutableToDosState.value = if (list.isEmpty()) {
-                    ToDosUIState.Empty
-                } else {
-                    ToDosUIState.Data(list)
-                }
+                val sortedList = list
+                    .sortedWith(compareBy { it.order })
+                _mutableToDosState.value = ToDosUIState.Data(sortedList)
             }
-
         }
     }
 
@@ -42,9 +43,19 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
     }
 
     fun updateToDoItem(updatedToDo: ToDo) {
-        println("Updating item")
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
+
+            val existingList = db.toDoDao().getAllWithListId(updatedToDo.listId).first().toMutableList()
+
+            existingList.sortWith(
+                compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }
+            )
+
+            existingList.forEachIndexed { index, toDo ->
+                val reorderedToDo: ToDo = toDo.copy(order = index)
+                db.toDoDao().update(reorderedToDo)
+            }
         }
     }
 
@@ -56,7 +67,6 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
 }
 
 sealed class ToDosUIState {
-    data object Empty : ToDosUIState()
     data object Loading : ToDosUIState()
     data class Data(val toDos: List<ToDo>) : ToDosUIState()
 }

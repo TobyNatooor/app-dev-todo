@@ -1,7 +1,9 @@
 package com.example.todo_app.ui.feature.toDoList
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +16,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,42 +24,67 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.model.ToDoStatus
+import kotlinx.coroutines.launch
 
 @Composable
 fun ToDoList(
     toDos: List<ToDo>,
     viewmodel: ToDoListViewModel,
     modifier: Modifier = Modifier,
-    title: String = "",
+    title: String = ""
 ) {
     val scrollState = rememberLazyListState()
-    val toDosWithTitle = listOf(title) + toDos
 
-    LazyColumn(
-        state = scrollState,
+    Column(
+        verticalArrangement = Arrangement.Top,
         modifier = modifier
             .fillMaxSize()
     ) {
-        itemsIndexed(toDosWithTitle) { index, item ->
-            if (index == 0) {
-                Text(
-                    item.toString(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 60.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 100.dp, bottom = 100.dp)
-                )
+        // Title
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                fontSize = 60.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 75.dp, bottom = 75.dp)
+            )
+        }
+
+        // To-do elements
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            if (toDos.isEmpty()) {
+                item {
+                    Text(
+                        text = "No to-do items in this list",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             } else {
-                ToDoItem(viewmodel, toDo = item as ToDo, index = index - 1)
+                itemsIndexed(toDos) { index, item ->
+                    ToDoItem(viewmodel, toDo = item, index = index)
+                }
             }
         }
     }
@@ -90,7 +114,6 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
             }
         }
-
     }
 }
 
@@ -178,7 +201,10 @@ private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel){
         toDo.status.isDone(),
         onCheckedChange = {
             viewmodel.updateToDoItem(
-                toDo.copy(status = toDo.status.check())
+                toDo.copy(
+                    status = toDo.status.check()
+                )
             )
-        })
+        }
+    )
 }
