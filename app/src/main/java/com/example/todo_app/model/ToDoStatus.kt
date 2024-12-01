@@ -1,5 +1,7 @@
 package com.example.todo_app.model
 
+import androidx.room.TypeConverter
+
 enum class ToDoStatus(val status: String) {
     NOT_DONE("not done"),
     DONE("done"),
@@ -21,4 +23,12 @@ enum class ToDoStatus(val status: String) {
         if (this == DONE) return true
         else return false
     }
+}
+
+class ToDoStatusConverter {
+    @TypeConverter
+    fun fromToDoStatus(status: ToDoStatus): String = status.name
+
+    @TypeConverter
+    fun toToDoStatus(value: String): ToDoStatus = ToDoStatus.valueOf(value)
 }

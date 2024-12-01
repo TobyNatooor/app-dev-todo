@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import android.util.Log
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,10 @@ import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
@@ -38,9 +43,19 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
     }
 
     fun updateToDoItem(updatedToDo: ToDo) {
-        println("Updating item")
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
+
+            val existingList = db.toDoDao().getAllWithListId(updatedToDo.listId).first().toMutableList()
+
+            existingList.sortWith(
+                compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }
+            )
+
+            existingList.forEachIndexed { index, toDo ->
+                val reorderedToDo: ToDo = toDo.copy(order = index)
+                db.toDoDao().update(reorderedToDo)
+            }
         }
     }
 

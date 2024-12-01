@@ -78,7 +78,6 @@ private fun ToDosContent(
 
 @Composable
 fun AddButton(viewModel: ToDoListViewModel) {
-
     FloatingActionButton(
         onClick = {
             viewModel.addToDoItem()

@@ -82,13 +82,7 @@ fun ToDoList(
                     )
                 }
             } else {
-                // Unfinished to-dos
-                itemsIndexed(toDos.withoutStatus(ToDoStatus.DONE)) { index, item ->
-                    ToDoItem(viewmodel, toDo = item, index = index)
-                }
-
-                // Completed to-dos
-                itemsIndexed(toDos.withStatus(ToDoStatus.DONE)) { index, item ->
+                itemsIndexed(toDos) { index, item ->
                     ToDoItem(viewmodel, toDo = item, index = index)
                 }
             }
@@ -120,7 +114,6 @@ private fun ToDoItem(viewmodel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
             }
         }
-
     }
 }
 
@@ -208,15 +201,10 @@ private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel){
         toDo.status.isDone(),
         onCheckedChange = {
             viewmodel.updateToDoItem(
-                toDo.copy(status = toDo.status.check())
+                toDo.copy(
+                    status = toDo.status.check()
+                )
             )
-        })
-}
-
-fun List<ToDo>.withStatus(vararg statusFilters: ToDoStatus): List<ToDo> {
-    return this.filter { toDo -> toDo.status in statusFilters }
-}
-
-fun List<ToDo>.withoutStatus(vararg statusFilters: ToDoStatus): List<ToDo> {
-    return this.filter { toDo -> toDo.status !in statusFilters }
+        }
+    )
 }
