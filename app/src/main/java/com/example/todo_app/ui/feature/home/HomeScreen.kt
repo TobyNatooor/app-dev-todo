@@ -47,7 +47,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun AddButton(viewModel: HomeViewModel) {
+private fun AddButton(viewModel: HomeViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
@@ -81,4 +81,3 @@ private fun HomeContent(
         else -> LoadingScreen(modifier)
     }
 }
-
