@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -40,7 +41,10 @@ fun ToDoListScreen(
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable {
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                ) {
                     focusManager.clearFocus()
                 },
             floatingActionButton = { AddButton(viewmodel) },
