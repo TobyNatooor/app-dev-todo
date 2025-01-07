@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -57,7 +60,9 @@ fun HomeList(
                 "My Lists",
                 textAlign = TextAlign.Center,
                 fontSize = 60.sp,
-                modifier = Modifier.fillMaxWidth().padding(top = 100.dp, bottom = 100.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 100.dp, bottom = 100.dp)
             )
         }
         if (lists.isEmpty()) {
@@ -82,21 +87,27 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
         onClick = {
             viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
         },
-        modifier = Modifier
-            .width(130.dp)
-            .height(130.dp)
+        modifier = Modifier.aspectRatio(1f)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 if(list.title != null){
-                    Text(list.title.toString(), fontSize = 20.sp)
+                  Text(
+                      list.title,
+                      style = TextStyle(fontSize = 20.sp),
+                      textAlign = TextAlign.Justify,
+                      modifier = Modifier.weight(5f),
+                  )
                 } else {
-                    ListTextField(list, viewModel)
+                  ListTextField(list, viewModel)
                 }
-                Spacer(modifier = Modifier.weight(1f))
+                
                 Icon(
                     Icons.Rounded.MoreVert,
                     contentDescription = null,
+                    Modifier.weight(1f)
                 )
             }
         }
