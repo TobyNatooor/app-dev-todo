@@ -58,7 +58,7 @@ fun ToDoList(
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
-                fontSize = 60.sp,
+                style = TextStyle(fontSize = 60.sp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 75.dp, bottom = 75.dp)
@@ -140,10 +140,11 @@ private fun ToDoTextField(
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {
-                    viewmodel.updateToDoItem(
-                        toDo.copy(title = blankTitle)
-                    )
+                    title = blankTitle
                 }
+                viewmodel.updateToDoItem(
+                    toDo.copy(title = title)
+                )
             }
         }
         BasicTextField(

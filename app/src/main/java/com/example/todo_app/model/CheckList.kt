@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class CheckList(
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
-    val title : String,
+    val title : String? = null,
     val description : String,
     val order: Int,
     val folderId: Int,

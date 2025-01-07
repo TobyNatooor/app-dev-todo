@@ -1,8 +1,8 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -34,6 +38,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +57,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +77,7 @@ import com.example.todo_app.ui.theme.background
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
+    gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -124,6 +140,7 @@ fun HomeList(
 
             // Lists
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(40.dp),
                 verticalArrangement = Arrangement.spacedBy(40.dp),
@@ -306,19 +323,97 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
             viewModel.clickList(listTitle = list.title, listId = list.id)
             focusManager.clearFocus()
         },
-        modifier = Modifier
-            .width(130.dp)
-            .height(130.dp)
+        modifier = Modifier.aspectRatio(1f)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row {
-                Text(list.title, fontSize = 20.sp)
-                Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if(list.title != null){
+                  Text(
+                      list.title,
+                      style = TextStyle(fontSize = 20.sp),
+                      textAlign = TextAlign.Justify,
+                      modifier = Modifier.weight(5f),
+                  )
+                } else {
+                  ListTextField(list, viewModel)
+                }
+
                 Icon(
                     Icons.Rounded.MoreVert,
                     contentDescription = null,
+                    Modifier.weight(1f)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
+    val focusRequester = remember { FocusRequester() }
+    var isEnabled by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    val blankTitle = "Unnamed list"
+    var title by remember { mutableStateOf("") }
+
+    Box(){
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    title = blankTitle
+                }
+                viewModel.updateList(
+                    list.copy(title = title)
+                )
+            }
+        }
+
+
+        BasicTextField(
+            value = title,
+            onValueChange = { newTitle ->
+                title = newTitle
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Handle title update to Room SQL when unfocused
+                .onFocusChanged {
+                    isFocused = !isFocused
+                    if (!isFocused) {
+                        if (title.isBlank()) {
+                            title = blankTitle
+                        }
+                        viewModel.updateList(
+                            list.copy(title = title)
+                        )
+                        isEnabled = false
+                    }
+                },
+            enabled = isEnabled,
+        )
+
+        // Hint text when title is blank
+        if (title.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = Color.Gray,
+                fontSize = 20.sp,
+            )
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.clickable
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -20,10 +23,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.LoadingScreen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,18 +37,31 @@ fun HomeScreen(
     navController: NavController,
     db: AppDatabase
 ) {
+    val gridState = rememberLazyGridState()
     val viewmodel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
     val homeUIState = viewmodel.homeState.collectAsState().value
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        floatingActionButton = { AddButton(viewmodel) },
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                indication = null,
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+            },
+        floatingActionButton = { AddButton(viewmodel,gridState) },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, viewmodel)
+                HomeContent(homeUIState, viewmodel, gridState = gridState)
             }
         }
 
@@ -51,12 +69,19 @@ fun HomeScreen(
 }
 
 @Composable
-private fun AddButton(viewModel: HomeViewModel) {
+fun AddButton(viewModel: HomeViewModel, gridState: LazyGridState) {
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
-            coroutineScope.launch { viewModel.addList() }
+            coroutineScope.launch {
+                viewModel.addList()
+                val lastIndex = gridState.layoutInfo.totalItemsCount - 1
+                if (lastIndex >= 0) {
+                    delay(100L)
+                    gridState.animateScrollToItem(lastIndex)
+                }
+            }
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
@@ -75,7 +100,8 @@ private fun AddButton(viewModel: HomeViewModel) {
 private fun HomeContent(
     homeUIState: HomeUIState,
     viewModel: HomeViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    gridState: LazyGridState
 ) {
     when (homeUIState) {
 /*        is HomeUIState.Empty -> EmptyScreen(
@@ -85,7 +111,8 @@ private fun HomeContent(
         )*/
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
-            viewModel = viewModel
+            viewModel = viewModel,
+            gridState = gridState
         )
         else -> LoadingScreen(modifier)
     }
