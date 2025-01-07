@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -101,10 +102,19 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
 @Composable
 private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
     val focusRequester = remember { FocusRequester() }
+    var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
     val blankTitle = "Unnamed list"
     var title by remember { mutableStateOf("") }
+
     Box(){
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+
+
         BasicTextField(
             value = title,
             onValueChange = { newTitle ->
@@ -129,9 +139,10 @@ private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
                         viewModel.updateList(
                             list.copy(title = title)
                         )
-                        //isEnabled = false
+                        isEnabled = false
                     }
                 },
+            enabled = isEnabled,
         )
 
         // Hint text when title is blank
