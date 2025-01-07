@@ -140,10 +140,11 @@ private fun ToDoTextField(
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {
-                    viewmodel.updateToDoItem(
-                        toDo.copy(title = blankTitle)
-                    )
+                    title = blankTitle
                 }
+                viewmodel.updateToDoItem(
+                    toDo.copy(title = title)
+                )
             }
         }
         BasicTextField(

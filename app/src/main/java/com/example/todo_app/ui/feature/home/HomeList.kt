@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -115,6 +116,17 @@ private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
             isEnabled = true
             isFocused = false
             focusRequester.requestFocus()
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    title = blankTitle
+                }
+                viewModel.updateList(
+                    list.copy(title = title)
+                )
+            }
         }
 
 
