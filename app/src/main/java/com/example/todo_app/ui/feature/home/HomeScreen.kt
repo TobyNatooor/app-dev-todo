@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,9 +60,14 @@ private fun AddButton(viewModel: HomeViewModel) {
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
+        contentColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.padding(20.dp)
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new list", tint = Color.Black)
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add new list",
+            tint = Color(0xFF1E1E1E)
+        )
     }
 }
 
