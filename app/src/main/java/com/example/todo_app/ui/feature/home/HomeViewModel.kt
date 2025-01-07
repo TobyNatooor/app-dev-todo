@@ -31,12 +31,18 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
 
     suspend fun addList() {
         val newList = CheckList(
-            title = "New List",
+            title = null,
             description = "Add Description",
             order = 2, //TODO: Add query to find max order
             folderId = 0
         )
         db.checkListDao().insert(newList)
+    }
+
+    fun updateList(list: CheckList){
+        this.viewModelScope.launch {
+            db.checkListDao().update(list)
+        }
     }
 
     fun clickList(listTitle: String, listId: Int){
