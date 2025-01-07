@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -41,8 +42,10 @@ import com.example.todo_app.model.CheckList
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
+    gridState: LazyGridState
 ) {
     LazyVerticalGrid(
+        state = gridState,
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(40.dp),
         verticalArrangement = Arrangement.spacedBy(40.dp),
