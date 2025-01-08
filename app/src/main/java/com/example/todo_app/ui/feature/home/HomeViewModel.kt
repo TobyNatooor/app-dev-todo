@@ -1,14 +1,19 @@
 package com.example.todo_app.ui.feature.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
+import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.list
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
 
@@ -29,14 +34,29 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
         }
     }
 
-    suspend fun addList() {
-        val newList = CheckList(
-            title = null,
-            description = "Add Description",
-            order = 2, //TODO: Add query to find max order
-            folderId = 0
-        )
-        db.checkListDao().insert(newList)
+    fun addList() {
+        this.viewModelScope.launch {
+            val newList = CheckList(
+                title = null,
+                description = "Add Description",
+                //created = LocalDateTime.now(),
+                order = 2, //TODO: Add query to find max order
+                folderId = 0
+            )
+            db.checkListDao().insert(newList)
+        }
+    }
+
+    fun sortLists(sortBy: SortOption){
+        this.viewModelScope.launch {
+            var sortedList : Flow<List<CheckList>> = lists
+            when (sortBy) {
+                SortOption.CREATED -> sortedList = db.checkListDao().getAllSortedByCreated()
+                SortOption.RECENT -> {}
+                SortOption.NAME -> sortedList = db.checkListDao().getAllSortedByName()
+            }
+            sortedList.collect { list -> _mutableHomeState.value = HomeUIState.Data(list)}
+        }
     }
 
     fun updateList(list: CheckList){
