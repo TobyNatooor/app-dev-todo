@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
-
+class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
     private val lists: Flow<List<CheckList>> = db.checkListDao().getAll()
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState

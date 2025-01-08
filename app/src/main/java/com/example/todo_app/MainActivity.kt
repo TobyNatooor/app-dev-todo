@@ -25,9 +25,9 @@ class MainActivity : ComponentActivity() {
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "ToDoDB"
-        ).build()
-
-
+        ).fallbackToDestructiveMigration()
+            .build()
+        
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
             // Should not be in release
