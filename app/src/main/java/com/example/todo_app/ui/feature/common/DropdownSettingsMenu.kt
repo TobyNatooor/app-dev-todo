@@ -43,7 +43,7 @@ fun DropdownSettingsMenu() {
                     )
                 },
                 onClick = { expanded = false
-                    /* Handle Share */ }
+                            /* Handle Share */ }
             )
             DropdownMenuItem(
                 text = {
@@ -55,7 +55,7 @@ fun DropdownSettingsMenu() {
                     )
                 },
                 onClick = { expanded = false
-                    /* Handle Edit */ }
+                            /* Handle Edit */ }
             )
             DropdownMenuItem(
                 text = {
@@ -67,7 +67,7 @@ fun DropdownSettingsMenu() {
                     )
                 },
                 onClick = { expanded = false
-                    /* Handle Rename */ }
+                            /* Handle Rename */ }
             )
             DropdownMenuItem(
                 text = {
@@ -79,7 +79,7 @@ fun DropdownSettingsMenu() {
                     )
                 },
                 onClick = { expanded = false
-                    /* Handle Merge */ }
+                            /* Handle Merge */ }
             )
             DropdownMenuItem(
                 text = {
@@ -91,7 +91,7 @@ fun DropdownSettingsMenu() {
                     )
                 },
                 onClick = { expanded = false
-                    /* Handle Delete */ }
+                            /* Handle Delete */ }
             )
         }
     }

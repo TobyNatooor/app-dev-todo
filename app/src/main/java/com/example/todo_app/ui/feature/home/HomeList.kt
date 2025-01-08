@@ -300,7 +300,6 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
-    var expanded by remember { mutableStateOf(false) }
 
     return Card(
         onClick = {
