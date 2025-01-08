@@ -17,4 +17,10 @@ class Converters {
     fun dateToTimestamp(date: LocalDateTime?): String? {
         return date?.toString()
     }
+
+    @TypeConverter
+    fun fromToDoStatus(status: ToDoStatus): String = status.name
+
+    @TypeConverter
+    fun toToDoStatus(value: String): ToDoStatus = ToDoStatus.valueOf(value)
 }

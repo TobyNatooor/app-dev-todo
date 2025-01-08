@@ -14,7 +14,7 @@ import com.example.todo_app.model.ToDo;
 import com.example.todo_app.model.ToDoStatusConverter
 
 @Database(entities = [ToDo::class, CheckList::class, Folder::class], version = 2)
-@TypeConverters(ToDoStatusConverter::class, Converters::class)
+@TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
     abstract fun checkListDao(): CheckListDao

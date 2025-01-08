@@ -23,11 +23,3 @@ enum class ToDoStatus(val status: String) {
         return this == DONE
     }
 }
-
-class ToDoStatusConverter {
-    @TypeConverter
-    fun fromToDoStatus(status: ToDoStatus): String = status.name
-
-    @TypeConverter
-    fun toToDoStatus(value: String): ToDoStatus = ToDoStatus.valueOf(value)
-}
