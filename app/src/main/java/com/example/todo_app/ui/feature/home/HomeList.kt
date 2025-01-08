@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,7 +28,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +54,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import kotlin.math.exp
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 
 @Composable
 fun HomeList(
@@ -326,78 +324,8 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
                   ListTextField(list, viewModel)
                 }
 
-                Box() {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = "Settings")
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Share",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            onClick = { expanded = false
-                                        /* Handle Share */ }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Edit",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            onClick = { expanded = false
-                                        /* Handle Edit */ }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Rename",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            onClick = { expanded = false
-                                        /* Handle Rename */ }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Merge",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            onClick = { expanded = false
-                                        /* Handle Merge */ }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Delete",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            onClick = { expanded = false
-                                        /* Handle Delete */ }
-                        )
-                    }
-                }
+                DropdownSettingsMenu()
+
             }
         }
     }
