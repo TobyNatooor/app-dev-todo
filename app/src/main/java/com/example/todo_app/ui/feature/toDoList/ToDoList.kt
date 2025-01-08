@@ -59,19 +59,14 @@ fun ToDoList(
             .fillMaxSize()
     ) {
         // Title
-        Box(
+        Text(
+            text = title,
+            textAlign = TextAlign.Center,
+            style = TextStyle(fontSize = 54.sp),
             modifier = Modifier
                 .fillMaxWidth()
-        ) {
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                style = TextStyle(fontSize = 60.sp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 75.dp, bottom = 75.dp)
-            )
-        }
+                .padding(top = 75.dp, bottom = 75.dp)
+        )
 
         // To-do elements
         LazyColumn(
