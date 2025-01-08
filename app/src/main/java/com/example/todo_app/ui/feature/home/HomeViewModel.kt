@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
+import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.list
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +44,18 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
                 folderId = 0
             )
             db.checkListDao().insert(newList)
+        }
+    }
+
+    fun sortLists(sortBy: SortOption){
+        this.viewModelScope.launch {
+            var sortedList : Flow<List<CheckList>> = lists
+            when (sortBy) {
+                SortOption.CREATED -> sortedList = db.checkListDao().getAllSortedByCreated()
+                SortOption.RECENT -> {}
+                SortOption.NAME -> sortedList = db.checkListDao().getAllSortedByName()
+            }
+            sortedList.collect { list -> _mutableHomeState.value = HomeUIState.Data(list)}
         }
     }
 

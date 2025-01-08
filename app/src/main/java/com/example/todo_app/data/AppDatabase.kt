@@ -11,7 +11,6 @@ import com.example.todo_app.data.util.Converters
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.Folder
 import com.example.todo_app.model.ToDo;
-import com.example.todo_app.model.ToDoStatusConverter
 
 @Database(entities = [ToDo::class, CheckList::class, Folder::class], version = 2)
 @TypeConverters(Converters::class)
