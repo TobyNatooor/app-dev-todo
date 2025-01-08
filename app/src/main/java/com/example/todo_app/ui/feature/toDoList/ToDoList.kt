@@ -13,7 +13,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,45 +51,59 @@ fun ToDoList(
 ) {
     val scrollState = rememberLazyListState()
 
-    Column(
-        verticalArrangement = Arrangement.Top,
+    Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        // Title
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                style = TextStyle(fontSize = 60.sp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 75.dp, bottom = 75.dp)
-            )
-        }
-
-        // To-do elements
-        LazyColumn(
-            state = scrollState,
-            modifier = Modifier
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = modifier
                 .fillMaxSize()
         ) {
-            if (toDos.isEmpty()) {
-                item {
-                    Text(
-                        text = "No to-do items in this list",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                itemsIndexed(toDos) { index, item ->
-                    ToDoItem(viewmodel, toDo = item, index = index)
+            // Title
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(fontSize = 60.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 75.dp, bottom = 75.dp)
+                )
+            }
+
+            // To-do elements
+            LazyColumn(
+                state = scrollState,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                if (toDos.isEmpty()) {
+                    item {
+                        Text(
+                            text = "No to-do items in this list",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    itemsIndexed(toDos) { index, item ->
+                        ToDoItem(viewmodel, toDo = item, index = index)
+                    }
                 }
             }
+        }
+
+        // Settings dropdown menu
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopEnd)
+        ) {
+            SettingsDropdownMenu()
         }
     }
 }
@@ -202,4 +222,82 @@ private fun ToDoCheckBox(toDo: ToDo, viewmodel: ToDoListViewModel){
             )
         }
     )
+}
+
+@Composable
+private fun SettingsDropdownMenu() {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box() {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(Icons.Rounded.MoreVert, contentDescription = "Settings")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Share",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                onClick = { expanded = false
+                    /* Handle Share */ }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Edit",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                onClick = { expanded = false
+                    /* Handle Edit */ }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Rename",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                onClick = { expanded = false
+                    /* Handle Rename */ }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Merge",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                onClick = { expanded = false
+                    /* Handle Merge */ }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Delete",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                onClick = { expanded = false
+                    /* Handle Delete */ }
+            )
+        }
+    }
 }
