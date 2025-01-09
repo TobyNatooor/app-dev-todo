@@ -1,4 +1,4 @@
-package com.example.todo_app.ui.feature.taskOptions
+package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 
 @Composable
-fun TaskOptions(
-    task: ToDo,
-    viewmodel: TaskOptionsViewModel,
+fun ToDoOptions(
+    toDo: ToDo,
+    viewmodel: ToDoOptionsViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -42,7 +42,7 @@ fun TaskOptions(
     ) {
         // Title
         Text(
-            text = "Edit Task",
+            text = "Edit ToDo",
             textAlign = TextAlign.Center,
             style = TextStyle(fontSize = 54.sp),
             modifier = Modifier
@@ -57,30 +57,30 @@ fun TaskOptions(
                 .padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
-            // Task title
+            // ToDo title
             Option(
-                optionTitle = "Task title",
+                optionTitle = "ToDo title",
                 content = {
                     TextFieldOption(
-                        startText = task.title.toString(),
-                        hintText = "Enter task title",
+                        startText = toDo.title.toString(),
+                        hintText = "Enter toDo title",
                         height = 42.dp,
                         contentAlign = Alignment.Center,
-                        onTextChanged = { title -> viewmodel.updateTask(task.copy(title = title)) }
+                        onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
                     )
                 }
             )
 
-            // Task description
+            // ToDo description
             Option(
                 optionTitle = "Description",
                 content = {
                     TextFieldOption(
-                        startText = task.description,
-                        hintText = "Enter task description",
+                        startText = toDo.description,
+                        hintText = "Enter toDo description",
                         height = 192.dp,
                         contentAlign = Alignment.TopStart,
-                        onTextChanged = { description -> viewmodel.updateTask(task.copy(description = description)) }
+                        onTextChanged = { description -> viewmodel.updateToDo(toDo.copy(description = description)) }
                     )
                 }
             )

@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todo_app.ui.feature.home.HomeScreen
-import com.example.todo_app.ui.feature.taskOptions.TaskOptionsScreen
+import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
 
 @Composable
@@ -49,7 +49,7 @@ fun AppNavigation(db: AppDatabase) {
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getInt("taskId") ?: -1
 
-            TaskOptionsScreen(
+            ToDoOptionsScreen(
                 taskId = taskId,
                 appBar = appBar,
                 db = db

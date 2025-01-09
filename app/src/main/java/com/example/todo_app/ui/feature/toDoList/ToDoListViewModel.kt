@@ -56,8 +56,8 @@ class ToDoListViewModel(private val listId: Int, private val db: AppDatabase, pr
         }
     }
 
-    fun clickTaskOptions(taskId: Int){
-        nav.navigate("taskOptions/${taskId}")
+    fun clickToDoOptions(toDoId: Int){
+        nav.navigate("toDoOptions/${toDoId}")
     }
 
     fun deleteToDo(toDo: ToDo){

@@ -86,7 +86,7 @@ fun ToDoList(
                 }
             } else {
                 itemsIndexed(toDos) { index, item ->
-                    ToDoItem(viewmodel, task = item, index = index)
+                    ToDoItem(viewmodel, toDo = item, index = index)
                 }
             }
         }
@@ -94,7 +94,7 @@ fun ToDoList(
 }
 
 @Composable
-private fun ToDoItem(viewModel: ToDoListViewModel, task: ToDo, index: Int = 0) {
+private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,23 +106,23 @@ private fun ToDoItem(viewModel: ToDoListViewModel, task: ToDo, index: Int = 0) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ToDoCheckBox(task, viewModel)
+            ToDoCheckBox(toDo, viewModel)
             Spacer(
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
             )
-            if (task.title == null) {
-                ToDoTextField(task, viewModel)
+            if (toDo.title == null) {
+                ToDoTextField(toDo, viewModel)
             } else {
                 Text(
-                    text = task.title.toString(),
+                    text = toDo.title.toString(),
                     fontSize = 18.sp,
                     color = Color.White
                 )
             }
         }
 
-        TaskOptionsButton(task, viewModel,
+        ToDoOptionsButton(toDo, viewModel,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
         )
@@ -241,8 +241,8 @@ fun ToDoCheckBox(
 }
 
 @Composable
-fun TaskOptionsButton(
-    task: ToDo,
+fun ToDoOptionsButton(
+    toDo: ToDo,
     viewModel: ToDoListViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -250,12 +250,12 @@ fun TaskOptionsButton(
 
     Icon(
         imageVector = Icons.Rounded.MoreVert,
-        contentDescription = "Task Options Icon",
+        contentDescription = "ToDo Options Icon",
         tint = Color.White,
         modifier = modifier
             .padding(8.dp)
             .clickable {
-                viewModel.clickTaskOptions(taskId = task.id)
+                viewModel.clickToDoOptions(toDoId = toDo.id)
                 focusManager.clearFocus()
             }
     )
