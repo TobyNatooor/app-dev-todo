@@ -25,8 +25,7 @@ class MainActivity : ComponentActivity() {
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "ToDoDB"
-        ).fallbackToDestructiveMigration()
-            .build()
+        ).build()
         
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
@@ -43,7 +42,4 @@ class MainActivity : ComponentActivity() {
             }
             }
         }
-
-
 }
-
