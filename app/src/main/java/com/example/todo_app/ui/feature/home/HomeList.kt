@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -303,34 +304,42 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
+    var currentLettter = "Little test"
 
-    return Card(
-        onClick = {
-            viewModel.clickList(list)
-            focusManager.clearFocus()
-        },
-        modifier = Modifier.aspectRatio(1f)
-    ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if(list.title != null){
-                  Text(
-                      list.title,
-                      style = TextStyle(fontSize = 20.sp),
-                      textAlign = TextAlign.Justify,
-                      modifier = Modifier.weight(5f),
-                  )
-                } else {
-                  ListTextField(list, viewModel)
+    return Column {
+        Text(
+            currentLettter,
+            style = TextStyle(fontSize = 10.sp),
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+        Card(
+            onClick = {
+                viewModel.clickList(list)
+                focusManager.clearFocus()
+            },
+            modifier = Modifier.aspectRatio(1f)
+        ) {
+            Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (list.title != null) {
+                        Text(
+                            list.title,
+                            style = TextStyle(fontSize = 20.sp),
+                            textAlign = TextAlign.Justify,
+                            modifier = Modifier.weight(5f),
+                        )
+                    } else {
+                        ListTextField(list, viewModel)
+                    }
+
+                    Icon(
+                        Icons.Rounded.MoreVert,
+                        contentDescription = null,
+                        Modifier.weight(1f)
+                    )
                 }
-
-                Icon(
-                    Icons.Rounded.MoreVert,
-                    contentDescription = null,
-                    Modifier.weight(1f)
-                )
             }
         }
     }
