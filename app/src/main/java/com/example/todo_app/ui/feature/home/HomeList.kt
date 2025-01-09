@@ -82,7 +82,6 @@ fun HomeList(
     val focusManager = LocalFocusManager.current
     var currentLetter: Char? = 'A'
 
-
     val textState = remember { mutableStateOf("") }
 
     val horizontalPadding = 40.dp
@@ -217,6 +216,7 @@ private fun SearchTextField(
             onValueChange = {
                 textState.value = it
                 viewModel.searchTodos(textState.value)
+                Log.d("TEXTSTATE", "textState: $textState")
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -385,7 +385,6 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
                         getTodoTitleWithHighlight(todo.title, search),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        //modifier = Modifier.background(Color.Black)
                     )
                 }
             }
