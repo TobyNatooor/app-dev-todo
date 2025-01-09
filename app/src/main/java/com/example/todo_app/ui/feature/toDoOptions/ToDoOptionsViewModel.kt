@@ -17,7 +17,11 @@ class ToDoOptionsViewModel(private val toDoId: Int, private val db: AppDatabase)
         viewModelScope.launch {
             val toDoFlow: Flow<ToDo> = db.toDoDao().getWithId(toDoId)
             toDoFlow.collect { toDo ->
-                _mutableToDoState.value = ToDoUIState.Data(toDo)
+                val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(toDo.listId)
+                toDos.collect { list ->
+                    val sortedList = list.sortedWith(compareBy { it.order })
+                    _mutableToDoState.value = ToDoUIState.Data(toDo, sortedList)
+                }
             }
         }
     }
@@ -37,5 +41,5 @@ class ToDoOptionsViewModel(private val toDoId: Int, private val db: AppDatabase)
 
 sealed class ToDoUIState {
     data object Loading : ToDoUIState()
-    data class Data(val toDo: ToDo) : ToDoUIState()
+    data class Data(val toDo: ToDo, val toDoList: List<ToDo>) : ToDoUIState()
 }
