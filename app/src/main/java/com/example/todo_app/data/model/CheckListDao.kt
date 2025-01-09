@@ -22,6 +22,12 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList")
     fun getAll(): Flow<List<CheckList>>
 
+    @Query("SELECT * FROM CheckList ORDER BY Checklist.created DESC")
+    fun getAllSortedByCreated(): Flow<List<CheckList>>
+
+    @Query("SELECT * FROM CheckList ORDER BY Checklist.title ASC")
+    fun getAllSortedByName(): Flow<List<CheckList>>
+
     @Query("SELECT * FROM CheckList WHERE CheckList.folderId = :vFolderId")
     fun getAllWithFolderId(vFolderId: Int): Flow<List<CheckList>>
 

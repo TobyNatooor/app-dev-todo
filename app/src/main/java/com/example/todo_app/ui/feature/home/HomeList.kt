@@ -55,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.model.SortOption
+
 
 @Composable
 fun HomeList(
@@ -235,7 +237,7 @@ fun SortButton(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val sortOptions = listOf("Name", "Recent", "Date")
+    val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
     var selectedOption by remember { mutableStateOf(sortOptions[0]) }
 
     Box(
@@ -277,11 +279,12 @@ fun SortButton(
                         DropdownMenuItem(
                             onClick = {
                                 selectedOption = option
+                                viewModel.sortLists(option)
                                 expanded = false
                             },
                             text = {
                                 Text(
-                                    text = option,
+                                    text = option.toString(),
                                     color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Center
