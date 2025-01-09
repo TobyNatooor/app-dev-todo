@@ -382,7 +382,11 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
             for (todo in todos) {
                 if (!todo.title.isNullOrEmpty()) {
                     Text(
-                        getTodoTitleWithHighlight(todo.title, search),
+                        if (search.isNotEmpty()) {
+                            getTodoTitleWithHighlight(todo.title, search)
+                        } else {
+                            AnnotatedString(todo.title)
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -396,28 +400,33 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
     return buildAnnotatedString {
         var searchStringIndex = 0
+        var searching = false
         todoTitle.forEachIndexed { index, char ->
             if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
+                searching = true
                 searchStringIndex++
                 if (searchStringIndex == search.length) {
+                    searching = false
+                    val start = index - (searchStringIndex - 1)
+                    val end = index + searchStringIndex - (searchStringIndex - 1)
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
                             background = Color.Blue,
                         )
                     ) {
-                        val start = index - (searchStringIndex - 1)
-                        val end = index + searchStringIndex - (searchStringIndex - 1)
-                        if (start < 0 || todoTitle.length < start || end < 0 || todoTitle.length < end || end <= start) {
-                            Log.d("HIGHLIGHTING", "start: $start, end: $end, search.length: ${search.length}, todoTitle: $todoTitle")
-                            return AnnotatedString("Error")
-                        }
                         append(
                             todoTitle.substring(start, end)
                         )
                     }
                     searchStringIndex = 0
                 }
+            } else if (searching) {
+                searching = false
+                val start = index - searchStringIndex
+                val end = index + searchStringIndex - (searchStringIndex - 1)
+                append(todoTitle.substring(start, end))
+                searchStringIndex = 0
             } else {
                 append(char)
             }

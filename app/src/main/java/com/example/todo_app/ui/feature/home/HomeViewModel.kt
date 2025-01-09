@@ -71,7 +71,8 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
             combine(lists, todos) { list, todo ->
                 if (list.isEmpty()) {
-                    HomeUIState.Empty
+                    //HomeUIState.Empty
+                    HomeUIState.Data(ArrayList(),ArrayList())
                 } else {
                     HomeUIState.Data(list, todo)
                 }
