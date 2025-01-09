@@ -2,6 +2,8 @@ package com.example.todo_app.ui.feature.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,16 +19,19 @@ import java.time.LocalDateTime
 
 class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
 
-    private val lists: Flow<List<CheckList>> = db.checkListDao().getAll()
+    var sortedOption : SortOption = SortOption.NAME
+    private var lists: Flow<List<CheckList>> = listBySort(sortedOption)
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
 
     init {
         viewModelScope.launch {
+            lists = listBySort(sortedOption)
             lists.collect { list ->
                 _mutableHomeState.value = if (list.isEmpty()) {
                     HomeUIState.Empty
                 } else {
+                    println("viewModel launched - sorting option is '${sortedOption}'")
                     HomeUIState.Data(list)
                 }
             }
@@ -39,7 +44,6 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
             val newList = CheckList(
                 title = null,
                 description = "Add Description",
-                //created = LocalDateTime.now(),
                 order = 2, //TODO: Add query to find max order
                 folderId = 0
             )
@@ -48,14 +52,10 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
     }
 
     fun sortLists(sortBy: SortOption){
+        sortedOption = sortBy
         this.viewModelScope.launch {
-            var sortedList : Flow<List<CheckList>> = lists
-            when (sortBy) {
-                SortOption.CREATED -> sortedList = db.checkListDao().getAllSortedByCreated()
-                SortOption.RECENT -> {}
-                SortOption.NAME -> sortedList = db.checkListDao().getAllSortedByName()
-            }
-            sortedList.collect { list -> _mutableHomeState.value = HomeUIState.Data(list)}
+            lists = listBySort(sortBy)
+            lists.collect { list -> _mutableHomeState.value = HomeUIState.Data(list)}
         }
     }
 
@@ -65,8 +65,20 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
         }
     }
 
-    fun clickList(listTitle: String, listId: Int){
-        nav.navigate("todoList/${listTitle}/${listId}")
+    fun clickList(list: CheckList){
+        this.viewModelScope.launch {
+            db.checkListDao().update(list.copy(lastModified = LocalDateTime.now()))
+        }
+        nav.navigate("todoList/${list.title}/${list.id}")
+    }
+
+    private fun listBySort(sortBy: SortOption): Flow<List<CheckList>>{
+            return when (sortBy) {
+                SortOption.CREATED -> db.checkListDao().getAllSortedByCreated()
+                SortOption.RECENT -> db.checkListDao().getAllSortedByLastModified()
+                SortOption.NAME -> db.checkListDao().getAllSortedByName()
+            }
+
     }
 }
 

@@ -38,6 +38,7 @@ fun HomeScreen(
     db: AppDatabase
 ) {
     val gridState = rememberLazyGridState()
+    println("Recreating HomeScreen")
     val viewmodel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
@@ -76,11 +77,8 @@ fun AddButton(viewModel: HomeViewModel, gridState: LazyGridState) {
         onClick = {
             coroutineScope.launch {
                 viewModel.addList()
-                val lastIndex = gridState.layoutInfo.totalItemsCount - 1
-                if (lastIndex >= 0) {
-                    delay(100L)
-                    gridState.animateScrollToItem(lastIndex)
-                }
+                delay(100L)
+                gridState.animateScrollToItem(0)
             }
         },
         // Remove shape parameter for default shape (square with rounded corners)
