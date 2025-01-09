@@ -7,8 +7,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigator
 
 class HomeViewModelFactory(
-    val db: AppDatabase,
-    val nav: NavController
+    private val db: AppDatabase,
+    private val nav: NavController
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {

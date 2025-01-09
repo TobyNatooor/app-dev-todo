@@ -26,8 +26,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java, "ToDoDB"
         ).build()
-
-
+        
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
             // Should not be in release
@@ -43,7 +42,4 @@ class MainActivity : ComponentActivity() {
             }
             }
         }
-
-
 }
-

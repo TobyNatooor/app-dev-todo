@@ -34,8 +34,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    db: AppDatabase
+    db: AppDatabase,
+    navController: NavController
 ) {
     val gridState = rememberLazyGridState()
     println("Recreating HomeScreen")
@@ -89,7 +89,7 @@ fun AddButton(viewModel: HomeViewModel, gridState: LazyGridState) {
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = "Add new list",
-            tint = Color(0xFF1E1E1E)
+            tint = MaterialTheme.colorScheme.onSecondary,
         )
     }
 }
