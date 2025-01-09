@@ -14,6 +14,8 @@ class MockDataStore {
         ToDo(title = "Clean Kitchen Counter", description = "Wipe down all surfaces in the kitchen.", listId = 2, order = 1),
         ToDo(title = "Clean Living Room Floor", description = "Vacuum the living room floor.", listId = 2, order = 2),
         ToDo(title = "Clean Bathroom Sink", description = "Scrub the sink in the bathroom.", listId = 2, order = 3),
+        ToDo(title = "Clean Bathroom Floor", description = "Scrub the floor in the bathroom.", listId = 2, order = 4),
+        ToDo(title = "Clean Bathroom Walls", description = "Scrub the walls in the bathroom.", listId = 2, order = 5),
 
         ToDo(title = "Run 5km", description = "Go for a 5km jog around the park.", listId = 3, order = 1),
         ToDo(title = "Push-ups", description = "Do 20 push-ups.", listId = 3, order = 2),

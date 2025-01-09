@@ -56,6 +56,13 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
             } else {
                 db.toDoDao().findWithTitle(string)
             }
+
+            val lists: Flow<List<CheckList>> = if (string.isEmpty()) {
+               db.checkListDao().getAll()
+            } else {
+                db.checkListDao().findWithTodosTitle(string)
+            }
+            
             combine(lists, todos) { list, todo ->
                 if (list.isEmpty()) {
                     HomeUIState.Empty
