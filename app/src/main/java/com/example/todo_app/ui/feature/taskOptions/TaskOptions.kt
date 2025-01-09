@@ -5,10 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
@@ -27,12 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
 
 @Composable
 fun TaskOptions(
     task: ToDo,
     viewmodel: TaskOptionsViewModel,
+    db: AppDatabase,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -51,39 +56,97 @@ fun TaskOptions(
         )
 
         // Options
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
                 .padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             // Task title
-            Option(
-                optionTitle = "Task title",
-                content = {
-                    TextFieldOption(
-                        startText = task.title.toString(),
-                        hintText = "Enter task title",
-                        height = 42.dp,
-                        contentAlign = Alignment.Center,
-                        onTextChanged = { title -> viewmodel.updateTask(task.copy(title = title)) }
+            item {
+                Option(
+                    optionTitle = "Task title",
+                    content = {
+                        TextFieldOption(
+                            startText = task.title.toString(),
+                            hintText = "Enter task title",
+                            height = 42.dp,
+                            contentAlign = Alignment.Center,
+                            onTextChanged = { title -> viewmodel.updateTask(task.copy(title = title)) }
+                        )
+                    }
+                )
+            }
+
+
+            // Move to list
+            item {
+                Option(
+                    optionTitle = "Move to list",
+                    content = {
+                        TextFieldOption(
+                            startText = "-- choose list --",
+                            hintText = "-- choose list --",
+                            height = 42.dp,
+                            contentAlign = Alignment.Center,
+                            onTextChanged = {  }
+                        )
+                    }
+                )
+            }
+
+
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Deadline
+                    Option(
+                        optionTitle = "Deadline",
+                        content = {
+                            TextFieldOption(
+                                startText = "01/10/25",
+                                hintText = "Select a date",
+                                height = 42.dp,
+                                contentAlign = Alignment.TopStart,
+                                onTextChanged = {  }
+                            )
+                        }
+                    )
+
+                    // Time estimate
+                    Option(
+                        optionTitle = "Time estimate",
+                        content = {
+                            TextFieldOption(
+                                startText = "00:00",
+                                hintText = "00:00",
+                                height = 42.dp,
+                                contentAlign = Alignment.TopStart,
+                                onTextChanged = {  }
+                            )
+                        }
                     )
                 }
-            )
+            }
+
 
             // Task description
-            Option(
-                optionTitle = "Description",
-                content = {
-                    TextFieldOption(
-                        startText = task.description,
-                        hintText = "Enter task description",
-                        height = 192.dp,
-                        contentAlign = Alignment.TopStart,
-                        onTextChanged = { description -> viewmodel.updateTask(task.copy(description = description)) }
-                    )
-                }
-            )
+            item {
+                Option(
+                    optionTitle = "Description",
+                    content = {
+                        TextFieldOption(
+                            startText = task.description,
+                            hintText = "Enter task description",
+                            height = 192.dp,
+                            contentAlign = Alignment.TopStart,
+                            onTextChanged = { description -> viewmodel.updateTask(task.copy(description = description)) }
+                        )
+                    }
+                )
+            }
+
         }
     }
 }

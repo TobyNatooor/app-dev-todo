@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.ui.feature.toDoList.ToDosUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,11 @@ class TaskOptionsViewModel(private val taskId: Int, private val db: AppDatabase)
         viewModelScope.launch {
             val taskFlow: Flow<ToDo> = db.toDoDao().getWithId(taskId)
             taskFlow.collect { task ->
-                _mutableTaskState.value = TaskUIState.Data(task)
+                val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(task.listId)
+                toDos.collect { list ->
+                    val sortedList = list.sortedWith(compareBy { it.order })
+                    _mutableTaskState.value = TaskUIState.Data(task, sortedList)
+                }
             }
         }
     }
@@ -39,5 +44,5 @@ class TaskOptionsViewModel(private val taskId: Int, private val db: AppDatabase)
 
 sealed class TaskUIState {
     data object Loading : TaskUIState()
-    data class Data(val task: ToDo) : TaskUIState()
+    data class Data(val task: ToDo, val toDoList: List<ToDo>) : TaskUIState()
 }

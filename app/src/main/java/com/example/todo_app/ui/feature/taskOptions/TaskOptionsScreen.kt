@@ -44,7 +44,7 @@ fun TaskOptionsScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-                    TaskContent(taskUIState, viewmodel)
+                    TaskContent(taskUIState, viewmodel, db)
                 }
             }
         }
@@ -55,6 +55,7 @@ fun TaskOptionsScreen(
 private fun TaskContent(
     taskUIState: TaskUIState,
     viewmodel: TaskOptionsViewModel,
+    db: AppDatabase,
     modifier: Modifier = Modifier
 ) {
     when (taskUIState) {
@@ -65,6 +66,7 @@ private fun TaskContent(
         is TaskUIState.Data -> TaskOptions(
             task = taskUIState.task,
             viewmodel = viewmodel,
+            db = db,
             modifier = modifier
         )
     }
