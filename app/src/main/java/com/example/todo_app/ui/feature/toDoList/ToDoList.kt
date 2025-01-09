@@ -74,7 +74,6 @@ fun ToDoList(
                         .padding(top = 75.dp, bottom = 75.dp)
                 )
 
-
             // To-do elements
             LazyColumn(
                 state = scrollState,
