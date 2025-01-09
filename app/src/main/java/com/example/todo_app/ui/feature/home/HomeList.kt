@@ -49,14 +49,17 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
@@ -66,7 +69,7 @@ fun HomeList(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    var currentLettter: Char? = 'a'
+    var currentLetter: Char? = 'A'
 
 
     val horizontalPadding = 40.dp
@@ -147,16 +150,27 @@ fun HomeList(
                         )
                     }
                 } else {
+                    viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
-                            if(lists[index].title != null && currentLettter != lists[index].title?.get(0)){
-                                currentLettter = lists[index].title?.get(0)
+                            if(viewModel.sortedOption == SortOption.NAME){
+                                val char = viewModel.isNextChar(lists[index])
+                                if (char != '!') {
+                                    Text(
+                                        char.toString(),
+                                        style = TextStyle(fontSize = 13.sp),
+                                    )
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .width(15.dp)
+                                            .height(4.dp)
+                                    )
+                                } else {
+                                    // Space instead of text
+                                    Spacer(modifier = Modifier.height(19.dp))
+                                }
+                                Spacer(modifier = Modifier.height(5.dp))
                             }
-                            Text(
-                                currentLettter.toString(),
-                                style = TextStyle(fontSize = 10.sp),
-                            )
-                            Spacer(modifier = Modifier.height(5.dp))
                             ListCard(lists[index], viewModel)
                         }
                     }

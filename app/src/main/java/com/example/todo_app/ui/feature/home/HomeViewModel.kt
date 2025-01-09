@@ -23,6 +23,7 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
     private var lists: Flow<List<CheckList>> = listBySort(sortedOption)
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
+    var currentChar: Char = '\u0000'
 
     init {
         viewModelScope.launch {
@@ -79,6 +80,18 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
                 SortOption.NAME -> db.checkListDao().getAllSortedByName()
             }
 
+    }
+
+    fun isNextChar(list: CheckList): Char{
+        if(!list.title.isNullOrEmpty()){
+            val char = list.title[0].uppercaseChar()
+            println("Name of list '${list.title} -- First char '$char' -- Current char '$currentChar'")
+            if(char != currentChar){
+                currentChar = char
+                return currentChar
+            }
+        }
+        return '!'
     }
 }
 
