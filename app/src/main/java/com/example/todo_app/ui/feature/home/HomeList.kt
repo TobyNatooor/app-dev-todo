@@ -147,7 +147,7 @@ fun HomeList(
                 if (lists.isEmpty()) {
                     item {
                         Text(
-                            text = "No checklists yet",
+                            text = "No checklists found",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )

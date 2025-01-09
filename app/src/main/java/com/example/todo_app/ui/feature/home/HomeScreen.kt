@@ -109,11 +109,11 @@ private fun HomeContent(
             title = "Home",
             text = "No checklists yet"
         )*/
-        /*is HomeUIState.Empty -> HomeList(
+        is HomeUIState.Empty -> HomeList(
             lists = ArrayList(),
             viewModel = viewModel,
             gridState = gridState
-        )*/
+        )
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel,
