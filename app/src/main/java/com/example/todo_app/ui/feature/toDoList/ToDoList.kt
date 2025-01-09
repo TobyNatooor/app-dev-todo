@@ -98,7 +98,9 @@ fun ToDoList(
                 .padding(16.dp)
                 .align(Alignment.TopEnd)
         ) {
-            //DropdownSettingsMenu( )
+            DropdownSettingsMenu(
+                onRenameClicked = { /* Handle rename on ToDoListScreen */  }
+            )
         }
     }
 }
