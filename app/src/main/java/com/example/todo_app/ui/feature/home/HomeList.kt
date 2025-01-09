@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -144,6 +145,7 @@ fun HomeList(
                         )
                     }
                 } else {
+                    //viewModel.homeState.value.
                     items(lists.size) { index ->
                         ListCard(lists[index], viewModel)
                     }
@@ -173,7 +175,10 @@ private fun SearchTextField(
         // Search TextField
         BasicTextField(
             value = textState.value,
-            onValueChange = { textState.value = it },
+            onValueChange = {
+                textState.value = it
+                viewModel.searchTodos(textState.value)
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester)
@@ -302,7 +307,14 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
-
+    val homeUIState = viewModel.homeState.collectAsState().value
+    val todos = when (homeUIState) {
+        is HomeUIState.Data -> {
+            homeUIState.todos.filter { todo -> todo.listId == list.id }
+       }
+        HomeUIState.Empty -> ArrayList()
+        HomeUIState.Loading -> ArrayList()
+    }
     return Card(
         onClick = {
             viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
@@ -330,6 +342,15 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
                     contentDescription = null,
                     Modifier.weight(1f)
                 )
+            }
+            for (todo in todos) {
+                if (!todo.title.isNullOrEmpty()) {
+                    Text(
+                        todo.title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }
