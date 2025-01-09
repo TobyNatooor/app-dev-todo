@@ -1,4 +1,4 @@
-package com.example.todo_app.ui.feature.taskOptions
+package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,17 +17,17 @@ import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 
 @Composable
-fun TaskOptionsScreen(
+fun ToDoOptionsScreen(
     modifier: Modifier = Modifier,
-    taskId: Int,
+    toDoId: Int,
     appBar: @Composable () -> Unit,
     db: AppDatabase
 ) {
-    val viewmodel: TaskOptionsViewModel = viewModel(
-        key = "TaskOptionsViewModel_$taskId",
-        factory = TaskOptionsViewModelFactory(taskId, db)
+    val viewmodel: ToDoOptionsViewModel = viewModel(
+        key = "ToDoOptionsViewModel_$toDoId",
+        factory = ToDoOptionsViewModelFactory(toDoId, db)
     )
-    val taskUIState = viewmodel.taskState.collectAsState().value
+    val toDoUIState = viewmodel.toDoState.collectAsState().value
     val focusManager = LocalFocusManager.current
 
     TodoappTheme {
@@ -44,7 +44,7 @@ fun TaskOptionsScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-                    TaskContent(taskUIState, viewmodel, db)
+                    ToDoContent(toDoUIState, viewmodel, db)
                 }
             }
         }
@@ -52,19 +52,19 @@ fun TaskOptionsScreen(
 }
 
 @Composable
-private fun TaskContent(
-    taskUIState: TaskUIState,
-    viewmodel: TaskOptionsViewModel,
+private fun ToDoContent(
+    toDoUIState: ToDoUIState,
+    viewmodel: ToDoOptionsViewModel,
     db: AppDatabase,
     modifier: Modifier = Modifier
 ) {
-    when (taskUIState) {
-        is TaskUIState.Loading -> LoadingScreen(
+    when (toDoUIState) {
+        is ToDoUIState.Loading -> LoadingScreen(
             modifier = modifier
         )
 
-        is TaskUIState.Data -> TaskOptions(
-            task = taskUIState.task,
+        is ToDoUIState.Data -> ToDoOptions(
+            toDo = toDoUIState.toDo,
             viewmodel = viewmodel,
             db = db,
             modifier = modifier

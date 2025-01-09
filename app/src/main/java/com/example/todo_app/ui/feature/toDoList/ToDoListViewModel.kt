@@ -1,5 +1,7 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -56,8 +58,8 @@ class ToDoListViewModel(private val listId: Int, private val db: AppDatabase, pr
         }
     }
 
-    fun clickTaskOptions(taskId: Int){
-        nav.navigate("taskOptions/${taskId}")
+    fun clickToDoOptions(toDoId: Int){
+        nav.navigate("toDoOptions/${toDoId}")
     }
 
     fun deleteToDo(toDo: ToDo){

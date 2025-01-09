@@ -4,12 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.model.ToDoStatus
-import com.example.todo_app.ui.feature.toDoList.ToDosUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ToDoOptionsViewModel(private val toDoId: Int, private val db: AppDatabase) : ViewModel() {
@@ -20,11 +17,7 @@ class ToDoOptionsViewModel(private val toDoId: Int, private val db: AppDatabase)
         viewModelScope.launch {
             val toDoFlow: Flow<ToDo> = db.toDoDao().getWithId(toDoId)
             toDoFlow.collect { toDo ->
-                val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(toDo.listId)
-                toDos.collect { list ->
-                    val sortedList = list.sortedWith(compareBy { it.order })
-                    _mutableToDoState.value = ToDoUIState.Data(toDo, sortedList)
-                }
+                _mutableToDoState.value = ToDoUIState.Data(toDo)
             }
         }
     }
@@ -44,5 +37,5 @@ class ToDoOptionsViewModel(private val toDoId: Int, private val db: AppDatabase)
 
 sealed class ToDoUIState {
     data object Loading : ToDoUIState()
-    data class Data(val toDo: ToDo, val toDoList: List<ToDo>) : ToDoUIState()
+    data class Data(val toDo: ToDo) : ToDoUIState()
 }
