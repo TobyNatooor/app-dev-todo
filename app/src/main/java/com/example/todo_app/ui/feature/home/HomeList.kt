@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +50,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +72,8 @@ fun HomeList(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+
+    val textState = remember { mutableStateOf("") }
 
     val horizontalPadding = 40.dp
 
@@ -99,8 +105,7 @@ fun HomeList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = horizontalPadding / 2,
-                        end = horizontalPadding / 4
+                        start = horizontalPadding / 2, end = horizontalPadding / 4
                     ),
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -110,6 +115,7 @@ fun HomeList(
                 SearchTextField(
                     viewModel,
                     focusRequester,
+                    textState,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -148,8 +154,7 @@ fun HomeList(
                     }
                 } else {
                     items(lists) { list ->
-                        val todos = viewModel.getTodosByListId(list.id)
-                        ListCard(list, viewModel, todos)
+                        ListCard(list, textState.value, viewModel)
                     }
                 }
             }
@@ -161,9 +166,10 @@ fun HomeList(
 private fun SearchTextField(
     viewModel: HomeViewModel,
     focusRequester: FocusRequester,
+    textState: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
-    val textState = remember { mutableStateOf("") }
+    //val textState = remember { mutableStateOf("") }
     val focusState = remember { mutableStateOf(false) }
 
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
@@ -307,8 +313,10 @@ fun SortButton(
 }
 
 @Composable
-private fun ListCard(list: CheckList, viewModel: HomeViewModel, todos: List<ToDo>) {
+private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) {
+
     val focusManager = LocalFocusManager.current
+    val todos = viewModel.getTodosByListId(list.id)
 
     return Card(
         onClick = {
@@ -345,9 +353,23 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel, todos: List<ToDo
             for (todo in todos) {
                 if (!todo.title.isNullOrEmpty()) {
                     Text(
-                        todo.title,
+                        buildAnnotatedString {
+                            val splitTitle = todo.title.split(search)
+                            splitTitle.forEachIndexed { index, split ->
+                                if (index != 0) withStyle(
+                                    style = SpanStyle(
+                                        color = Color.White,
+                                        background = Color.Blue,
+                                    )
+                                ) {
+                                    append(search)
+                                }
+                                append(split)
+                            }
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        //modifier = Modifier.background(Color.Black)
                     )
                 }
             }

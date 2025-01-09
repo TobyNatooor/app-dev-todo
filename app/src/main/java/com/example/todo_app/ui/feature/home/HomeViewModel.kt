@@ -1,6 +1,8 @@
 package com.example.todo_app.ui.feature.home
 
+import android.health.connect.changelog.ChangeLogsResponse.DeletedLog
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import com.example.todo_app.data.AppDatabase
@@ -35,6 +37,7 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
                     HomeUIState.Data(list, todo)
                 }
             }.collect { homeUIState ->
+                Log.d("TODOS", "ui state: $homeUIState")
                 _mutableHomeState.value = homeUIState
             }
         }
@@ -70,6 +73,7 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
                     HomeUIState.Data(list, todo)
                 }
             }.collect { homeUIState ->
+                Log.d("TODOS", "ui state: $homeUIState")
                 _mutableHomeState.value = homeUIState
             }
         }
