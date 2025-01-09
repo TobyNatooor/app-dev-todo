@@ -42,15 +42,15 @@ fun AppNavigation(db: AppDatabase) {
             )
         }
         composable(
-            route = "taskOptions/{taskId}",
+            route = "toDoOptions/{toDoId}",
             arguments = listOf(
-                navArgument("taskId") { type = NavType.IntType }
+                navArgument("toDoId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val taskId = backStackEntry.arguments?.getInt("taskId") ?: -1
+            val toDoId = backStackEntry.arguments?.getInt("toDoId") ?: -1
 
             ToDoOptionsScreen(
-                taskId = taskId,
+                toDoId = toDoId,
                 appBar = appBar,
                 db = db
             )
