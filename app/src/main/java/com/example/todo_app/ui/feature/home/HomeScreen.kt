@@ -34,10 +34,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    db: AppDatabase
+    db: AppDatabase,
+    navController: NavController
 ) {
     val gridState = rememberLazyGridState()
+    println("Recreating HomeScreen")
     val viewmodel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
@@ -76,11 +77,8 @@ fun AddButton(viewModel: HomeViewModel, gridState: LazyGridState) {
         onClick = {
             coroutineScope.launch {
                 viewModel.addList()
-                val lastIndex = gridState.layoutInfo.totalItemsCount - 1
-                if (lastIndex >= 0) {
-                    delay(100L)
-                    gridState.animateScrollToItem(lastIndex)
-                }
+                delay(100L)
+                gridState.animateScrollToItem(0)
             }
         },
         // Remove shape parameter for default shape (square with rounded corners)
@@ -91,7 +89,7 @@ fun AddButton(viewModel: HomeViewModel, gridState: LazyGridState) {
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = "Add new list",
-            tint = Color(0xFF1E1E1E)
+            tint = MaterialTheme.colorScheme.onSecondary,
         )
     }
 }

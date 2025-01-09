@@ -13,6 +13,7 @@ data class CheckList @RequiresApi(Build.VERSION_CODES.O) constructor(
     val title : String? = null,
     val description : String,
     val created : LocalDateTime = LocalDateTime.now(),
+    val lastModified : LocalDateTime = LocalDateTime.now(),
     val order : Int,
     val folderId : Int,
 )

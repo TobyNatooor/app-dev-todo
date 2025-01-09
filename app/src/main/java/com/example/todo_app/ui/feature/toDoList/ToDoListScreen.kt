@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 
@@ -28,11 +29,12 @@ fun ToDoListScreen(
     modifier: Modifier = Modifier,
     title: String = "", listId: Int,
     appBar: @Composable () -> Unit,
-    db: AppDatabase
+    db: AppDatabase,
+    navController: NavController
 ) {
     val viewmodel: ToDoListViewModel = viewModel(
         key = "ToDoListViewModel_$listId",
-        factory = ToDoListViewModelFactory(listId, db)
+        factory = ToDoListViewModelFactory(listId, db, navController)
     )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current
