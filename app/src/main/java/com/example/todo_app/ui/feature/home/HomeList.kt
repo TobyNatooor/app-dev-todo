@@ -46,8 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -300,10 +302,13 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
+    var isRenaming by remember { mutableStateOf(false) }
 
     return Card(
         onClick = {
-            viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
+            if (!isRenaming) {
+                viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
+            }
             focusManager.clearFocus()
         },
         modifier = Modifier.aspectRatio(1f)
@@ -312,18 +317,28 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if(list.title != null){
-                  Text(
-                      list.title,
-                      style = TextStyle(fontSize = 20.sp),
-                      textAlign = TextAlign.Justify,
-                      modifier = Modifier.weight(5f),
-                  )
+                if (isRenaming) {
+                    RenameList(
+                        list = list,
+                        viewModel = viewModel,
+                        onRenameComplete = {
+                            isRenaming = false // Reset renaming state
+                        }
+                    )
+                } else if (list.title != null){
+                    Text(
+                        list.title,
+                        style = TextStyle(fontSize = 20.sp),
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.weight(5f),
+                    )
                 } else {
-                  ListTextField(list, viewModel)
+                    ListTextField(list, viewModel)
                 }
 
-                DropdownSettingsMenu()
+                DropdownSettingsMenu(
+                    onRenameClicked = { isRenaming = true }
+                )
 
             }
         }
@@ -397,3 +412,70 @@ private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
         }
     }
 }
+
+@Composable
+private fun RenameList(list: CheckList, viewModel: HomeViewModel, onRenameComplete: () -> Unit) {
+    val focusRequester = remember { FocusRequester() }
+    var isEnabled by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    val blankTitle = "Unnamed list"
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(list.title ?: "", TextRange((list.title ?: "").length))) }
+
+    Box {
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                if (textFieldValue.text.isBlank()) {
+                    textFieldValue = TextFieldValue(blankTitle)
+                }
+                viewModel.updateList(
+                    list.copy(title = textFieldValue.text)
+                )
+                onRenameComplete()
+            }
+        }
+
+        BasicTextField(
+            value = textFieldValue,
+            onValueChange = { newValue -> textFieldValue = newValue },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Handle title update to Room SQL when unfocused
+                .onFocusChanged {
+                    isFocused = !isFocused
+                    if (!isFocused) {
+                        if (textFieldValue.text.isBlank()) {
+                            textFieldValue = TextFieldValue(blankTitle)
+                        }
+                        viewModel.updateList(
+                            list.copy(title = textFieldValue.text)
+                        )
+                        isEnabled = false
+                        onRenameComplete()
+                    }
+                },
+            enabled = isEnabled,
+        )
+
+        if (textFieldValue.text.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = Color.Gray,
+                fontSize = 20.sp,
+            )
+        }
+    }
+}
+

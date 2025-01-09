@@ -16,12 +16,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DropdownSettingsMenu() {
+fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
     var expanded by remember { mutableStateOf(false) }
+    val menuTextStyle = TextStyle(
+        color = MaterialTheme.colorScheme.onBackground,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
 
     Box() {
         IconButton(onClick = { expanded = !expanded }) {
@@ -37,9 +43,7 @@ fun DropdownSettingsMenu() {
                 text = {
                     Text(
                         "Share",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
@@ -49,9 +53,7 @@ fun DropdownSettingsMenu() {
                 text = {
                     Text(
                         "Edit",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
@@ -61,21 +63,17 @@ fun DropdownSettingsMenu() {
                 text = {
                     Text(
                         "Rename",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
-                            /* Handle Rename */ }
+                            onRenameClicked() }
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         "Merge",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
@@ -85,9 +83,7 @@ fun DropdownSettingsMenu() {
                 text = {
                     Text(
                         "Delete",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
