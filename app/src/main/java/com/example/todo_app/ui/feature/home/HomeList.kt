@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.model.ToDo
 
 @Composable
 fun HomeList(
@@ -145,9 +147,9 @@ fun HomeList(
                         )
                     }
                 } else {
-                    //viewModel.homeState.value.
-                    items(lists.size) { index ->
-                        ListCard(lists[index], viewModel)
+                    items(lists) { list ->
+                        val todos = viewModel.getTodosByListId(list.id)
+                        ListCard(list, viewModel, todos)
                     }
                 }
             }
@@ -305,22 +307,19 @@ fun SortButton(
 }
 
 @Composable
-private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
+private fun ListCard(list: CheckList, viewModel: HomeViewModel, todos: List<ToDo>) {
     val focusManager = LocalFocusManager.current
-    val homeUIState = viewModel.homeState.collectAsState().value
-    val todos = when (homeUIState) {
-        is HomeUIState.Data -> {
-            homeUIState.todos.filter { todo -> todo.listId == list.id }
-       }
-        HomeUIState.Empty -> ArrayList()
-        HomeUIState.Loading -> ArrayList()
-    }
+
     return Card(
         onClick = {
             viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
             focusManager.clearFocus()
         },
-        modifier = Modifier.aspectRatio(1f)
+        modifier = if (todos.isEmpty()) {
+            Modifier.aspectRatio(1f)
+        } else {
+            Modifier
+        }
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row(

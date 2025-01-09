@@ -2,6 +2,7 @@ package com.example.todo_app.ui.feature.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.collectAsState
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,6 +40,14 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
         }
     }
 
+    fun getTodosByListId(listId: Int): List<ToDo> {
+        val todos: List<ToDo> = when (val hs = homeState.value) {
+            is HomeUIState.Data -> hs.todos.filter { todo -> todo.listId == listId }
+            HomeUIState.Empty -> ArrayList()
+            HomeUIState.Loading -> ArrayList()
+        }
+        return todos
+    }
 
     fun searchTodos(string: String) {
         this.viewModelScope.launch {

@@ -40,6 +40,10 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList WHERE title LIKE '%' || :vSearchWord || '%'")
     fun findWithTitle(vSearchWord: String): Flow<List<CheckList>>
 
+    @Query("SELECT DISTINCT CheckList.* FROM CheckList JOIN (SELECT * FROM ToDo WHERE title LIKE" +
+            " '%' || :vSearchWord || '%') AS td ON CheckList.id=td.listId GROUP BY CheckList.title")
+    fun findWithTodosTitle(vSearchWord: String): Flow<List<CheckList>>
+
     @Query("SELECT CAST(SUBSTR(title, LENGTH('New List ') + 1) AS INTEGER) + 1 AS listNumber " +
             "FROM CheckList WHERE title LIKE 'New List %' ORDER BY listNumber DESC LIMIT 1")
     fun getNewListNr(): Int
