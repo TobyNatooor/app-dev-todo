@@ -66,6 +66,8 @@ fun HomeList(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    var currentLettter: Char? = 'a'
+
 
     val horizontalPadding = 40.dp
 
@@ -146,7 +148,17 @@ fun HomeList(
                     }
                 } else {
                     items(lists.size) { index ->
-                        ListCard(lists[index], viewModel)
+                        Column {
+                            if(lists[index].title != null && currentLettter != lists[index].title?.get(0)){
+                                currentLettter = lists[index].title?.get(0)
+                            }
+                            Text(
+                                currentLettter.toString(),
+                                style = TextStyle(fontSize = 10.sp),
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                            ListCard(lists[index], viewModel)
+                        }
                     }
                 }
             }
@@ -304,45 +316,38 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
-    var currentLettter = "Little test"
 
-    return Column {
-        Text(
-            currentLettter,
-            style = TextStyle(fontSize = 10.sp),
-        )
-        Spacer(modifier = Modifier.height(5.dp))
-        Card(
-            onClick = {
-                viewModel.clickList(list)
-                focusManager.clearFocus()
-            },
-            modifier = Modifier.aspectRatio(1f)
-        ) {
-            Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    if (list.title != null) {
-                        Text(
-                            list.title,
-                            style = TextStyle(fontSize = 20.sp),
-                            textAlign = TextAlign.Justify,
-                            modifier = Modifier.weight(5f),
-                        )
-                    } else {
-                        ListTextField(list, viewModel)
-                    }
-
-                    Icon(
-                        Icons.Rounded.MoreVert,
-                        contentDescription = null,
-                        Modifier.weight(1f)
+    return Card(
+        onClick = {
+            viewModel.clickList(list)
+            focusManager.clearFocus()
+        },
+        modifier = Modifier.aspectRatio(1f)
+    ) {
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (list.title != null) {
+                    Text(
+                        list.title,
+                        style = TextStyle(fontSize = 20.sp),
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.weight(5f),
                     )
+                } else {
+                    ListTextField(list, viewModel)
                 }
+
+                Icon(
+                    Icons.Rounded.MoreVert,
+                    contentDescription = null,
+                    Modifier.weight(1f)
+                )
             }
         }
     }
+
 }
 
 @Composable
