@@ -17,8 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
-
+class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
     var sortedOption : SortOption = SortOption.NAME
     private var lists: Flow<List<CheckList>> = listBySort(sortedOption)
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)

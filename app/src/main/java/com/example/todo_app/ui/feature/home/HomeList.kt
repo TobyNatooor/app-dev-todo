@@ -84,7 +84,7 @@ fun HomeList(
             Text(
                 "My Lists",
                 textAlign = TextAlign.Center,
-                fontSize = 60.sp,
+                fontSize = 54.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .fillMaxWidth()
