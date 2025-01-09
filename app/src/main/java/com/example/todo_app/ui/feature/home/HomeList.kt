@@ -237,7 +237,8 @@ fun SortButton(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
-    var selectedOption by remember { mutableStateOf(sortOptions[0]) }
+    var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
+    println("From HomeList: Current selected option is '$selectedOption'")
 
     Box(
         modifier = modifier
@@ -277,8 +278,8 @@ fun SortButton(
                     sortOptions.forEach { option ->
                         DropdownMenuItem(
                             onClick = {
-                                selectedOption = option
                                 viewModel.sortLists(option)
+                                selectedOption = viewModel.sortedOption
                                 expanded = false
                             },
                             text = {
@@ -305,7 +306,7 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
 
     return Card(
         onClick = {
-            viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
+            viewModel.clickList(list)
             focusManager.clearFocus()
         },
         modifier = Modifier.aspectRatio(1f)
