@@ -13,22 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
+    background = background,
+    onBackground = onBackgroundAndButton,
     primary = checkedBox,
     onPrimary = Color.Black,
-    onBackground = onBackgroundAndButton,
     primaryContainer = onBackgroundAndButton,
-    background = background,
+    onSecondary = buttonIcon,
     tertiaryContainer = appBar,
     surfaceVariant = list,
     onSurfaceVariant = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
+    background = background,
+    onBackground = onBackgroundAndButton,
     primary = checkedBox,
     onPrimary = Color.Black,
-    onBackground = onBackgroundAndButton,
     primaryContainer = onBackgroundAndButton,
-    background = background,
+    onSecondary = buttonIcon,
     tertiaryContainer = appBar,
     surfaceVariant = list,
     onSurfaceVariant = Color.White,

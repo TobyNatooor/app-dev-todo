@@ -4,6 +4,8 @@ import android.health.connect.changelog.ChangeLogsResponse.DeletedLog
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
@@ -21,9 +23,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
-
-    private val lists: Flow<List<CheckList>> = db.checkListDao().getAll()
+class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
+    var sortedOption : SortOption = SortOption.NAME
+    private var lists: Flow<List<CheckList>> = listBySort(sortedOption)
     private val todos: Flow<List<ToDo>> = flowOf(ArrayList())
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
@@ -32,6 +34,9 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
         viewModelScope.launch {
             combine(lists, todos) { list, todo ->
                 if (list.isEmpty()) {
+            lists = listBySort(sortedOption)
+            lists.collect { list ->
+                _mutableHomeState.value = if (list.isEmpty()) {
                     HomeUIState.Empty
                 } else {
                     HomeUIState.Data(list, todo)
@@ -65,7 +70,7 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
             } else {
                 db.checkListDao().findWithTodosTitle(string)
             }
-            
+
             combine(lists, todos) { list, todo ->
                 if (list.isEmpty()) {
                     HomeUIState.Empty
@@ -93,14 +98,10 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
     }
 
     fun sortLists(sortBy: SortOption){
+        sortedOption = sortBy
         this.viewModelScope.launch {
-            var sortedList : Flow<List<CheckList>> = lists
-            when (sortBy) {
-                SortOption.CREATED -> sortedList = db.checkListDao().getAllSortedByCreated()
-                SortOption.RECENT -> {}
-                SortOption.NAME -> sortedList = db.checkListDao().getAllSortedByName()
-            }
-            combine(sortedList, todos) { list, todo -> _mutableHomeState.value = HomeUIState.Data(list, todo)}
+            lists = listBySort(sortBy)
+            lists.collect { list -> _mutableHomeState.value = HomeUIState.Data(list)}
         }
     }
 
@@ -110,8 +111,20 @@ class HomeViewModel(val db: AppDatabase, val nav: NavController) : ViewModel() {
         }
     }
 
-    fun clickList(listTitle: String, listId: Int){
-        nav.navigate("todoList/${listTitle}/${listId}")
+    fun clickList(list: CheckList){
+        this.viewModelScope.launch {
+            db.checkListDao().update(list.copy(lastModified = LocalDateTime.now()))
+        }
+        nav.navigate("todoList/${list.title}/${list.id}")
+    }
+
+    private fun listBySort(sortBy: SortOption): Flow<List<CheckList>>{
+            return when (sortBy) {
+                SortOption.CREATED -> db.checkListDao().getAllSortedByCreated()
+                SortOption.RECENT -> db.checkListDao().getAllSortedByLastModified()
+                SortOption.NAME -> db.checkListDao().getAllSortedByName()
+            }
+
     }
 }
 

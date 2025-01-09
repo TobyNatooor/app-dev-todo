@@ -25,6 +25,9 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList ORDER BY Checklist.created DESC")
     fun getAllSortedByCreated(): Flow<List<CheckList>>
 
+    @Query("SELECT * FROM CheckList ORDER BY Checklist.lastModified DESC")
+    fun getAllSortedByLastModified(): Flow<List<CheckList>>
+
     @Query("SELECT * FROM CheckList ORDER BY Checklist.title ASC")
     fun getAllSortedByName(): Flow<List<CheckList>>
 
