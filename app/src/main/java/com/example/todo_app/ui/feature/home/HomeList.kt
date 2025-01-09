@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
@@ -379,20 +382,7 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
             for (todo in todos) {
                 if (!todo.title.isNullOrEmpty()) {
                     Text(
-                        buildAnnotatedString {
-                            val splitTitle = todo.title.split(search)
-                            splitTitle.forEachIndexed { index, split ->
-                                if (index != 0) withStyle(
-                                    style = SpanStyle(
-                                        color = Color.White,
-                                        background = Color.Blue,
-                                    )
-                                ) {
-                                    append(search)
-                                }
-                                append(split)
-                            }
-                        },
+                        getTodoTitleWithHighlight(todo.title, search),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         //modifier = Modifier.background(Color.Black)
@@ -402,6 +392,38 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
         }
     }
 
+}
+
+private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
+    return buildAnnotatedString {
+        var searchStringIndex = 0
+        todoTitle.forEachIndexed { index, char ->
+            if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
+                searchStringIndex++
+                if (searchStringIndex == search.length) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Blue,
+                        )
+                    ) {
+                        val start = index - (searchStringIndex - 1)
+                        val end = index + searchStringIndex - (searchStringIndex - 1)
+                        if (start < 0 || todoTitle.length < start || end < 0 || todoTitle.length < end || end <= start) {
+                            Log.d("HIGHLIGHTING", "start: $start, end: $end, search.length: ${search.length}, todoTitle: $todoTitle")
+                            return AnnotatedString("Error")
+                        }
+                        append(
+                            todoTitle.substring(start, end)
+                        )
+                    }
+                    searchStringIndex = 0
+                }
+            } else {
+                append(char)
+            }
+        }
+    }
 }
 
 @Composable
