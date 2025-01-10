@@ -122,7 +122,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ToDoCheckBox(toDo, viewModel)
+            ToDoCheckBox(toDo, viewModel, 26.dp)
             Spacer(
                 modifier = Modifier
                     .padding(horizontal = 4.dp)

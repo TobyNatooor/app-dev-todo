@@ -266,7 +266,6 @@ fun SortButton(
     var expanded by remember { mutableStateOf(false) }
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
     var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
-    println("From HomeList: Current selected option is '$selectedOption'")
 
     Box(
         modifier = modifier
@@ -301,7 +300,7 @@ fun SortButton(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
                     sortOptions.forEach { option ->
                         DropdownMenuItem(

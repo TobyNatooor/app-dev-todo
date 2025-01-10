@@ -1,13 +1,11 @@
 package com.example.todo_app.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
 @Entity(tableName = "CheckList")
-data class CheckList @RequiresApi(Build.VERSION_CODES.O) constructor(
+data class CheckList(
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
     val title : String? = null,
