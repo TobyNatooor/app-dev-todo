@@ -1,19 +1,17 @@
 package com.example.todo_app.model
 
-import androidx.room.TypeConverter
-
-enum class ToDoStatus(val status: String) {
+enum class ToDoStatus(private val status: String) {
     NOT_DONE("not done"),
     DONE("done"),
     IN_PROGRESS("in progress"),
     CANCELED("cancelled"),
     CANT_BE_DONE("can't be done");
 
-
-    override fun toString(): String = status // Custom toString for readability
+    // Custom toString for readability
+    override fun toString(): String = status
 
     fun check(): ToDoStatus {
-        return when(this) {
+        return when (this) {
             NOT_DONE -> DONE
             else -> NOT_DONE
         }

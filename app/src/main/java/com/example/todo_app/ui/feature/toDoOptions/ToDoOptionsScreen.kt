@@ -1,6 +1,7 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,11 +25,11 @@ fun ToDoOptionsScreen(
     appBar: @Composable () -> Unit,
     db: AppDatabase
 ) {
-    val viewmodel: ToDoOptionsViewModel = viewModel(
+    val viewModel: ToDoOptionsViewModel = viewModel(
         key = "ToDoOptionsViewModel_$toDoId",
         factory = ToDoOptionsViewModelFactory(toDoId, db)
     )
-    val toDoUIState by viewmodel.toDoState.collectAsState()
+    val toDoUIState by viewModel.toDoState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     TodoappTheme {
@@ -37,7 +38,7 @@ fun ToDoOptionsScreen(
                 .fillMaxSize()
                 .clickable(
                     indication = null,
-                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                    interactionSource = remember { MutableInteractionSource() }
                 ) {
                     focusManager.clearFocus()
                 }
@@ -45,7 +46,7 @@ fun ToDoOptionsScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 appBar()
                 Box(modifier = modifier) {
-                    ToDoContent(toDoUIState, viewmodel)
+                    ToDoContent(toDoUIState, viewModel)
                 }
             }
         }
@@ -55,7 +56,7 @@ fun ToDoOptionsScreen(
 @Composable
 private fun ToDoContent(
     toDoUIState: ToDoUIState,
-    viewmodel: ToDoOptionsViewModel,
+    viewModel: ToDoOptionsViewModel,
     modifier: Modifier = Modifier
 ) {
     when (toDoUIState) {
@@ -66,7 +67,7 @@ private fun ToDoContent(
         is ToDoUIState.Data -> ToDoOptions(
             toDo = toDoUIState.toDo,
             checklists = toDoUIState.checklists,
-            viewmodel = viewmodel,
+            viewmodel = viewModel,
             modifier = modifier
         )
     }

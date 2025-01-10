@@ -4,7 +4,6 @@ import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.Navigator
 
 class HomeViewModelFactory(
     private val db: AppDatabase,
