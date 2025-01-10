@@ -11,6 +11,7 @@ import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.room.util.query
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
@@ -25,6 +26,7 @@ import java.time.LocalDateTime
 
 class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
     var sortedOption: SortOption = SortOption.NAME
+    //private var query: String = ""
     private var lists: Flow<List<CheckList>> = listBySort(sortedOption)
     private val todos: Flow<List<ToDo>> = flowOf(ArrayList())
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
@@ -55,18 +57,22 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         return todos
     }
 
-    fun searchTodos(string: String) {
+    //fun getSearchQuery(): String {
+    //    return query
+    //}
+
+    fun searchForTodos(query: String) {
         this.viewModelScope.launch {
-            val todos: Flow<List<ToDo>> = if (string.isEmpty()) {
+            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
                 flowOf(ArrayList())
             } else {
-                db.toDoDao().findWithTitle(string)
+                db.toDoDao().findWithTitle(query)
             }
 
-            val lists: Flow<List<CheckList>> = if (string.isEmpty()) {
+            val lists: Flow<List<CheckList>> = if (query.isEmpty()) {
                 db.checkListDao().getAll()
             } else {
-                db.checkListDao().findWithTodosTitle(string)
+                db.checkListDao().findWithTodosTitle(query)
             }
 
             combine(lists, todos) { list, todo ->

@@ -76,13 +76,12 @@ import com.example.todo_app.model.ToDo
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
+    searchQuery: MutableState<String>,
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     var currentLetter: Char? = 'A'
-
-    val textState = remember { mutableStateOf("") }
 
     val horizontalPadding = 40.dp
 
@@ -124,7 +123,7 @@ fun HomeList(
                 SearchTextField(
                     viewModel,
                     focusRequester,
-                    textState,
+                    searchQuery,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -183,7 +182,7 @@ fun HomeList(
                                 }
                                 Spacer(modifier = Modifier.height(5.dp))
                             }
-                            ListCard(lists[index], textState.value, viewModel)
+                            ListCard(lists[index], searchQuery.value, viewModel)
                         }
                     }
                 }
@@ -196,10 +195,9 @@ fun HomeList(
 private fun SearchTextField(
     viewModel: HomeViewModel,
     focusRequester: FocusRequester,
-    textState: MutableState<String>,
+    searchQuery: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
-    //val textState = remember { mutableStateOf("") }
     val focusState = remember { mutableStateOf(false) }
 
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
@@ -212,11 +210,11 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            value = textState.value,
+            //value = viewModel.getSearchQuery(),
+            value = searchQuery.value,
             onValueChange = {
-                textState.value = it
-                viewModel.searchTodos(textState.value)
-                Log.d("TEXTSTATE", "textState: $textState")
+                searchQuery.value = it
+                viewModel.searchForTodos(it)
             },
             modifier = Modifier
                 .fillMaxSize()
