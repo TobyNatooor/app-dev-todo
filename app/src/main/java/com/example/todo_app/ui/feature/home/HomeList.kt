@@ -1,7 +1,9 @@
 package com.example.todo_app.ui.feature.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -34,12 +37,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -47,12 +53,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,17 +72,18 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.theme.*
 
+import com.example.todo_app.model.ToDo
 
 @Composable
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
+    searchQuery: MutableState<String>,
+    focusManager: FocusManager,
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
     var currentLetter: Char? = 'A'
-
 
     val horizontalPadding = 40.dp
 
@@ -103,8 +115,7 @@ fun HomeList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = horizontalPadding / 2,
-                        end = horizontalPadding / 4
+                        start = horizontalPadding / 2, end = horizontalPadding / 4
                     ),
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -114,6 +125,7 @@ fun HomeList(
                 SearchTextField(
                     viewModel,
                     focusRequester,
+                    searchQuery,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -145,7 +157,7 @@ fun HomeList(
                 if (lists.isEmpty()) {
                     item {
                         Text(
-                            text = "No checklists yet",
+                            text = "No checklists found",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -172,7 +184,7 @@ fun HomeList(
                                 }
                                 Spacer(modifier = Modifier.height(5.dp))
                             }
-                            ListCard(lists[index], viewModel)
+                            ListCard(lists[index], searchQuery.value, viewModel)
                         }
                     }
                 }
@@ -185,9 +197,9 @@ fun HomeList(
 private fun SearchTextField(
     viewModel: HomeViewModel,
     focusRequester: FocusRequester,
+    searchQuery: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
-    val textState = remember { mutableStateOf("") }
     val focusState = remember { mutableStateOf(false) }
 
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
@@ -200,8 +212,12 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            value = textState.value,
-            onValueChange = { textState.value = it },
+            //value = viewModel.getSearchQuery(),
+            value = searchQuery.value,
+            onValueChange = {
+                searchQuery.value = it
+                viewModel.searchForTodos(it)
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester)
@@ -328,15 +344,21 @@ fun SortButton(
 }
 
 @Composable
-private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
+private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) {
+
     val focusManager = LocalFocusManager.current
+    val todos = viewModel.getTodosByListId(list.id)
 
     return Card(
         onClick = {
             viewModel.clickList(list)
             focusManager.clearFocus()
         },
-        modifier = Modifier.aspectRatio(1f)
+        modifier = if (todos.isEmpty()) {
+            Modifier.aspectRatio(1f)
+        } else {
+            Modifier
+        }
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row(
@@ -356,9 +378,59 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
                 DropdownSettingsMenu()
 
             }
+            for (todo in todos) {
+                if (!todo.title.isNullOrEmpty()) {
+                    Text(
+                        if (search.isNotEmpty()) {
+                            getTodoTitleWithHighlight(todo.title, search)
+                        } else {
+                            AnnotatedString(todo.title)
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
         }
     }
 
+}
+
+private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
+    return buildAnnotatedString {
+        var searchStringIndex = 0
+        var searching = false
+        todoTitle.forEachIndexed { index, char ->
+            if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
+                searching = true
+                searchStringIndex++
+                if (searchStringIndex == search.length) {
+                    searching = false
+                    val start = index - (searchStringIndex - 1)
+                    val end = index + searchStringIndex - (searchStringIndex - 1)
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Blue,
+                        )
+                    ) {
+                        append(
+                            todoTitle.substring(start, end)
+                        )
+                    }
+                    searchStringIndex = 0
+                }
+            } else if (searching) {
+                searching = false
+                val start = index - searchStringIndex
+                val end = index + searchStringIndex - (searchStringIndex - 1)
+                append(todoTitle.substring(start, end))
+                searchStringIndex = 0
+            } else {
+                append(char)
+            }
+        }
+    }
 }
 
 @Composable
