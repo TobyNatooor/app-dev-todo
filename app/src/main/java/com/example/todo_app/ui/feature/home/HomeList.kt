@@ -238,7 +238,6 @@ fun SortButton(
     var expanded by remember { mutableStateOf(false) }
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
     var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
-    println("From HomeList: Current selected option is '$selectedOption'")
 
     Box(
         modifier = modifier
