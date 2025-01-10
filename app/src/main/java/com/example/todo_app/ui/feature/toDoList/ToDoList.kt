@@ -64,22 +64,20 @@ fun ToDoList(
                 .fillMaxSize()
         ) {
             // Title
-
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontSize = 54.sp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 75.dp, bottom = 75.dp)
-                )
-
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontSize = 54.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 75.dp, bottom = 75.dp)
+            )
             // To-do elements
             LazyColumn(
                 state = scrollState,
                 verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
                     .fillMaxSize()
             ) {
                 if (toDos.isEmpty()) {
@@ -97,7 +95,6 @@ fun ToDoList(
                 }
             }
         }
-
         // Settings dropdown menu
         Box(
             modifier = Modifier
@@ -137,8 +134,8 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
             }
         }
-
-        ToDoOptionsButton(toDo, viewModel,
+        ToDoOptionsButton(
+            toDo, viewModel,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
         )
@@ -150,11 +147,11 @@ private fun ToDoTextField(
     toDo: ToDo,
     viewmodel: ToDoListViewModel
 ) {
+    val blankTitle = "Unnamed to do item"
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var title by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed to do item"
 
     Box(
         modifier = Modifier
@@ -166,7 +163,6 @@ private fun ToDoTextField(
             isFocused = false
             focusRequester.requestFocus()
         }
-
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {

@@ -1,9 +1,7 @@
 package com.example.todo_app.ui.feature.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -38,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,13 +52,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.substring
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -70,9 +63,6 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.ui.theme.*
-
-import com.example.todo_app.model.ToDo
 
 @Composable
 fun HomeList(
@@ -83,8 +73,6 @@ fun HomeList(
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
-    var currentLetter: Char? = 'A'
-
     val horizontalPadding = 40.dp
 
     Box(
@@ -120,7 +108,7 @@ fun HomeList(
                 verticalAlignment = Alignment.Bottom
             ) {
                 val childrenHeight = 42.dp
-                val horizontalDistribution = 8f/15f
+                val horizontalDistribution = 8f / 15f
 
                 SearchTextField(
                     viewModel,
@@ -166,7 +154,7 @@ fun HomeList(
                     viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
-                            if(viewModel.sortedOption == SortOption.NAME){
+                            if (viewModel.sortedOption == SortOption.NAME) {
                                 val char = viewModel.isNextChar(lists[index])
                                 if (char != '!') {
                                     Text(
@@ -212,7 +200,6 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            //value = viewModel.getSearchQuery(),
             value = searchQuery.value,
             onValueChange = {
                 searchQuery.value = it
@@ -256,13 +243,11 @@ private fun SearchTextField(
         ) {
             HorizontalDivider(
                 thickness = 2.dp,
-
                 color = if (focusState.value) {
                     MaterialTheme.colorScheme.onBackground
                 } else {
                     MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
                 },
-
                 modifier = Modifier
                     .padding(
                         start = 4.dp,
@@ -279,8 +264,9 @@ fun SortButton(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
+
+    var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
 
     Box(
@@ -300,7 +286,7 @@ fun SortButton(
                 .align(Alignment.BottomCenter)
                 .padding(top = 4.dp)
         ) {
-            Box () {
+            Box {
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
@@ -434,20 +420,19 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
 }
 
 @Composable
-private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
+private fun ListTextField(list: CheckList, viewModel: HomeViewModel) {
+    val blankTitle = "Unnamed list"
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
     var title by remember { mutableStateOf("") }
 
-    Box(){
+    Box {
         LaunchedEffect(Unit) {
             isEnabled = true
             isFocused = false
             focusRequester.requestFocus()
         }
-
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {
@@ -458,8 +443,6 @@ private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
                 )
             }
         }
-
-
         BasicTextField(
             value = title,
             onValueChange = { newTitle ->

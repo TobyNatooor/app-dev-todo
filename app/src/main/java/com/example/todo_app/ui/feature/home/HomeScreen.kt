@@ -1,7 +1,7 @@
 package com.example.todo_app.ui.feature.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,8 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,14 +39,11 @@ fun HomeScreen(
     navController: NavController
 ) {
     val gridState = rememberLazyGridState()
-    println("Recreating HomeScreen")
-    val viewmodel: HomeViewModel = viewModel(
+    val viewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
-    val homeUIState = viewmodel.homeState.collectAsState().value
-
+    val homeUIState = viewModel.homeState.collectAsState().value
     val searchQuery = remember { mutableStateOf("") }
-
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -57,18 +51,18 @@ fun HomeScreen(
             .fillMaxSize()
             .clickable(
                 indication = null,
-                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                interactionSource = remember { MutableInteractionSource() }
             ) {
                 focusManager.clearFocus()
             },
-        floatingActionButton = { AddButton(viewmodel, searchQuery, gridState) },
+        floatingActionButton = { AddButton(viewModel, searchQuery, gridState) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, searchQuery, focusManager, viewmodel, gridState = gridState)
+                HomeContent(homeUIState, searchQuery, focusManager, viewModel, gridState)
             }
         }
 
@@ -76,7 +70,34 @@ fun HomeScreen(
 }
 
 @Composable
-fun AddButton(viewModel: HomeViewModel, searchQuery: MutableState<String>, gridState: LazyGridState) {
+private fun HomeContent(
+    homeUIState: HomeUIState,
+    searchQuery: MutableState<String>,
+    focusManager: FocusManager,
+    viewModel: HomeViewModel,
+    gridState: LazyGridState,
+    modifier: Modifier = Modifier,
+) {
+    when (homeUIState) {
+        is HomeUIState.Data, HomeUIState.Empty -> HomeList(
+            lists = ArrayList(),
+            viewModel = viewModel,
+            searchQuery = searchQuery,
+            focusManager = focusManager,
+            gridState = gridState
+        )
+
+        else -> LoadingScreen(modifier)
+    }
+}
+
+
+@Composable
+fun AddButton(
+    viewModel: HomeViewModel,
+    searchQuery: MutableState<String>,
+    gridState: LazyGridState
+) {
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(
@@ -100,38 +121,5 @@ fun AddButton(viewModel: HomeViewModel, searchQuery: MutableState<String>, gridS
             contentDescription = "Add new list",
             tint = MaterialTheme.colorScheme.onSecondary,
         )
-    }
-}
-
-@Composable
-private fun HomeContent(
-    homeUIState: HomeUIState,
-    searchQuery: MutableState<String>,
-    focusManager: FocusManager,
-    viewModel: HomeViewModel,
-    modifier: Modifier = Modifier,
-    gridState: LazyGridState
-) {
-    when (homeUIState) {
-/*        is HomeUIState.Empty -> EmptyScreen(
-            modifier = modifier,
-            title = "Home",
-            text = "No checklists yet"
-        )*/
-        is HomeUIState.Empty -> HomeList(
-            lists = ArrayList(),
-            viewModel = viewModel,
-            searchQuery = searchQuery,
-            focusManager = focusManager,
-            gridState = gridState
-        )
-        is HomeUIState.Data -> HomeList(
-            lists = homeUIState.lists,
-            viewModel = viewModel,
-            searchQuery = searchQuery,
-            focusManager = focusManager,
-            gridState = gridState
-        )
-        else -> LoadingScreen(modifier)
     }
 }
