@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.home
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -77,10 +79,10 @@ fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
     searchQuery: MutableState<String>,
+    focusManager: FocusManager,
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
     var currentLetter: Char? = 'A'
 
     val horizontalPadding = 40.dp

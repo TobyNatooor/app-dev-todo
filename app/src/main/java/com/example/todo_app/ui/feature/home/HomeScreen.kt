@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -67,7 +68,7 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, searchQuery, viewmodel, gridState = gridState)
+                HomeContent(homeUIState, searchQuery, focusManager, viewmodel, gridState = gridState)
             }
         }
 
@@ -106,6 +107,7 @@ fun AddButton(viewModel: HomeViewModel, searchQuery: MutableState<String>, gridS
 private fun HomeContent(
     homeUIState: HomeUIState,
     searchQuery: MutableState<String>,
+    focusManager: FocusManager,
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
     gridState: LazyGridState
@@ -120,12 +122,14 @@ private fun HomeContent(
             lists = ArrayList(),
             viewModel = viewModel,
             searchQuery = searchQuery,
+            focusManager = focusManager,
             gridState = gridState
         )
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel,
             searchQuery = searchQuery,
+            focusManager = focusManager,
             gridState = gridState
         )
         else -> LoadingScreen(modifier)
