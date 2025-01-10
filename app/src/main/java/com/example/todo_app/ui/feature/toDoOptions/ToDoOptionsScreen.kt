@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -27,7 +28,7 @@ fun ToDoOptionsScreen(
         key = "ToDoOptionsViewModel_$toDoId",
         factory = ToDoOptionsViewModelFactory(toDoId, db)
     )
-    val toDoUIState = viewmodel.toDoState.collectAsState().value
+    val toDoUIState by viewmodel.toDoState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     TodoappTheme {
@@ -64,6 +65,7 @@ private fun ToDoContent(
 
         is ToDoUIState.Data -> ToDoOptions(
             toDo = toDoUIState.toDo,
+            checklists = toDoUIState.checklists,
             viewmodel = viewmodel,
             modifier = modifier
         )

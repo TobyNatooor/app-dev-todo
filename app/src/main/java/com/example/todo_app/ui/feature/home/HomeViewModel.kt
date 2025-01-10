@@ -86,6 +86,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
                 Log.d("TODOS", "ui state: $homeUIState")
                 _mutableHomeState.value = homeUIState
             }
+
         }
     }
 
@@ -94,7 +95,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             val newList = CheckList(
                 title = null,
                 description = "Add Description",
-                //created = LocalDateTime.now(),
                 order = 2, //TODO: Add query to find max order
                 folderId = 0
             )
@@ -131,13 +131,12 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         nav.navigate("todoList/${list.title}/${list.id}")
     }
 
-    private fun listBySort(sortBy: SortOption): Flow<List<CheckList>> {
-        return when (sortBy) {
-            SortOption.CREATED -> db.checkListDao().getAllSortedByCreated()
-            SortOption.RECENT -> db.checkListDao().getAllSortedByLastModified()
-            SortOption.NAME -> db.checkListDao().getAllSortedByName()
-        }
-
+    private fun listBySort(sortBy: SortOption): Flow<List<CheckList>>{
+            return when (sortBy) {
+                SortOption.CREATED -> db.checkListDao().getAllSortedByCreated()
+                SortOption.RECENT -> db.checkListDao().getAllSortedByLastModified()
+                SortOption.NAME -> db.checkListDao().getAllSortedByName()
+            }
     }
 
     fun isNextChar(list: CheckList): Char{
