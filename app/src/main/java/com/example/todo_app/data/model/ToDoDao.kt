@@ -13,8 +13,8 @@ interface ToDoDao {
     @Insert
     suspend fun insert(toDo: ToDo)
 
-    @Insert
-    suspend fun insert(toDo: List<ToDo>)
+    //@Insert
+    //suspend fun insert(toDo: List<ToDo>)
 
     @Update
     suspend fun update(toDo: ToDo)

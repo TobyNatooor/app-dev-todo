@@ -65,7 +65,6 @@ fun HomeScreen(
                 HomeContent(homeUIState, searchQuery, focusManager, viewModel, gridState)
             }
         }
-
     }
 }
 

@@ -47,8 +47,11 @@ class ToDoListViewModel(
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
 
-            val existingList =
-                db.toDoDao().getAllWithListId(updatedToDo.listId).first().toMutableList()
+            val existingList = db
+                .toDoDao()
+                .getAllWithListId(updatedToDo.listId)
+                .first()
+                .toMutableList()
 
             existingList.sortWith(
                 compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }

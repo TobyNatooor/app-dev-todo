@@ -93,7 +93,13 @@ class MockDataStore {
     )
 
     suspend fun insertMockData(db: AppDatabase) {
-        db.checkListDao().insert(listData)
-        db.toDoDao().insert(todoData)
+        for (toDo in todoData) {
+            db.toDoDao().insert(toDo)
+        }
+        for (list in listData) {
+            db.checkListDao().insert(list)
+        }
+        //db.checkListDao().insert(listData)
+        //db.toDoDao().insert(todoData)
     }
 }
