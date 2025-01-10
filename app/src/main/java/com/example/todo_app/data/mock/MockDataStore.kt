@@ -5,8 +5,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 
 class MockDataStore {
-
-    val todoData = listOf(
+    private val todoData = listOf(
         ToDo(title = "Buy Apples", description = "Pick up apples from the grocery store.", listId = 1, order = 1),
         ToDo(title = "Buy Bananas", description = "Get bananas for the week.", listId = 1, order = 2),
         ToDo(title = "Buy Oranges", description = "Buy a pack of fresh oranges.", listId = 1, order = 3),
@@ -42,7 +41,7 @@ class MockDataStore {
         ToDo(title = "Steam Vegetables", description = "Steam some broccoli and carrots as a side.", listId = 8, order = 3)
     )
 
-    val listData = listOf(
+    private val listData = listOf(
         CheckList(
             title = "Grocery Shopping",
             description = "Make sure to buy fruits, vegetables, and snacks for the week.",
@@ -93,15 +92,8 @@ class MockDataStore {
         )
     )
 
-
-
-    suspend fun insertMockData(db: AppDatabase){
-        for(toDo in todoData){
-            db.toDoDao().insert(toDo)
-        }
-
-        for(list in listData){
-            db.checkListDao().insert(list)
-        }
+    suspend fun insertMockData(db: AppDatabase) {
+        db.checkListDao().insert(listData)
+        db.toDoDao().insert(todoData)
     }
 }
