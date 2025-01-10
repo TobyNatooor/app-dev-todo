@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -48,14 +48,19 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.*
+
 
 @Composable
 fun HomeList(
@@ -65,6 +70,8 @@ fun HomeList(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    var currentLetter: Char? = 'A'
+
 
     val horizontalPadding = 40.dp
 
@@ -144,8 +151,29 @@ fun HomeList(
                         )
                     }
                 } else {
+                    viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
-                        ListCard(lists[index], viewModel)
+                        Column {
+                            if(viewModel.sortedOption == SortOption.NAME){
+                                val char = viewModel.isNextChar(lists[index])
+                                if (char != '!') {
+                                    Text(
+                                        char.toString(),
+                                        style = TextStyle(fontSize = 13.sp),
+                                    )
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .width(15.dp)
+                                            .height(4.dp)
+                                    )
+                                } else {
+                                    // Space instead of text
+                                    Spacer(modifier = Modifier.height(19.dp))
+                                }
+                                Spacer(modifier = Modifier.height(5.dp))
+                            }
+                            ListCard(lists[index], viewModel)
+                        }
                     }
                 }
             }
@@ -314,25 +342,23 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if(list.title != null){
-                  Text(
-                      list.title,
-                      style = TextStyle(fontSize = 20.sp),
-                      textAlign = TextAlign.Justify,
-                      modifier = Modifier.weight(5f),
-                  )
+                if (list.title != null) {
+                    Text(
+                        list.title,
+                        style = TextStyle(fontSize = 20.sp),
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.weight(5f),
+                    )
                 } else {
-                  ListTextField(list, viewModel)
+                    ListTextField(list, viewModel)
                 }
 
-                Icon(
-                    Icons.Rounded.MoreVert,
-                    contentDescription = null,
-                    Modifier.weight(1f)
-                )
+                DropdownSettingsMenu()
+
             }
         }
     }
+
 }
 
 @Composable

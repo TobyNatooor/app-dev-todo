@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 
 @Composable
 fun ToDoList(
@@ -53,42 +54,57 @@ fun ToDoList(
 ) {
     val scrollState = rememberLazyListState()
 
-    Column(
-        verticalArrangement = Arrangement.Top,
+    Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        // Title
-        Text(
-            text = title,
-            textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 54.sp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 75.dp, bottom = 75.dp)
-        )
-
-        // To-do elements
-        LazyColumn(
-            state = scrollState,
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = modifier
                 .fillMaxSize()
         ) {
-            if (toDos.isEmpty()) {
-                item {
-                    Text(
-                        text = "No to-do items in this list",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                itemsIndexed(toDos) { index, item ->
-                    ToDoItem(viewmodel, toDo = item, index = index)
+            // Title
+
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(fontSize = 54.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 75.dp, bottom = 75.dp)
+                )
+
+            // To-do elements
+            LazyColumn(
+                state = scrollState,
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                    .fillMaxSize()
+            ) {
+                if (toDos.isEmpty()) {
+                    item {
+                        Text(
+                            text = "No to-do items in this list",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    itemsIndexed(toDos) { index, item ->
+                        ToDoItem(viewmodel, toDo = item, index = index)
+                    }
                 }
             }
+        }
+
+        // Settings dropdown menu
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopEnd)
+        ) {
+            DropdownSettingsMenu()
         }
     }
 }
