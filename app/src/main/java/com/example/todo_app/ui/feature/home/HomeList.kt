@@ -300,7 +300,7 @@ fun SortButton(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
                     sortOptions.forEach { option ->
                         DropdownMenuItem(

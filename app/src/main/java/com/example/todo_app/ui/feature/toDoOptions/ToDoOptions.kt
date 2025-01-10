@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -37,13 +34,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.data.AppDatabase
+import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.common.CustomDropdownMenu
 
 @Composable
 fun ToDoOptions(
     toDo: ToDo,
+    checklists : List<CheckList>,
     viewmodel: ToDoOptionsViewModel,
-    db: AppDatabase,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -90,12 +89,13 @@ fun ToDoOptions(
                     optionTitle = "Move to list",
                     content = {
                         DropdownMenuOption(
-                            hintText = "-- choose list --",
+                            hintText = checklists.find { it.id == toDo.listId }?.title ?: "Select a list",
                             height = 42.dp,
                             contentAlign = Alignment.Center,
-                            sortOptions = listOf(DropdownOptionItem(1, "test1"), DropdownOptionItem(2, "test2")),
+                            sortOptions = checklists.filter { it.id != toDo.listId }.map { DropdownOptionItem(it.id, it.title.toString()) },
                             onOptionSelected = { selectedOption ->
-
+                                val updatedToDo = toDo.copy(listId = selectedOption.id)
+                                viewmodel.updateToDo(updatedToDo)
                             }
                         )
                     }
@@ -259,59 +259,66 @@ private fun DropdownMenuOption(
     val textAlign = when (contentAlign) {
         Alignment.Center -> TextAlign.Center
         Alignment.TopStart -> TextAlign.Left
-        else -> TextAlign.Left
+        else -> TextAlign.Center
     }
+    val modifier = Modifier.fillMaxWidth()
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth() // Ensure the Box takes the full width of the parent
-            .height(height)
-            .background(color = Color(0xFF6A6E90), shape = shape)
-            .border(1.dp, Color.White, shape = shape)
-            .clickable { expanded = !expanded }, // Toggle expanded state
-        contentAlignment = contentAlign
-    ) {
-        // Display the selected option or the hintText
-        Text(
-            text = selectedOption?.title ?: hintText,
-            fontSize = 18.sp,
-            color = Color.White,
-            textAlign = textAlign,
-            modifier = Modifier
-                .fillMaxWidth() // Make the text take up full width of the Box
-                .padding(10.dp) // Padding around the text
-        )
-
-        // DropdownMenu that should fill the width of the parent Box but not beyond
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth() // Use wrapContentWidth to match the parent width
-                .background(Color.Transparent, shape) // Match background of parent
+    Column(verticalArrangement = Arrangement.spacedBy((-1).dp)) {
+        Box(
+            modifier = modifier
+                .height(height)
+                .background(color = Color(0xFF6A6E90), shape = shape)
+                .border(1.dp, Color.White, shape = shape)
+                .clickable { expanded = !expanded },
+            contentAlignment = contentAlign
         ) {
-            sortOptions.forEach { option ->
-                DropdownMenuItem(
-                    onClick = {
-                        selectedOption = option
-                        expanded = false
-                        onOptionSelected(option)
-                    },
-                    text = {
-                        Text(
-                            text = option.title,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    modifier = Modifier
-                        .background(Color.Transparent)
-                        .padding(horizontal = 8.dp)
-                )
-            }
+            Text(
+                text = selectedOption?.title ?: hintText,
+                fontSize = 18.sp,
+                color = Color.White,
+                textAlign = textAlign,
+                modifier = Modifier.padding(10.dp)
+            )
         }
+
+        CustomDropdownMenu(
+            modifier = modifier
+                .background(color = Color(0xFF6A6E90), shape = shape)
+                .border(1.dp, Color.White, shape = shape)
+                .padding(vertical = 4.dp),
+            divider = {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.White.copy(alpha = 0.125f),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            },
+            contentAlign = contentAlign,
+            expanded = expanded,
+            items = sortOptions,
+            onDismiss = { expanded = false },
+            onItemSelected = {
+                selectedOption = it
+                onOptionSelected(it)
+            },
+            itemContent = { item, index ->
+                Box(
+                    modifier = modifier
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ),
+                    contentAlignment = contentAlign
+                ) {
+                    Text(
+                        text = item.title,
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        textAlign = textAlign
+                    )
+                }
+            }
+        )
     }
 }
 

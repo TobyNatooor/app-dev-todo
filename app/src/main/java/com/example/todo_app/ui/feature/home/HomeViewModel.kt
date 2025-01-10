@@ -78,7 +78,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
                 SortOption.RECENT -> db.checkListDao().getAllSortedByLastModified()
                 SortOption.NAME -> db.checkListDao().getAllSortedByName()
             }
-
     }
 
     fun isNextChar(list: CheckList): Char{
