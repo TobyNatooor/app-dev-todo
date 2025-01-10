@@ -78,8 +78,16 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
 ) {
     when (homeUIState) {
-        is HomeUIState.Data, HomeUIState.Empty -> HomeList(
+        is HomeUIState.Empty -> HomeList(
             lists = ArrayList(),
+            viewModel = viewModel,
+            searchQuery = searchQuery,
+            focusManager = focusManager,
+            gridState = gridState
+        )
+
+        is HomeUIState.Data -> HomeList(
+            lists = homeUIState.lists,
             viewModel = viewModel,
             searchQuery = searchQuery,
             focusManager = focusManager,
