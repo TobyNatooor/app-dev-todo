@@ -172,7 +172,7 @@ fun HomeList(
                                 }
                                 Spacer(modifier = Modifier.height(5.dp))
                             }
-                            ListCard(lists[index], searchQuery.value, viewModel)
+                            ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
                         }
                     }
                 }
@@ -330,7 +330,12 @@ fun SortButton(
 }
 
 @Composable
-private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) {
+private fun ListCard(
+    list: CheckList,
+    search: String,
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
 
     val focusManager = LocalFocusManager.current
     val todos = viewModel.getTodosByListId(list.id)
@@ -358,7 +363,7 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
                         modifier = Modifier.weight(5f),
                     )
                 } else {
-                    ListTextField(list, viewModel)
+                    ListTextField(list, focusRequester, viewModel)
                 }
 
                 DropdownSettingsMenu()
@@ -420,9 +425,12 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
 }
 
 @Composable
-private fun ListTextField(list: CheckList, viewModel: HomeViewModel) {
+private fun ListTextField(
+    list: CheckList,
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
     val blankTitle = "Unnamed list"
-    val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
     var title by remember { mutableStateOf("") }
