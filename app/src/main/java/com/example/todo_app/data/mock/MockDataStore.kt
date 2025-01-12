@@ -5,8 +5,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 
 class MockDataStore {
-
-    val todoData = listOf(
+    private val todoData = listOf(
         ToDo(title = "Buy Apples", description = "Pick up apples from the grocery store.", listId = 1, order = 1),
         ToDo(title = "Buy Bananas", description = "Get bananas for the week.", listId = 1, order = 2),
         ToDo(title = "Buy Oranges", description = "Buy a pack of fresh oranges.", listId = 1, order = 3),
@@ -14,6 +13,8 @@ class MockDataStore {
         ToDo(title = "Clean Kitchen Counter", description = "Wipe down all surfaces in the kitchen.", listId = 2, order = 1),
         ToDo(title = "Clean Living Room Floor", description = "Vacuum the living room floor.", listId = 2, order = 2),
         ToDo(title = "Clean Bathroom Sink", description = "Scrub the sink in the bathroom.", listId = 2, order = 3),
+        ToDo(title = "Clean Bathroom Floor", description = "Scrub the floor in the bathroom.", listId = 2, order = 4),
+        ToDo(title = "Clean Bathroom Walls", description = "Scrub the walls in the bathroom.", listId = 2, order = 5),
 
         ToDo(title = "Run 5km", description = "Go for a 5km jog around the park.", listId = 3, order = 1),
         ToDo(title = "Push-ups", description = "Do 20 push-ups.", listId = 3, order = 2),
@@ -40,7 +41,7 @@ class MockDataStore {
         ToDo(title = "Steam Vegetables", description = "Steam some broccoli and carrots as a side.", listId = 8, order = 3)
     )
 
-    val listData = listOf(
+    private val listData = listOf(
         CheckList(
             title = "Grocery Shopping",
             description = "Make sure to buy fruits, vegetables, and snacks for the week.",
@@ -91,15 +92,14 @@ class MockDataStore {
         )
     )
 
-
-
-    suspend fun insertMockData(db: AppDatabase){
-        for(toDo in todoData){
+    suspend fun insertMockData(db: AppDatabase) {
+        for (toDo in todoData) {
             db.toDoDao().insert(toDo)
         }
-
-        for(list in listData){
+        for (list in listData) {
             db.checkListDao().insert(list)
         }
+        //db.checkListDao().insert(listData)
+        //db.toDoDao().insert(todoData)
     }
 }

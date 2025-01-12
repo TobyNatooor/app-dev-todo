@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.toDoList
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
+class ToDoListViewModel(
+    private val listId: Int,
+    private val db: AppDatabase,
+    private val nav: NavController
+) : ViewModel() {
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
@@ -42,7 +47,11 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
 
-            val existingList = db.toDoDao().getAllWithListId(updatedToDo.listId).first().toMutableList()
+            val existingList = db
+                .toDoDao()
+                .getAllWithListId(updatedToDo.listId)
+                .first()
+                .toMutableList()
 
             existingList.sortWith(
                 compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }
@@ -55,7 +64,11 @@ class ToDoListViewModel(val listId: Int, val db: AppDatabase) : ViewModel() {
         }
     }
 
-    fun deleteToDo(toDo: ToDo){
+    fun clickToDoOptions(toDoId: Int) {
+        nav.navigate("toDoOptions/${toDoId}")
+    }
+
+    fun deleteToDo(toDo: ToDo) {
         this.viewModelScope.launch {
             db.toDoDao().delete(toDo)
         }
