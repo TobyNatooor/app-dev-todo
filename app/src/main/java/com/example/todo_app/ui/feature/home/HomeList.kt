@@ -31,8 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,17 +44,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.*
 
 @Composable
 fun HomeList(
@@ -319,8 +315,10 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
             ) {
                 if (isNaming || list.title == null) {
                     NameList(
-                        list = list,
-                        viewModel = viewModel,
+                        title = list.title,
+                        onTitleChange = { newTitle ->
+                            viewModel.updateList(list.copy(title = newTitle))
+                        },
                         onRenameComplete = {
                             isNaming = false // Reset naming state
                         }
@@ -342,70 +340,3 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
         }
     }
 }
-
-@Composable
-private fun NameList(list: CheckList, viewModel: HomeViewModel, onRenameComplete: () -> Unit) {
-    val focusRequester = remember { FocusRequester() }
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(list.title ?: "", TextRange((list.title ?: "").length))) }
-
-    Box {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-
-        DisposableEffect(Unit) {
-            onDispose {
-                if (textFieldValue.text.isBlank()) {
-                    textFieldValue = TextFieldValue(blankTitle)
-                }
-                viewModel.updateList(
-                    list.copy(title = textFieldValue.text)
-                )
-                onRenameComplete()
-            }
-        }
-
-        BasicTextField(
-            value = textFieldValue,
-            onValueChange = { newValue -> textFieldValue = newValue },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (textFieldValue.text.isBlank()) {
-                            textFieldValue = TextFieldValue(blankTitle)
-                        }
-                        viewModel.updateList(
-                            list.copy(title = textFieldValue.text)
-                        )
-                        isEnabled = false
-                        onRenameComplete()
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        if (textFieldValue.text.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = Color.Gray,
-                fontSize = 20.sp,
-            )
-        }
-    }
-}
-
