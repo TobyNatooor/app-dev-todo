@@ -53,6 +53,7 @@ fun ToDoList(
     title: String = ""
 ) {
     val scrollState = rememberLazyListState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -102,7 +103,8 @@ fun ToDoList(
                 .align(Alignment.TopEnd)
         ) {
             DropdownSettingsMenu(
-                onRenameClicked = { /* Handle rename on ToDoListScreen */  }
+                onRenameClicked = { /* Handle rename on ToDoListScreen */  },
+                onDeleteClicked = { /* Handle delete on ToDoListScreen */ }
             )
         }
     }
