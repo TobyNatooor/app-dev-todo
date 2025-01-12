@@ -302,11 +302,11 @@ fun SortButton(
 @Composable
 private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
     val focusManager = LocalFocusManager.current
-    var isRenaming by remember { mutableStateOf(false) }
+    var isNaming by remember { mutableStateOf(false) }
 
     return Card(
         onClick = {
-            if (!isRenaming) {
+            if (!isNaming) {
                 viewModel.clickList(listTitle = list.title.toString(), listId = list.id)
             }
             focusManager.clearFocus()
@@ -317,27 +317,25 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (isRenaming) {
-                    RenameList(
+                if (isNaming || list.title == null) {
+                    NameList(
                         list = list,
                         viewModel = viewModel,
                         onRenameComplete = {
-                            isRenaming = false // Reset renaming state
+                            isNaming = false // Reset naming state
                         }
                     )
-                } else if (list.title != null){
+                } else {
                     Text(
                         list.title,
                         style = TextStyle(fontSize = 20.sp),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
                     )
-                } else {
-                    ListTextField(list, viewModel)
                 }
 
                 DropdownSettingsMenu(
-                    onRenameClicked = { isRenaming = true }
+                    onRenameClicked = { isNaming = true }
                 )
 
             }
@@ -346,75 +344,7 @@ private fun ListCard(list: CheckList, viewModel: HomeViewModel) {
 }
 
 @Composable
-private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
-    val focusRequester = remember { FocusRequester() }
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
-    var title by remember { mutableStateOf("") }
-
-    Box(){
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-                viewModel.updateList(
-                    list.copy(title = title)
-                )
-            }
-        }
-
-
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewModel.updateList(
-                            list.copy(title = title)
-                        )
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = Color.Gray,
-                fontSize = 20.sp,
-            )
-        }
-    }
-}
-
-@Composable
-private fun RenameList(list: CheckList, viewModel: HomeViewModel, onRenameComplete: () -> Unit) {
+private fun NameList(list: CheckList, viewModel: HomeViewModel, onRenameComplete: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
