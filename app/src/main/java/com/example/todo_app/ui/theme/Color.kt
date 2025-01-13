@@ -32,10 +32,10 @@ val red2 = Color(0xFFE54239)
 val red1 = Color(0xFFFA948E)
 val red0 = Color(0xFFFFE7E5)
 
-val background = Color(0xFF201433)
-val checkedBox = Color(0xFFFFEB99)
+val background = neutral4
+val checkedBox = green1
 val folder = Color(0xFF355D68)
-val list = Color(0xFF8C3839)
-val onBackgroundAndButton = Color(0xFF96D2DD)
-val appBar = Color(0xFF545775)
-val buttonIcon = Color(0xFF1E1E1E)
+val list = neutral2
+val onBackgroundAndButton = neutral1
+val appBar = neutral4
+val buttonIcon = primary3
