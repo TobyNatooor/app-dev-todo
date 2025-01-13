@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import com.example.todo_app.data.AppDatabase
+import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,13 +93,14 @@ fun AddButton(viewModel: HomeViewModel, searchQuery: MutableState<String>, gridS
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
-        contentColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = primary2,
+        contentColor = primary1,
         modifier = Modifier.padding(20.dp)
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = "Add new list",
-            tint = MaterialTheme.colorScheme.onSecondary,
+            tint = primary4,
         )
     }
 }
