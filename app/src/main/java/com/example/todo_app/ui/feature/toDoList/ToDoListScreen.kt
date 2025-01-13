@@ -63,6 +63,7 @@ fun ToDoListScreen(
 
                         is ToDosUIState.Data -> ToDoList(
                             title = title,
+                            listId = listId,
                             toDos = toDosUIState.toDos,
                             viewmodel = viewmodel,
                             modifier = modifier
