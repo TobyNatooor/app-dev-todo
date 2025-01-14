@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -59,6 +60,7 @@ fun NameList(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
             textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
+            cursorBrush = SolidColor(Color.White),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
