@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +75,7 @@ fun HomeList(
 ) {
     val focusRequester = remember { FocusRequester() }
     val horizontalPadding = 40.dp
+    val sortedOption = viewModel.sortedOption.collectAsState()
 
     Box(
         modifier = Modifier
@@ -152,9 +154,10 @@ fun HomeList(
                     }
                 } else {
                     viewModel.currentChar = '\u0000'
+
                     items(lists.size) { index ->
                         Column {
-                            if (viewModel.sortedOption == SortOption.NAME) {
+                            if (sortedOption.value == SortOption.NAME) {
                                 val char = viewModel.isNextChar(lists[index])
                                 if (char != '!') {
                                     Text(
@@ -267,7 +270,7 @@ fun SortButton(
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
 
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
+    val selectedOption = viewModel.sortedOption.collectAsState()
 
     Box(
         modifier = modifier
@@ -290,7 +293,7 @@ fun SortButton(
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    text = "Sort: $selectedOption",
+                    text = "Sort: ${selectedOption.value}",
                     overflow = TextOverflow.Visible,
                     maxLines = 1,
                     modifier = Modifier
@@ -308,7 +311,6 @@ fun SortButton(
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
-                                selectedOption = viewModel.sortedOption
                                 expanded = false
                             },
                             text = {
