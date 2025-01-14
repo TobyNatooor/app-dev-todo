@@ -68,26 +68,37 @@ fun ToDoList(
                 .fillMaxSize()
         ) {
             // Title
-            if (isNaming) {
-                NameList(
-                    title = listTitle,
-                    onTitleChange = { newTitle ->
-                        viewmodel.updateList(listId, newTitle)
-                        listTitle = newTitle
-                    },
-                    onRenameComplete = {
-                        isNaming = false
-                    }
-                )
-            } else {
-                Text(
-                    text = listTitle,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontSize = 54.sp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 75.dp, bottom = 75.dp)
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 75.dp, bottom = 75.dp)
+            ) {
+                if (isNaming) {
+                    NameList(
+                        title = listTitle,
+                        textStyle = TextStyle(
+                            fontSize = 54.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Center),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onTitleChange = { newTitle ->
+                            viewmodel.updateList(listId, newTitle)
+                            listTitle = newTitle
+                        },
+                        onRenameComplete = {
+                            isNaming = false
+                        }
+                    )
+                } else {
+                    Text(
+                        text = listTitle,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontSize = 54.sp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
             }
             // To-do elements
             LazyColumn(

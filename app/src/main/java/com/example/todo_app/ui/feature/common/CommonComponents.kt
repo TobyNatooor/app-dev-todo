@@ -20,12 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun NameList(
     title: String?,
+    textStyle: TextStyle?,
+    modifier: Modifier?,
     onTitleChange: (String) -> Unit,
     onRenameComplete: () -> Unit
 ) {
@@ -55,11 +58,7 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
+            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
