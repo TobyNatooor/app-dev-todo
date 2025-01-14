@@ -21,9 +21,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
@@ -31,6 +33,8 @@ import com.example.todo_app.model.CheckList
 @Composable
 fun NameList(
     title: String?,
+    textStyle: TextStyle?,
+    modifier: Modifier?,
     onTitleChange: (String) -> Unit,
     onRenameComplete: () -> Unit
 ) {
@@ -60,11 +64,8 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
+            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
+            cursorBrush = SolidColor(Color.White),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)

@@ -371,6 +371,8 @@ private fun ListCard(
                 if (isNaming || list.title == null) {
                     NameList(
                         title = list.title,
+                        textStyle = null,
+                        modifier = null,
                         onTitleChange = { newTitle ->
                             viewModel.updateList(list.copy(title = newTitle))
                         },
