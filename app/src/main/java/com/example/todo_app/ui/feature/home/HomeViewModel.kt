@@ -21,11 +21,11 @@ import java.time.LocalDateTime
 class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
+
     private var lists: Flow<List<CheckList>> = combine(
         db.checkListDao().getAll(),
         _sortingOption
-        )
-        { list, sort ->
+    ) { list, sort ->
         delay(100)
         when (sort) {
             SortOption.CREATED -> list.sortedByDescending { it.created }
@@ -34,9 +34,14 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         }
     }
     private val todos: Flow<List<ToDo>> = flowOf(ArrayList())
+
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
+
     var currentChar: Char = '\u0000'
+
+    private val _addingNewList = MutableStateFlow(false)
+    val addingNewList = _addingNewList.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -53,6 +58,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
 
     fun getTodosByListId(listId: Int): List<ToDo> {
+
         val todos: List<ToDo> = when (val hs = homeState.value) {
             is HomeUIState.Data -> hs.todos.filter { todo -> todo.listId == listId }
             HomeUIState.Empty -> ArrayList()
