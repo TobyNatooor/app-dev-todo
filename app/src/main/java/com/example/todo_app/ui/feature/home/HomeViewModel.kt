@@ -1,6 +1,5 @@
 package com.example.todo_app.ui.feature.home
 
-import android.util.Log
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -80,8 +79,8 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
 
     fun searchForTodos(query: String) {
-        this.viewModelScope.launch {
-            _filterQuery.value = query
+        _filterQuery.value = query
+//        this.viewModelScope.launch {
 //            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
 //                flowOf(ArrayList())
 //            } else {
@@ -105,8 +104,8 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 //                Log.d("TODOS", "ui state: $homeUIState")
 //                _mutableHomeState.value = homeUIState
 //            }
-
-        }
+//
+//        }
     }
 
     fun addList() {
