@@ -76,6 +76,7 @@ fun HomeList(
     val focusRequester = remember { FocusRequester() }
     val horizontalPadding = 40.dp
     val sortedOption = viewModel.sortedOption.collectAsState()
+    val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
         modifier = Modifier
@@ -144,6 +145,9 @@ fun HomeList(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                if(addingNewList.value) {
+                    item { NewListCard(focusRequester, viewModel) }
+                }
                 if (lists.isEmpty()) {
                     item {
                         Text(
@@ -153,11 +157,10 @@ fun HomeList(
                         )
                     }
                 } else {
-                    viewModel.currentChar = '\u0000'
-
                     items(lists.size) { index ->
                         Column {
                             if (sortedOption.value == SortOption.NAME) {
+                                viewModel.currentChar = '\u0000'
                                 val char = viewModel.isNextChar(lists[index])
                                 if (char != '!') {
                                     Text(
@@ -365,7 +368,7 @@ private fun ListCard(
                         modifier = Modifier.weight(5f),
                     )
                 } else {
-                    ListTextField(list, focusRequester, viewModel)
+                    //ListTextField(list, focusRequester, viewModel)
                 }
 
                 DropdownSettingsMenu()
@@ -383,6 +386,35 @@ private fun ListCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun NewListCard(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+
+    val focusManager = LocalFocusManager.current
+
+    return Card(
+//        onClick = {
+//            viewModel.clickList(list)
+//            focusManager.clearFocus()
+//        },
+        modifier = Modifier.aspectRatio(1f)
+    ) {
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                NewListTextField(focusRequester, viewModel)
+                DropdownSettingsMenu()
+
             }
         }
     }
@@ -477,6 +509,69 @@ private fun ListTextField(
                         viewModel.updateList(
                             list.copy(title = title)
                         )
+                        isEnabled = false
+                    }
+                },
+            enabled = isEnabled,
+        )
+
+        // Hint text when title is blank
+        if (title.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = Color.Gray,
+                fontSize = 20.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewListTextField(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+    val blankTitle = "Unnamed list"
+    var isEnabled by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf("") }
+
+    Box {
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    title = blankTitle
+                }
+                //viewModel.addList(title)
+            }
+        }
+        BasicTextField(
+            value = title,
+            onValueChange = { newTitle ->
+                title = newTitle
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Handle title update to Room SQL when unfocused
+                .onFocusChanged {
+                    isFocused = !isFocused
+                    if (!isFocused) {
+                        if (title.isBlank()) {
+                            title = blankTitle
+                        }
+                        viewModel.addList(title)
                         isEnabled = false
                     }
                 },

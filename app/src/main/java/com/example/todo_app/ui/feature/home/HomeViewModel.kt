@@ -108,15 +108,16 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 //        }
     }
 
-    fun addList() {
+    fun addList(title: String) {
         this.viewModelScope.launch {
             val newList = CheckList(
-                title = null,
+                title = title,
                 description = "Add Description",
                 order = 2, //TODO: Add query to find max order
                 folderId = 0
             )
             db.checkListDao().insert(newList)
+            _addingNewList.value = false
         }
     }
 
@@ -147,6 +148,10 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             }
         }
         return '!'
+    }
+
+    fun addClicked() {
+        _addingNewList.value = true
     }
 }
 
