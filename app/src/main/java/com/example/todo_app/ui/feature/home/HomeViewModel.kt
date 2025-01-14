@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -22,8 +23,16 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 
+    private val _filterQuery = MutableStateFlow("")
+    private val filteringQuery = _filterQuery.asStateFlow()
+
+    private val filteredList: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
+        if (query.isBlank()) db.checkListDao().getAll()
+        else db.checkListDao().findWithTodosTitle(query)
+    }
+
     private var lists: Flow<List<CheckList>> = combine(
-        db.checkListDao().getAll(),
+        filteredList,
         _sortingOption
     ) { list, sort ->
         delay(100)
@@ -33,7 +42,10 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             SortOption.RECENT -> list.sortedByDescending { it.lastModified }
         }
     }
-    private val todos: Flow<List<ToDo>> = flowOf(ArrayList())
+    private val todos: Flow<List<ToDo>> =  filteringQuery.flatMapLatest { query ->
+        if (query.isBlank()) flowOf(ArrayList())
+        else db.toDoDao().findWithTitle(query)
+    }
 
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
@@ -69,29 +81,30 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
     fun searchForTodos(query: String) {
         this.viewModelScope.launch {
-            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
-                flowOf(ArrayList())
-            } else {
-                db.toDoDao().findWithTitle(query)
-            }
-
-            val lists: Flow<List<CheckList>> = if (query.isEmpty()) {
-                db.checkListDao().getAll()
-            } else {
-                db.checkListDao().findWithTodosTitle(query)
-            }
-
-            combine(lists, todos) { list, todo ->
-                if (list.isEmpty()) {
-                    //HomeUIState.Empty
-                    HomeUIState.Data(ArrayList(), ArrayList())
-                } else {
-                    HomeUIState.Data(list, todo)
-                }
-            }.collect { homeUIState ->
-                Log.d("TODOS", "ui state: $homeUIState")
-                _mutableHomeState.value = homeUIState
-            }
+            _filterQuery.value = query
+//            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
+//                flowOf(ArrayList())
+//            } else {
+//                db.toDoDao().findWithTitle(query)
+//            }
+//
+//            val lists: Flow<List<CheckList>> = if (query.isEmpty()) {
+//                db.checkListDao().getAll()
+//            } else {
+//                db.checkListDao().findWithTodosTitle(query)
+//            }
+//
+//            combine(lists, todos) { list, todo ->
+//                if (list.isEmpty()) {
+//                    //HomeUIState.Empty
+//                    HomeUIState.Data(ArrayList(), ArrayList())
+//                } else {
+//                    HomeUIState.Data(list, todo)
+//                }
+//            }.collect { homeUIState ->
+//                Log.d("TODOS", "ui state: $homeUIState")
+//                _mutableHomeState.value = homeUIState
+//            }
 
         }
     }
