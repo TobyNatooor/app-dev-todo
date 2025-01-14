@@ -112,10 +112,9 @@ fun AddButton(
             coroutineScope.launch {
                 searchQuery.value = ""
                 viewModel.searchForTodos("")
-                viewModel.addClicked()
-                delay(200L)
-                //gridState.animateScrollToItem(0)
                 gridState.animateScrollToItem(0)
+                delay(200L)
+                viewModel.addClicked()
             }
         },
         // Remove shape parameter for default shape (square with rounded corners)

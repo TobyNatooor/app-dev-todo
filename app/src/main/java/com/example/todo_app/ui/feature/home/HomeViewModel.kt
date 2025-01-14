@@ -37,7 +37,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         delay(100)
         when (sort) {
             SortOption.CREATED -> list.sortedByDescending { it.created }
-            SortOption.NAME -> list.sortedBy { it.title?.lowercase() }
+            SortOption.NAME -> list.sortedBy { it.title.lowercase() }
             SortOption.RECENT -> list.sortedByDescending { it.lastModified }
         }
     }
@@ -138,16 +138,27 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         nav.navigate("todoList/${list.title}/${list.id}")
     }
 
-    fun isNextChar(list: CheckList): Char {
-        if (!list.title.isNullOrEmpty()) {
-            val char = list.title[0].uppercaseChar()
-            println("Name of list '${list.title} -- First char '$char' -- Current char '$currentChar'")
-            if (char != currentChar) {
-                currentChar = char
-                return currentChar
+    fun isNextChar(char: Char): Boolean {
+        if (char > currentChar){
+            currentChar = when (char) {
+                in '!' .. '/' -> '/'
+                in '0'..'9' -> '9'
+                else -> char
             }
+            return true
+        } else return false
+    }
+
+    fun getSymbol(char:Char): String {
+        return when (char) {
+            in '!' .. '/' -> {
+                "!#%"
+            }
+            in '0'..'9' -> {
+                "0-9"
+            }
+            else -> char.toString()
         }
-        return '!'
     }
 
     fun addClicked() {

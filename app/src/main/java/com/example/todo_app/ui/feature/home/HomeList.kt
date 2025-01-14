@@ -146,7 +146,14 @@ fun HomeList(
                     .fillMaxWidth()
             ) {
                 if(addingNewList.value) {
-                    item { NewListCard(focusRequester, viewModel) }
+                    item {
+                        Column {
+                            if(sortedOption.value == SortOption.NAME){
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
+                            NewListCard(focusRequester, viewModel)
+                        }
+                    }
                 }
                 if (lists.isEmpty()) {
                     item {
@@ -157,14 +164,14 @@ fun HomeList(
                         )
                     }
                 } else {
+                    viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
                             if (sortedOption.value == SortOption.NAME) {
-                                viewModel.currentChar = '\u0000'
-                                val char = viewModel.isNextChar(lists[index])
-                                if (char != '!') {
+                                val char = lists[index].title[0].uppercaseChar()
+                                if (viewModel.isNextChar(char)) {
                                     Text(
-                                        char.toString(),
+                                        viewModel.getSymbol(char),
                                         style = TextStyle(fontSize = 13.sp),
                                     )
                                     HorizontalDivider(
@@ -360,16 +367,12 @@ private fun ListCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (list.title != null) {
-                    Text(
-                        list.title,
-                        style = TextStyle(fontSize = 20.sp),
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier.weight(5f),
-                    )
-                } else {
-                    //ListTextField(list, focusRequester, viewModel)
-                }
+                Text(
+                    list.title,
+                    style = TextStyle(fontSize = 20.sp),
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.weight(5f),
+                )
 
                 DropdownSettingsMenu()
 
@@ -398,23 +401,14 @@ private fun NewListCard(
     viewModel: HomeViewModel
 ) {
 
-    val focusManager = LocalFocusManager.current
-
     return Card(
-//        onClick = {
-//            viewModel.clickList(list)
-//            focusManager.clearFocus()
-//        },
         modifier = Modifier.aspectRatio(1f)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-
                 NewListTextField(focusRequester, viewModel)
-                DropdownSettingsMenu()
-
             }
         }
     }
@@ -454,74 +448,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             } else {
                 append(char)
             }
-        }
-    }
-}
-
-@Composable
-private fun ListTextField(
-    list: CheckList,
-    focusRequester: FocusRequester,
-    viewModel: HomeViewModel
-) {
-    val blankTitle = "Unnamed list"
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
-
-    Box {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-                viewModel.updateList(
-                    list.copy(title = title)
-                )
-            }
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewModel.updateList(
-                            list.copy(title = title)
-                        )
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = Color.Gray,
-                fontSize = 20.sp,
-            )
         }
     }
 }
