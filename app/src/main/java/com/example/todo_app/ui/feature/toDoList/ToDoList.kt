@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
 
@@ -132,7 +133,16 @@ fun ToDoList(
         ) {
             DropdownSettingsMenu(
                 onRenameClicked = { isNaming = true },
-                onDeleteClicked = { /* Handle delete on ToDoListScreen */ }
+                onDeleteClicked = { showDeleteDialog = true }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteList(
+                listId = listId,
+                title = listTitle,
+                onDelete = { id -> viewmodel.deleteList(listId) },
+                onDismiss = { showDeleteDialog = false }
             )
         }
     }

@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
@@ -97,8 +96,9 @@ fun NameList(
 
 @Composable
 fun DeleteList(
-    list: CheckList,
-    onDelete: (CheckList) -> Unit,
+    listId: Int,
+    title: String,
+    onDelete: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -106,7 +106,7 @@ fun DeleteList(
         titleContentColor = Color.Black,
         textContentColor = Color.Blue,
         onDismissRequest = onDismiss,
-        title = { Text("Delete list ${list.title}?") },
+        title = { Text("Delete list \"$title\"?") },
         text = { Text("Are you sure you want to delete this list?") },
         confirmButton = {
             Button(
@@ -115,9 +115,10 @@ fun DeleteList(
                     contentColor = Color.White // White text for contrast
                 ),
                 onClick = {
-                onDelete(list)
-                onDismiss()
-                } ) {
+                    onDelete(listId)
+                    onDismiss()
+                }
+            ) {
                 Text("Delete")
             }
         },
@@ -127,7 +128,8 @@ fun DeleteList(
                     containerColor = MaterialTheme.colorScheme.surface, // Neutral background
                     contentColor = MaterialTheme.colorScheme.onSurface // Text color based on theme
                 ),
-                onClick = onDismiss) {
+                onClick = onDismiss
+            ) {
                 Text("Cancel")
             }
         }

@@ -50,6 +50,9 @@ interface CheckListDao {
     @Query("UPDATE CheckList SET title = :vNewTitle WHERE id = :vId")
     suspend fun updateTitle(vId: Int, vNewTitle: String)
 
+    @Query("DELETE FROM CheckList WHERE id = :vId")
+    suspend fun deleteWithId(vId: Int)
+
     @Query(
         """
         SELECT DISTINCT CheckList.* 

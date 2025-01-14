@@ -345,8 +345,9 @@ private fun ListCard(
 
     if (showDeleteDialog) {
         DeleteList(
-            list = list,
-            onDelete = { viewModel.deleteList(it) },
+            listId = list.id,
+            title = list.title ?: "",
+            onDelete = { viewModel.deleteList( list.id ) },
             onDismiss = { showDeleteDialog = false }
         )
     }

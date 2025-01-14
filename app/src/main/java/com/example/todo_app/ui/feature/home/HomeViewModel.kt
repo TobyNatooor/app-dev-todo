@@ -111,9 +111,9 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         }
     }
 
-    fun deleteList(list: CheckList) {
+    fun deleteList(listId: Int) {
         this.viewModelScope.launch {
-            db.checkListDao().delete(list)
+            db.checkListDao().deleteWithId(listId)
         }
     }
 
