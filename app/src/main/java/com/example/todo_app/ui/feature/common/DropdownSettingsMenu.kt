@@ -42,7 +42,7 @@ fun DropdownSettingsMenu(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Share",
@@ -51,8 +51,8 @@ fun DropdownSettingsMenu(
                 },
                 onClick = { expanded = false
                             /* Handle Share */ }
-            )
-            DropdownMenuItem(
+            )*/
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Edit",
@@ -61,7 +61,7 @@ fun DropdownSettingsMenu(
                 },
                 onClick = { expanded = false
                             /* Handle Edit */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
@@ -72,7 +72,7 @@ fun DropdownSettingsMenu(
                 onClick = { expanded = false
                             onRenameClicked() }
             )
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Merge",
@@ -81,7 +81,7 @@ fun DropdownSettingsMenu(
                 },
                 onClick = { expanded = false
                             /* Handle Merge */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
