@@ -33,7 +33,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +78,8 @@ fun HomeList(
     val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
+    val sortedOption = viewModel.sortedOption.collectAsState()
+    val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
         modifier = Modifier
@@ -143,6 +148,16 @@ fun HomeList(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                if(addingNewList.value) {
+                    item {
+                        Column {
+                            if(sortedOption.value == SortOption.NAME){
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
+                            NewListCard(focusRequester, viewModel)
+                        }
+                    }
+                }
                 if (lists.isEmpty()) {
                     item {
                         Text(
@@ -155,11 +170,11 @@ fun HomeList(
                     viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
-                            if (viewModel.sortedOption == SortOption.NAME) {
-                                val char = viewModel.isNextChar(lists[index])
-                                if (char != '!') {
+                            if (sortedOption.value == SortOption.NAME) {
+                                val char = lists[index].title[0].uppercaseChar()
+                                if (viewModel.isNextChar(char)) {
                                     Text(
-                                        char.toString(),
+                                        viewModel.getSymbol(char),
                                         style = TextStyle(fontSize = 13.sp),
                                     )
                                     HorizontalDivider(
@@ -268,7 +283,7 @@ fun SortButton(
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
 
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
+    val selectedOption = viewModel.sortedOption.collectAsState()
 
     Box(
         modifier = modifier
@@ -291,7 +306,7 @@ fun SortButton(
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    text = "Sort: $selectedOption",
+                    text = "Sort: ${selectedOption.value}",
                     overflow = TextOverflow.Visible,
                     maxLines = 1,
                     modifier = Modifier
@@ -309,7 +324,6 @@ fun SortButton(
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
-                                selectedOption = viewModel.sortedOption
                                 expanded = false
                             },
                             text = {
@@ -369,7 +383,7 @@ private fun ListCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (isNaming || list.title == null) {
+                if (isNaming) {
                     NameList(
                         title = list.title,
                         textStyle = null,
@@ -412,6 +426,25 @@ private fun ListCard(
     }
 }
 
+@Composable
+private fun NewListCard(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+
+    return Card(
+        modifier = Modifier.aspectRatio(1f)
+    ) {
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                NewListTextField(focusRequester, viewModel)
+            }
+        }
+    }
+
+}
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
     return buildAnnotatedString {
@@ -446,6 +479,70 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             } else {
                 append(char)
             }
+        }
+    }
+
+}
+
+@Composable
+private fun NewListTextField(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+    val blankTitle = "Unnamed list"
+    var isEnabled by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf("") }
+
+    Box {
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    title = blankTitle
+                }
+                //viewModel.addList(title)
+            }
+        }
+        BasicTextField(
+            value = title,
+            onValueChange = { newTitle ->
+                title = newTitle
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Handle title update to Room SQL when unfocused
+                .onFocusChanged {
+                    isFocused = !isFocused
+                    if (!isFocused) {
+                        if (title.isBlank()) {
+                            title = blankTitle
+                        }
+                        viewModel.addList(title)
+                        isEnabled = false
+                    }
+                },
+            enabled = isEnabled,
+        )
+
+        // Hint text when title is blank
+        if (title.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = Color.Gray,
+                fontSize = 20.sp,
+            )
         }
     }
 }
