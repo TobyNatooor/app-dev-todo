@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
 
@@ -57,6 +58,7 @@ fun ToDoList(
     val scrollState = rememberLazyListState()
     var listTitle by remember { mutableStateOf(title) }
     var isNaming by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -130,7 +132,17 @@ fun ToDoList(
                 .align(Alignment.TopEnd)
         ) {
             DropdownSettingsMenu(
-                onRenameClicked = { isNaming = true }
+                onRenameClicked = { isNaming = true },
+                onDeleteClicked = { showDeleteDialog = true }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteList(
+                listId = listId,
+                title = listTitle,
+                onDelete = { id -> viewmodel.deleteList(listId) },
+                onDismiss = { showDeleteDialog = false }
             )
         }
     }

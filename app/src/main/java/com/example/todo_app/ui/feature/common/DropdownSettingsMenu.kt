@@ -21,7 +21,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
+fun DropdownSettingsMenu(
+        onRenameClicked: () -> Unit,
+        onDeleteClicked: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
         color = MaterialTheme.colorScheme.onBackground,
@@ -29,7 +32,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
         textAlign = TextAlign.Center
     )
 
-    Box() {
+    Box {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(Icons.Rounded.MoreVert, contentDescription = "Settings")
         }
@@ -39,7 +42,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Share",
@@ -48,8 +51,8 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
                 },
                 onClick = { expanded = false
                             /* Handle Share */ }
-            )
-            DropdownMenuItem(
+            )*/
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Edit",
@@ -58,7 +61,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
                 },
                 onClick = { expanded = false
                             /* Handle Edit */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
@@ -69,7 +72,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
                 onClick = { expanded = false
                             onRenameClicked() }
             )
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Merge",
@@ -78,7 +81,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
                 },
                 onClick = { expanded = false
                             /* Handle Merge */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
@@ -87,7 +90,7 @@ fun DropdownSettingsMenu( onRenameClicked: () -> Unit ) {
                     )
                 },
                 onClick = { expanded = false
-                            /* Handle Delete */ }
+                            onDeleteClicked() }
             )
         }
     }

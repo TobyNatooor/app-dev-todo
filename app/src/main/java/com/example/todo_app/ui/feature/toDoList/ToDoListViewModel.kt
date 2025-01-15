@@ -80,6 +80,13 @@ class ToDoListViewModel(
             db.checkListDao().updateTitle(listId, newTitle)
         }
     }
+
+    fun deleteList(listId: Int) {
+        this.viewModelScope.launch {
+            db.checkListDao().deleteWithId(listId)
+            nav.navigate("home")
+        }
+    }
 }
 
 sealed class ToDosUIState {

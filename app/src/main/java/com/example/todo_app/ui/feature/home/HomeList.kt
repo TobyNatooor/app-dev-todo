@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -339,7 +340,17 @@ private fun ListCard(
 
     val focusManager = LocalFocusManager.current
     var isNaming by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+
+    if (showDeleteDialog) {
+        DeleteList(
+            listId = list.id,
+            title = list.title ?: "",
+            onDelete = { viewModel.deleteList( list.id ) },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
 
     return Card(
         onClick = {
@@ -379,7 +390,8 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
-                        onRenameClicked = { isNaming = true }
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true }
                     )
 
                 }
