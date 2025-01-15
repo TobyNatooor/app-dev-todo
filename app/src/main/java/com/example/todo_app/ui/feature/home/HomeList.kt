@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -98,6 +100,7 @@ fun HomeList(
                 "My Lists",
                 textAlign = TextAlign.Center,
                 fontSize = 54.sp,
+                fontFamily = dosisFontFamily,
                 color = neutral1,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,7 +166,8 @@ fun HomeList(
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = dosisFontFamily
                         )
                     }
                 } else {
@@ -175,7 +179,8 @@ fun HomeList(
                                 if (viewModel.isNextChar(char)) {
                                     Text(
                                         viewModel.getSymbol(char),
-                                        style = TextStyle(fontSize = 13.sp),
+                                        style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
+                                        color = neutral1,
                                     )
                                     HorizontalDivider(
                                         modifier = Modifier
@@ -206,7 +211,7 @@ private fun SearchTextField(
 ) {
     val focusState = remember { mutableStateOf(false) }
 
-    val onFocusChange: (Boolean) -> Unit = { isFocused ->
+    val onFocusChange: (Boolean) -> Unit = { isFocused -> 
         focusState.value = isFocused
     }
 
@@ -227,19 +232,20 @@ private fun SearchTextField(
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = Color.White,
+                color = neutral0,
+                fontFamily = dosisFontFamily,
                 lineHeight = TextUnit.Unspecified,
                 letterSpacing = TextUnit.Unspecified
             ),
-            cursorBrush = SolidColor(Color.White),
-            decorationBox = @Composable { innerTextField ->
+            cursorBrush = SolidColor(neutral0),
+            decorationBox = @Composable { innerTextField -> 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = neutral1
                     )
                     Box(
                         modifier = Modifier
@@ -260,9 +266,9 @@ private fun SearchTextField(
             HorizontalDivider(
                 thickness = 2.dp,
                 color = if (focusState.value) {
-                    MaterialTheme.colorScheme.onBackground
+                    neutral1
                 } else {
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
+                    Color.Transparent
                 },
                 modifier = Modifier
                     .padding(
@@ -295,7 +301,7 @@ fun SortButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground
+                contentColor = neutral1
             ),
             modifier = Modifier
                 //.border(1.dp, Color.Red)
@@ -306,6 +312,7 @@ fun SortButton(
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
+                    fontFamily = dosisFontFamily,
                     text = "Sort: ${selectedOption.value}",
                     overflow = TextOverflow.Visible,
                     maxLines = 1,
@@ -318,9 +325,9 @@ fun SortButton(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(neutral1)
                 ) {
-                    sortOptions.forEach { option ->
+                    sortOptions.forEach { option -> 
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
@@ -329,8 +336,9 @@ fun SortButton(
                             text = {
                                 Text(
                                     text = option.toString(),
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = neutral4,
                                     fontSize = 16.sp,
+                                    fontFamily = dosisFontFamily,
                                     textAlign = TextAlign.Center
                                 )
                             },
@@ -373,6 +381,9 @@ private fun ListCard(
             }
             focusManager.clearFocus()
         },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
         modifier = if (todos.isEmpty()) {
             Modifier.aspectRatio(1f)
         } else {
@@ -388,7 +399,7 @@ private fun ListCard(
                         title = list.title,
                         textStyle = null,
                         modifier = null,
-                        onTitleChange = { newTitle ->
+                        onTitleChange = { newTitle -> 
                             viewModel.updateList(list.copy(title = newTitle))
                         },
                         onRenameComplete = {
@@ -398,9 +409,10 @@ private fun ListCard(
                 } else {
                     Text(
                         list.title,
-                        style = TextStyle(fontSize = 20.sp),
+                        style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
+                        color = neutral0
                     )
 
                     DropdownSettingsMenu(
@@ -416,10 +428,11 @@ private fun ListCard(
                             getTodoTitleWithHighlight(todo.title, search)
                         } else {
                             AnnotatedString(todo.title)
-                               },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = dosisFontFamily
+                    )
                 }
             }
         }
@@ -433,6 +446,9 @@ private fun NewListCard(
 ) {
 
     return Card(
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
         modifier = Modifier.aspectRatio(1f)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
@@ -450,7 +466,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
     return buildAnnotatedString {
         var searchStringIndex = 0
         var searching = false
-        todoTitle.forEachIndexed { index, char ->
+        todoTitle.forEachIndexed { index, char -> 
             if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
                 searching = true
                 searchStringIndex++
@@ -460,8 +476,9 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                     val end = index + searchStringIndex - (searchStringIndex - 1)
                     withStyle(
                         style = SpanStyle(
-                            color = Color.White,
-                            background = Color.Blue,
+                            color = primary0,
+                            background = primary2,
+                            fontFamily = dosisFontFamily
                         )
                     ) {
                         append(
@@ -474,10 +491,27 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                 searching = false
                 val start = index - searchStringIndex
                 val end = index + searchStringIndex - (searchStringIndex - 1)
-                append(todoTitle.substring(start, end))
+                withStyle(
+                        style = SpanStyle(
+                            color = primary0,
+                            background = primary2,
+                            fontFamily = dosisFontFamily
+                        )
+                    ) {
+                        append(
+                            todoTitle.substring(start, end)
+                        )
+                    }
                 searchStringIndex = 0
             } else {
-                append(char)
+                withStyle(
+                    style = SpanStyle(
+                        color = neutral0,
+                        fontFamily = dosisFontFamily
+                    )
+                ) {
+                    append(char)
+                }
             }
         }
     }
@@ -510,13 +544,14 @@ private fun NewListTextField(
         }
         BasicTextField(
             value = title,
-            onValueChange = { newTitle ->
+            onValueChange = { newTitle -> 
                 title = newTitle
             },
             singleLine = true,
             textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
+                color = neutral0,
+                fontSize = 16.sp,
+                fontFamily = dosisFontFamily
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -540,8 +575,9 @@ private fun NewListTextField(
         if (title.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 20.sp,
+                fontFamily = dosisFontFamily
             )
         }
     }

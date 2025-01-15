@@ -86,8 +86,8 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
-            cursorBrush = SolidColor(Color.White),
+            textStyle = textStyle ?: TextStyle(fontSize = 20.sp, color = neutral0, fontFamily = dosisFontFamily),
+            cursorBrush = SolidColor(neutral0),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
@@ -110,8 +110,9 @@ fun NameList(
         if (textFieldValue.text.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 20.sp,
+                fontFamily = dosisFontFamily
             )
         }
     }
@@ -125,35 +126,36 @@ fun DeleteList(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        containerColor = Color.White,
-        titleContentColor = Color.Black,
-        textContentColor = Color.Blue,
+        containerColor = primary0,
+        titleContentColor = primary4,
+        textContentColor = primary3,
         onDismissRequest = onDismiss,
-        title = { Text("Delete list \"$title\"?") },
-        text = { Text("Are you sure you want to delete this list?") },
+        title = { Text("Delete list \"$title\"?", fontFamily = dosisFontFamily) },
+        text = { Text("Are you sure you want to delete this list?", fontFamily = dosisFontFamily) },
         confirmButton = {
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error, // Red for destructive action
-                    contentColor = Color.White // White text for contrast
+                    containerColor = primary3,
+                    contentColor = primary0
                 ),
                 onClick = {
                     onDelete(listId)
                     onDismiss()
                 }
             ) {
-                Text("Delete")
+                Text("Delete", fontFamily = dosisFontFamily)
             }
         },
         dismissButton = {
             Button(
+                border = BorderStroke(3.dp, primary3),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface, // Neutral background
-                    contentColor = MaterialTheme.colorScheme.onSurface // Text color based on theme
+                    containerColor = primary0,
+                    contentColor = primary3
                 ),
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text("Cancel", fontFamily = dosisFontFamily)
             }
         }
     )

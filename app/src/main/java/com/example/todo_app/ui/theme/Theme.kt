@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 private val DarkColorScheme = darkColorScheme(
     background = background,
     onBackground = onBackgroundAndButton,
-    primary = checkedBox,
+    primary = primary3,
     onPrimary = Color.Black,
     primaryContainer = onBackgroundAndButton,
     onSecondary = buttonIcon,
