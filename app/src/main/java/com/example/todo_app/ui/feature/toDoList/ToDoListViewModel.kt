@@ -1,11 +1,10 @@
 package com.example.todo_app.ui.feature.toDoList
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel(private val listId: Int, private val db: AppDatabase, private val nav: NavController) : ViewModel() {
+class ToDoListViewModel(
+    private val listId: Int,
+    private val db: AppDatabase,
+    private val nav: NavController
+) : ViewModel() {
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
@@ -45,7 +48,11 @@ class ToDoListViewModel(private val listId: Int, private val db: AppDatabase, pr
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
 
-            val existingList = db.toDoDao().getAllWithListId(updatedToDo.listId).first().toMutableList()
+            val existingList = db
+                .toDoDao()
+                .getAllWithListId(updatedToDo.listId)
+                .first()
+                .toMutableList()
 
             existingList.sortWith(
                 compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }
@@ -58,13 +65,26 @@ class ToDoListViewModel(private val listId: Int, private val db: AppDatabase, pr
         }
     }
 
-    fun clickToDoOptions(toDoId: Int){
+    fun clickToDoOptions(toDoId: Int) {
         nav.navigate("toDoOptions/${toDoId}")
     }
 
-    fun deleteToDo(toDo: ToDo){
+    fun deleteToDo(toDo: ToDo) {
         this.viewModelScope.launch {
             db.toDoDao().delete(toDo)
+        }
+    }
+
+    fun updateList(listId: Int, newTitle: String) {
+        this.viewModelScope.launch {
+            db.checkListDao().updateTitle(listId, newTitle)
+        }
+    }
+
+    fun deleteList(listId: Int) {
+        this.viewModelScope.launch {
+            db.checkListDao().deleteWithId(listId)
+            nav.navigate("home")
         }
     }
 }

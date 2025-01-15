@@ -1,9 +1,7 @@
 package com.example.todo_app.ui.feature.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,10 +19,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -56,23 +54,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.substring
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.ui.theme.*
-
-import com.example.todo_app.model.ToDo
 
 @Composable
 fun HomeList(
@@ -83,9 +75,11 @@ fun HomeList(
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
-    var currentLetter: Char? = 'A'
+    val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
+    val sortedOption = viewModel.sortedOption.collectAsState()
+    val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
         modifier = Modifier
@@ -120,7 +114,7 @@ fun HomeList(
                 verticalAlignment = Alignment.Bottom
             ) {
                 val childrenHeight = 42.dp
-                val horizontalDistribution = 8f/15f
+                val horizontalDistribution = 8f / 15f
 
                 SearchTextField(
                     viewModel,
@@ -154,6 +148,16 @@ fun HomeList(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                if(addingNewList.value) {
+                    item {
+                        Column {
+                            if(sortedOption.value == SortOption.NAME){
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
+                            NewListCard(focusRequester, viewModel)
+                        }
+                    }
+                }
                 if (lists.isEmpty()) {
                     item {
                         Text(
@@ -166,11 +170,11 @@ fun HomeList(
                     viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
-                            if(viewModel.sortedOption == SortOption.NAME){
-                                val char = viewModel.isNextChar(lists[index])
-                                if (char != '!') {
+                            if (sortedOption.value == SortOption.NAME) {
+                                val char = lists[index].title[0].uppercaseChar()
+                                if (viewModel.isNextChar(char)) {
                                     Text(
-                                        char.toString(),
+                                        viewModel.getSymbol(char),
                                         style = TextStyle(fontSize = 13.sp),
                                     )
                                     HorizontalDivider(
@@ -184,7 +188,7 @@ fun HomeList(
                                 }
                                 Spacer(modifier = Modifier.height(5.dp))
                             }
-                            ListCard(lists[index], searchQuery.value, viewModel)
+                            ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
                         }
                     }
                 }
@@ -212,7 +216,6 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            //value = viewModel.getSearchQuery(),
             value = searchQuery.value,
             onValueChange = {
                 searchQuery.value = it
@@ -256,13 +259,11 @@ private fun SearchTextField(
         ) {
             HorizontalDivider(
                 thickness = 2.dp,
-
                 color = if (focusState.value) {
                     MaterialTheme.colorScheme.onBackground
                 } else {
                     MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
                 },
-
                 modifier = Modifier
                     .padding(
                         start = 4.dp,
@@ -279,9 +280,10 @@ fun SortButton(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
-    var selectedOption by remember { mutableStateOf(viewModel.sortedOption) }
+
+    var expanded by remember { mutableStateOf(false) }
+    val selectedOption = viewModel.sortedOption.collectAsState()
 
     Box(
         modifier = modifier
@@ -300,11 +302,11 @@ fun SortButton(
                 .align(Alignment.BottomCenter)
                 .padding(top = 4.dp)
         ) {
-            Box () {
+            Box {
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    text = "Sort: $selectedOption",
+                    text = "Sort: ${selectedOption.value}",
                     overflow = TextOverflow.Visible,
                     maxLines = 1,
                     modifier = Modifier
@@ -322,7 +324,6 @@ fun SortButton(
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
-                                selectedOption = viewModel.sortedOption
                                 expanded = false
                             },
                             text = {
@@ -344,14 +345,32 @@ fun SortButton(
 }
 
 @Composable
-private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) {
+private fun ListCard(
+    list: CheckList,
+    search: String,
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
 
     val focusManager = LocalFocusManager.current
+    var isNaming by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+
+    if (showDeleteDialog) {
+        DeleteList(
+            listId = list.id,
+            title = list.title ?: "",
+            onDelete = { viewModel.deleteList( list.id ) },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
 
     return Card(
         onClick = {
-            viewModel.clickList(list)
+            if (!isNaming) {
+                viewModel.clickList(list)
+            }
             focusManager.clearFocus()
         },
         modifier = if (todos.isEmpty()) {
@@ -364,19 +383,31 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (list.title != null) {
+                if (isNaming) {
+                    NameList(
+                        title = list.title,
+                        textStyle = null,
+                        modifier = null,
+                        onTitleChange = { newTitle ->
+                            viewModel.updateList(list.copy(title = newTitle))
+                        },
+                        onRenameComplete = {
+                            isNaming = false // Reset naming state
+                        }
+                    )
+                } else {
                     Text(
                         list.title,
                         style = TextStyle(fontSize = 20.sp),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
                     )
-                } else {
-                    ListTextField(list, viewModel)
+
+                    DropdownSettingsMenu(
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true }
+                    )
                 }
-
-                DropdownSettingsMenu()
-
             }
             for (todo in todos) {
                 if (!todo.title.isNullOrEmpty()) {
@@ -385,11 +416,30 @@ private fun ListCard(list: CheckList, search: String, viewModel: HomeViewModel) 
                             getTodoTitleWithHighlight(todo.title, search)
                         } else {
                             AnnotatedString(todo.title)
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                               },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewListCard(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+
+    return Card(
+        modifier = Modifier.aspectRatio(1f)
+    ) {
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                NewListTextField(focusRequester, viewModel)
             }
         }
     }
@@ -431,35 +481,33 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             }
         }
     }
+
 }
 
 @Composable
-private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
-    val focusRequester = remember { FocusRequester() }
+private fun NewListTextField(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+    val blankTitle = "Unnamed list"
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
     var title by remember { mutableStateOf("") }
 
-    Box(){
+    Box {
         LaunchedEffect(Unit) {
             isEnabled = true
             isFocused = false
             focusRequester.requestFocus()
         }
-
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {
                     title = blankTitle
                 }
-                viewModel.updateList(
-                    list.copy(title = title)
-                )
+                //viewModel.addList(title)
             }
         }
-
-
         BasicTextField(
             value = title,
             onValueChange = { newTitle ->
@@ -481,9 +529,7 @@ private fun ListTextField(list: CheckList, viewModel: HomeViewModel){
                         if (title.isBlank()) {
                             title = blankTitle
                         }
-                        viewModel.updateList(
-                            list.copy(title = title)
-                        )
+                        viewModel.addList(title)
                         isEnabled = false
                     }
                 },

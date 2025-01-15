@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.CustomDropdownMenu
@@ -41,7 +40,7 @@ import com.example.todo_app.ui.feature.common.CustomDropdownMenu
 @Composable
 fun ToDoOptions(
     toDo: ToDo,
-    checklists : List<CheckList>,
+    checklists: List<CheckList>,
     viewmodel: ToDoOptionsViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +58,6 @@ fun ToDoOptions(
                 .fillMaxWidth()
                 .padding(top = 75.dp, bottom = 75.dp)
         )
-
         // Options
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -82,17 +80,18 @@ fun ToDoOptions(
                     }
                 )
             }
-
             // Move to list
             item {
                 Option(
                     optionTitle = "Move to list",
                     content = {
                         DropdownMenuOption(
-                            hintText = checklists.find { it.id == toDo.listId }?.title ?: "Select a list",
+                            hintText = checklists.find { it.id == toDo.listId }?.title
+                                ?: "Select a list",
                             height = 42.dp,
                             contentAlign = Alignment.Center,
-                            sortOptions = checklists.filter { it.id != toDo.listId }.map { DropdownOptionItem(it.id, it.title.toString()) },
+                            sortOptions = checklists.filter { it.id != toDo.listId }
+                                .map { DropdownOptionItem(it.id, it.title.toString()) },
                             onOptionSelected = { selectedOption ->
                                 val updatedToDo = toDo.copy(listId = selectedOption.id)
                                 viewmodel.updateToDo(updatedToDo)
@@ -101,7 +100,6 @@ fun ToDoOptions(
                     }
                 )
             }
-
             item {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(32.dp)
@@ -115,12 +113,11 @@ fun ToDoOptions(
                                 hintText = "Select a date",
                                 height = 42.dp,
                                 contentAlign = Alignment.TopStart,
-                                onTextChanged = {  }
+                                onTextChanged = { }
                             )
                         },
                         modifier = Modifier.weight(0.5f)
                     )
-
                     // Time estimate
                     Option(
                         optionTitle = "Time estimate",
@@ -130,14 +127,13 @@ fun ToDoOptions(
                                 hintText = "00:00",
                                 height = 42.dp,
                                 contentAlign = Alignment.TopStart,
-                                onTextChanged = {  }
+                                onTextChanged = { }
                             )
                         },
                         modifier = Modifier.weight(0.5f)
                     )
                 }
             }
-
             // To-Do description
             item {
                 Option(
@@ -148,7 +144,13 @@ fun ToDoOptions(
                             hintText = "Enter task description",
                             height = 192.dp,
                             contentAlign = Alignment.TopStart,
-                            onTextChanged = { description -> viewmodel.updateToDo(toDo.copy(description = description)) }
+                            onTextChanged = { description ->
+                                viewmodel.updateToDo(
+                                    toDo.copy(
+                                        description = description
+                                    )
+                                )
+                            }
                         )
                     }
                 )
@@ -164,7 +166,7 @@ private fun Option(
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column (verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
         Text(
             text = optionTitle,
             color = Color.White,

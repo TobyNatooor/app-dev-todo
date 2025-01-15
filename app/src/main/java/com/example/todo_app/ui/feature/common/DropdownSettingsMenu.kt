@@ -16,14 +16,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DropdownSettingsMenu() {
+fun DropdownSettingsMenu(
+        onRenameClicked: () -> Unit,
+        onDeleteClicked: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
+    val menuTextStyle = TextStyle(
+        color = MaterialTheme.colorScheme.onBackground,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
 
-    Box() {
+    Box {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(Icons.Rounded.MoreVert, contentDescription = "Settings")
         }
@@ -31,67 +40,57 @@ fun DropdownSettingsMenu() {
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Share",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
                             /* Handle Share */ }
-            )
-            DropdownMenuItem(
+            )*/
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Edit",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
                             /* Handle Edit */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
                         "Rename",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
-                            /* Handle Rename */ }
+                            onRenameClicked() }
             )
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = {
                     Text(
                         "Merge",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
                             /* Handle Merge */ }
-            )
+            )*/
             DropdownMenuItem(
                 text = {
                     Text(
                         "Delete",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        style = menuTextStyle
                     )
                 },
                 onClick = { expanded = false
-                            /* Handle Delete */ }
+                            onDeleteClicked() }
             )
         }
     }

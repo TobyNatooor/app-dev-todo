@@ -43,16 +43,22 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.NameList
 
 @Composable
 fun ToDoList(
     toDos: List<ToDo>,
+    listId: Int,
     viewmodel: ToDoListViewModel,
     modifier: Modifier = Modifier,
     title: String = ""
 ) {
     val scrollState = rememberLazyListState()
+    var listTitle by remember { mutableStateOf(title) }
+    var isNaming by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -64,22 +70,44 @@ fun ToDoList(
                 .fillMaxSize()
         ) {
             // Title
-
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontSize = 54.sp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 75.dp, bottom = 75.dp)
-                )
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 75.dp, bottom = 75.dp)
+            ) {
+                if (isNaming) {
+                    NameList(
+                        title = listTitle,
+                        textStyle = TextStyle(
+                            fontSize = 54.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Center),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onTitleChange = { newTitle ->
+                            viewmodel.updateList(listId, newTitle)
+                            listTitle = newTitle
+                        },
+                        onRenameComplete = {
+                            isNaming = false
+                        }
+                    )
+                } else {
+                    Text(
+                        text = listTitle,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontSize = 54.sp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+            }
             // To-do elements
             LazyColumn(
                 state = scrollState,
                 verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
                     .fillMaxSize()
             ) {
                 if (toDos.isEmpty()) {
@@ -97,14 +125,25 @@ fun ToDoList(
                 }
             }
         }
-
         // Settings dropdown menu
         Box(
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopEnd)
         ) {
-            DropdownSettingsMenu()
+            DropdownSettingsMenu(
+                onRenameClicked = { isNaming = true },
+                onDeleteClicked = { showDeleteDialog = true }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteList(
+                listId = listId,
+                title = listTitle,
+                onDelete = { id -> viewmodel.deleteList(listId) },
+                onDismiss = { showDeleteDialog = false }
+            )
         }
     }
 }
@@ -137,8 +176,8 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
             }
         }
-
-        ToDoOptionsButton(toDo, viewModel,
+        ToDoOptionsButton(
+            toDo, viewModel,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
         )
@@ -150,11 +189,11 @@ private fun ToDoTextField(
     toDo: ToDo,
     viewmodel: ToDoListViewModel
 ) {
+    val blankTitle = "Unnamed to do item"
     val focusRequester = remember { FocusRequester() }
     var isEnabled by remember { mutableStateOf(true) }
     var title by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed to do item"
 
     Box(
         modifier = Modifier
@@ -166,7 +205,6 @@ private fun ToDoTextField(
             isFocused = false
             focusRequester.requestFocus()
         }
-
         DisposableEffect(Unit) {
             onDispose {
                 if (title.isBlank()) {
