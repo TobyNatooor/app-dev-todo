@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,8 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -62,7 +61,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
 
 @Composable
@@ -74,6 +73,8 @@ fun HomeList(
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     val horizontalPadding = 40.dp
     val sortedOption = viewModel.sortedOption.collectAsState()
     val addingNewList = viewModel.addingNewList.collectAsState()
@@ -350,11 +351,24 @@ private fun ListCard(
 ) {
 
     val focusManager = LocalFocusManager.current
+    var isNaming by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+
+    if (showDeleteDialog) {
+        DeleteList(
+            listId = list.id,
+            title = list.title ?: "",
+            onDelete = { viewModel.deleteList( list.id ) },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
 
     return Card(
         onClick = {
-            viewModel.clickList(list)
+            if (!isNaming) {
+                viewModel.clickList(list)
+            }
             focusManager.clearFocus()
         },
         modifier = if (todos.isEmpty()) {
@@ -367,32 +381,48 @@ private fun ListCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    list.title,
-                    style = TextStyle(fontSize = 20.sp),
-                    textAlign = TextAlign.Justify,
-                    modifier = Modifier.weight(5f),
-                )
-
-                DropdownSettingsMenu()
-
-            }
-            for (todo in todos) {
-                if (!todo.title.isNullOrEmpty()) {
-                    Text(
-                        if (search.isNotEmpty()) {
-                            getTodoTitleWithHighlight(todo.title, search)
-                        } else {
-                            AnnotatedString(todo.title)
+                if (isNaming) {
+                    NameList(
+                        title = list.title,
+                        textStyle = null,
+                        modifier = null,
+                        onTitleChange = { newTitle ->
+                            viewModel.updateList(list.copy(title = newTitle))
                         },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        onRenameComplete = {
+                            isNaming = false // Reset naming state
+                        }
                     )
+                } else {
+                    Text(
+                        list.title,
+                        style = TextStyle(fontSize = 20.sp),
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.weight(5f),
+                    )
+
+                    DropdownSettingsMenu(
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true }
+                    )
+
+                }
+                for (todo in todos) {
+                    if (!todo.title.isNullOrEmpty()) {
+                        Text(
+                            if (search.isNotEmpty()) {
+                                getTodoTitleWithHighlight(todo.title, search)
+                            } else {
+                                AnnotatedString(todo.title)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
     }
-
 }
 
 @Composable
@@ -450,6 +480,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             }
         }
     }
+
 }
 
 @Composable

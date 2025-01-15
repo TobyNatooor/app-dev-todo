@@ -131,6 +131,12 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         }
     }
 
+    fun deleteList(listId: Int) {
+        this.viewModelScope.launch {
+            db.checkListDao().deleteWithId(listId)
+        }
+    }
+
     fun clickList(list: CheckList) {
         this.viewModelScope.launch {
             db.checkListDao().update(list.copy(lastModified = LocalDateTime.now()))

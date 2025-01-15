@@ -46,6 +46,13 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList WHERE title LIKE '%' || :vSearchWord || '%'")
     fun findWithTitle(vSearchWord: String): Flow<List<CheckList>>
 
+    // Update name of list with id
+    @Query("UPDATE CheckList SET title = :vNewTitle WHERE id = :vId")
+    suspend fun updateTitle(vId: Int, vNewTitle: String)
+
+    @Query("DELETE FROM CheckList WHERE id = :vId")
+    suspend fun deleteWithId(vId: Int)
+
     @Query(
         """
         SELECT DISTINCT CheckList.* 
