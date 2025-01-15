@@ -417,9 +417,9 @@ private fun ListCard(
                         } else {
                             AnnotatedString(todo.title)
                                },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
         }
