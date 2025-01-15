@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
