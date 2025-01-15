@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -65,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(

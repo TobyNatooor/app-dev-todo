@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,13 +49,16 @@ import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
 
+@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 fun ToDoList(
     toDos: List<ToDo>,
     listId: Int,
     viewmodel: ToDoListViewModel,
     modifier: Modifier = Modifier,
-    title: String = ""
+    title: String = "",
+    appBar: @Composable () -> Unit
 ) {
     val scrollState = rememberLazyListState()
     var listTitle by remember { mutableStateOf(title) }
@@ -64,77 +69,79 @@ fun ToDoList(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Column(
-            verticalArrangement = Arrangement.Top,
-            modifier = modifier
+        LazyColumn(
+            state = scrollState,
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
-            // Title
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 75.dp, bottom = 75.dp)
-            ) {
-                if (isNaming) {
-                    NameList(
-                        title = listTitle,
-                        textStyle = TextStyle(
-                            fontSize = 54.sp,
-                            color = Color.White,
-                            textAlign = TextAlign.Center),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        onTitleChange = { newTitle ->
-                            viewmodel.updateList(listId, newTitle)
-                            listTitle = newTitle
-                        },
-                        onRenameComplete = {
-                            isNaming = false
-                        }
-                    )
-                } else {
-                    Text(
-                        text = listTitle,
-                        textAlign = TextAlign.Center,
-                        style = TextStyle(fontSize = 54.sp),
-                        modifier = Modifier
-                            .fillMaxWidth()
+            item {
+                // Settings dropdown menu
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    DropdownSettingsMenu(
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true }
                     )
                 }
             }
-            // To-do elements
-            LazyColumn(
-                state = scrollState,
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .fillMaxSize()
-            ) {
-                if (toDos.isEmpty()) {
-                    item {
+            item {
+                // Title
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 0.dp, bottom = 75.dp)
+                ) {
+                    if (isNaming) {
+                        NameList(
+                            title = listTitle,
+                            textStyle = TextStyle(
+                                fontSize = 54.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onTitleChange = { newTitle ->
+                                viewmodel.updateList(listId, newTitle)
+                                listTitle = newTitle
+                            },
+                            onRenameComplete = {
+                                isNaming = false
+                            }
+                        )
+                    } else {
                         Text(
-                            text = "No to-do items in this list",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+                            text = listTitle,
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(fontSize = 54.sp),
+                            modifier = Modifier
+                                .fillMaxWidth()
                         )
                     }
-                } else {
-                    itemsIndexed(toDos) { index, item ->
-                        ToDoItem(viewmodel, toDo = item, index = index)
-                    }
                 }
             }
-        }
-        // Settings dropdown menu
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopEnd)
-        ) {
-            DropdownSettingsMenu(
-                onRenameClicked = { isNaming = true },
-                onDeleteClicked = { showDeleteDialog = true }
-            )
+            stickyHeader {
+                appBar()
+            }
+            // To-do elements
+
+            if (toDos.isEmpty()) {
+                item {
+                    Text(
+                        text = "No to-do items in this list",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else {
+                itemsIndexed(toDos) { index, item ->
+                    ToDoItem(viewmodel, toDo = item, index = index)
+                }
+            }
         }
 
         if (showDeleteDialog) {
