@@ -3,10 +3,15 @@ package com.example.todo_app.ui.feature.common
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +32,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todo_app.model.CheckList
+import com.example.todo_app.ui.theme.*
+
+@Composable
+fun AddButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        // Remove shape parameter for default shape (square with rounded corners)
+        shape = RoundedCornerShape(45, 45, 45, 45),
+        containerColor = primary2,
+        contentColor = primary1,
+        modifier = Modifier.padding(20.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add new item",
+            tint = primary4,
+        )
+    }
+}
 
 @Composable
 fun NameList(
