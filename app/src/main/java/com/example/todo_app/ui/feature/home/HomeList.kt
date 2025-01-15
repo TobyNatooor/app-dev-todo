@@ -393,25 +393,25 @@ private fun ListCard(
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
                     )
-
                 }
-                for (todo in todos) {
-                    if (!todo.title.isNullOrEmpty()) {
-                        Text(
-                            if (search.isNotEmpty()) {
-                                getTodoTitleWithHighlight(todo.title, search)
-                            } else {
-                                AnnotatedString(todo.title)
-                            },
+            }
+            for (todo in todos) {
+                if (!todo.title.isNullOrEmpty()) {
+                    Text(
+                        if (search.isNotEmpty()) {
+                            getTodoTitleWithHighlight(todo.title, search)
+                        } else {
+                            AnnotatedString(todo.title)
+                               },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
-                    }
                 }
             }
         }
     }
 }
+
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
     return buildAnnotatedString {
