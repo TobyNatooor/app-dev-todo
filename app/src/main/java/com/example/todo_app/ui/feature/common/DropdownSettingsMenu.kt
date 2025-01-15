@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun DropdownSettingsMenu(
@@ -27,20 +28,20 @@ fun DropdownSettingsMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
-        color = MaterialTheme.colorScheme.onBackground,
+        color = neutral4,
         fontSize = 16.sp,
         textAlign = TextAlign.Center
     )
 
     Box {
         IconButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Rounded.MoreVert, contentDescription = "Settings")
+            Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
         }
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
+                .background(neutral1)
         ) {
             /*DropdownMenuItem(
                 text = {

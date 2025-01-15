@@ -28,6 +28,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
+import com.example.todo_app.ui.theme.*
+import androidx.compose.foundation.BorderStroke
 
 @Composable
 fun NameList(
@@ -63,8 +65,8 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
-            cursorBrush = SolidColor(Color.White),
+            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = neutral0),
+            cursorBrush = SolidColor(neutral0),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
@@ -87,7 +89,7 @@ fun NameList(
         if (textFieldValue.text.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 20.sp,
             )
         }
@@ -102,17 +104,17 @@ fun DeleteList(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        containerColor = Color.White,
-        titleContentColor = Color.Black,
-        textContentColor = Color.Blue,
+        containerColor = primary0,
+        titleContentColor = primary4,
+        textContentColor = primary3,
         onDismissRequest = onDismiss,
         title = { Text("Delete list \"$title\"?") },
         text = { Text("Are you sure you want to delete this list?") },
         confirmButton = {
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error, // Red for destructive action
-                    contentColor = Color.White // White text for contrast
+                    containerColor = primary3,
+                    contentColor = primary0
                 ),
                 onClick = {
                     onDelete(listId)
@@ -124,9 +126,10 @@ fun DeleteList(
         },
         dismissButton = {
             Button(
+                border = BorderStroke(3.dp, primary3),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface, // Neutral background
-                    contentColor = MaterialTheme.colorScheme.onSurface // Text color based on theme
+                    containerColor = primary0,
+                    contentColor = primary3
                 ),
                 onClick = onDismiss
             ) {
