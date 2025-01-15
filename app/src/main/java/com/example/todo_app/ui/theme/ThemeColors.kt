@@ -33,7 +33,7 @@ val red1 = Color(0xFFFA948E)
 val red0 = Color(0xFFFFE7E5)
 
 val background = neutral4
-val checkedBox = green1
+val checkedBox = green2
 val folder = Color(0xFF355D68)
 val list = neutral2
 val onBackgroundAndButton = neutral1

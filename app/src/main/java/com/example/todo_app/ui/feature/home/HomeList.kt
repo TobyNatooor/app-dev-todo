@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -380,6 +381,9 @@ private fun ListCard(
             }
             focusManager.clearFocus()
         },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
         modifier = if (todos.isEmpty()) {
             Modifier.aspectRatio(1f)
         } else {
@@ -442,6 +446,9 @@ private fun NewListCard(
 ) {
 
     return Card(
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
         modifier = Modifier.aspectRatio(1f)
     ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {

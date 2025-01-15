@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
@@ -118,10 +119,11 @@ fun AddButton(
                 viewModel.addClicked()
             }
         },
-        // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
         containerColor = primary2,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier
+            .padding(20.dp)
+            .border(1.dp, primary4, RoundedCornerShape(45, 45, 45, 45))
     ) {
         Icon(
             imageVector = Icons.Filled.Add,

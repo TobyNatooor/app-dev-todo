@@ -44,9 +44,9 @@ fun ToDoOptionsScreen(
                 }
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                appBar()
+                //appBar()
                 Box(modifier = modifier) {
-                    ToDoContent(toDoUIState, viewModel)
+                    ToDoContent(toDoUIState, viewModel, appBar)
                 }
             }
         }
@@ -57,7 +57,8 @@ fun ToDoOptionsScreen(
 private fun ToDoContent(
     toDoUIState: ToDoUIState,
     viewModel: ToDoOptionsViewModel,
-    modifier: Modifier = Modifier
+    appBar: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     when (toDoUIState) {
         is ToDoUIState.Loading -> LoadingScreen(
@@ -68,7 +69,8 @@ private fun ToDoContent(
             toDo = toDoUIState.toDo,
             checklists = toDoUIState.checklists,
             viewmodel = viewModel,
-            modifier = modifier
+            modifier = modifier,
+            appBar = appBar
         )
     }
 }

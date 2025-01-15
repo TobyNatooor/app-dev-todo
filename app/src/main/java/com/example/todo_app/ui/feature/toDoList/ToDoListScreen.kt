@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoList
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun ToDoListScreen(
@@ -52,7 +54,7 @@ fun ToDoListScreen(
                     focusManager.clearFocus()
                 },
             floatingActionButton = { AddButton(viewmodel) },
-        ) { innerPadding ->
+        ) { innerPadding -> 
             Column(modifier = Modifier.padding(innerPadding)) {
                 //appBar()
                 Box(modifier = modifier) {
@@ -82,14 +84,16 @@ fun AddButton(viewModel: ToDoListViewModel) {
         onClick = {
             viewModel.addToDoItem()
         },
-        // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
-        modifier = Modifier.padding(20.dp)
+        containerColor = primary2,
+        modifier = Modifier
+            .padding(20.dp)
+            .border(1.dp, primary4, RoundedCornerShape(45, 45, 45, 45))
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = "Add new to do",
-            tint = Color.Black
+            tint = primary4
         )
     }
 }
