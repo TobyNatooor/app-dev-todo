@@ -54,7 +54,7 @@ fun ToDoListScreen(
             floatingActionButton = { AddButton(viewmodel) },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                appBar()
+                //appBar()
                 Box(modifier = modifier) {
                     when (toDosUIState) {
                         is ToDosUIState.Loading -> LoadingScreen(
@@ -66,7 +66,8 @@ fun ToDoListScreen(
                             listId = listId,
                             toDos = toDosUIState.toDos,
                             viewmodel = viewmodel,
-                            modifier = modifier
+                            modifier = modifier,
+                            appBar = appBar
                         )
                     }
                 }
