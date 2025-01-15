@@ -65,7 +65,7 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = neutral0),
+            textStyle = textStyle ?: TextStyle(fontSize = 20.sp, color = neutral0, fontFamily = dosisFontFamily),
             cursorBrush = SolidColor(neutral0),
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,6 +91,7 @@ fun NameList(
                 text = "Enter new title",
                 color = neutral1,
                 fontSize = 20.sp,
+                fontFamily = dosisFontFamily
             )
         }
     }
@@ -108,8 +109,8 @@ fun DeleteList(
         titleContentColor = primary4,
         textContentColor = primary3,
         onDismissRequest = onDismiss,
-        title = { Text("Delete list \"$title\"?") },
-        text = { Text("Are you sure you want to delete this list?") },
+        title = { Text("Delete list \"$title\"?", fontFamily = dosisFontFamily) },
+        text = { Text("Are you sure you want to delete this list?", fontFamily = dosisFontFamily) },
         confirmButton = {
             Button(
                 colors = ButtonDefaults.buttonColors(
@@ -121,7 +122,7 @@ fun DeleteList(
                     onDismiss()
                 }
             ) {
-                Text("Delete")
+                Text("Delete", fontFamily = dosisFontFamily)
             }
         },
         dismissButton = {
@@ -133,7 +134,7 @@ fun DeleteList(
                 ),
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text("Cancel", fontFamily = dosisFontFamily)
             }
         }
     )

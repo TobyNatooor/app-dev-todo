@@ -30,7 +30,8 @@ fun DropdownSettingsMenu(
     val menuTextStyle = TextStyle(
         color = neutral4,
         fontSize = 16.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        fontFamily = dosisFontFamily
     )
 
     Box {

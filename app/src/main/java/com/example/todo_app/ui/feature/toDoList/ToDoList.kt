@@ -102,7 +102,8 @@ fun ToDoList(
                             textStyle = TextStyle(
                                 fontSize = 54.sp,
                                 color = neutral1,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                fontFamily = dosisFontFamily
                             ),
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -119,7 +120,7 @@ fun ToDoList(
                             color = neutral1,
                             text = listTitle,
                             textAlign = TextAlign.Center,
-                            style = TextStyle(fontSize = 54.sp),
+                            style = TextStyle(fontSize = 54.sp, fontFamily = dosisFontFamily),
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
@@ -137,7 +138,8 @@ fun ToDoList(
                         color = neutral1,
                         text = "No to-do items in this list",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = dosisFontFamily
                     )
                 }
             } else {
@@ -182,7 +184,8 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 Text(
                     text = toDo.title.toString(),
                     fontSize = 18.sp,
-                    color = neutral0
+                    color = neutral0,
+                    fontFamily = dosisFontFamily
                 )
             }
         }
@@ -233,7 +236,8 @@ private fun ToDoTextField(
             singleLine = true,
             textStyle = TextStyle(
                 color = neutral0,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                fontFamily = dosisFontFamily
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -260,6 +264,7 @@ private fun ToDoTextField(
                 text = "Enter new title",
                 color = neutral1,
                 fontSize = 16.sp,
+                fontFamily = dosisFontFamily,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp)

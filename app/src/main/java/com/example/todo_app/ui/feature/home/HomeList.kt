@@ -99,6 +99,7 @@ fun HomeList(
                 "My Lists",
                 textAlign = TextAlign.Center,
                 fontSize = 54.sp,
+                fontFamily = dosisFontFamily,
                 color = neutral1,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,7 +165,8 @@ fun HomeList(
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = dosisFontFamily
                         )
                     }
                 } else {
@@ -176,7 +178,7 @@ fun HomeList(
                                 if (viewModel.isNextChar(char)) {
                                     Text(
                                         viewModel.getSymbol(char),
-                                        style = TextStyle(fontSize = 13.sp),
+                                        style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
                                         color = neutral1,
                                     )
                                     HorizontalDivider(
@@ -208,7 +210,7 @@ private fun SearchTextField(
 ) {
     val focusState = remember { mutableStateOf(false) }
 
-    val onFocusChange: (Boolean) -> Unit = { isFocused ->
+    val onFocusChange: (Boolean) -> Unit = { isFocused -> 
         focusState.value = isFocused
     }
 
@@ -230,11 +232,12 @@ private fun SearchTextField(
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 color = neutral0,
+                fontFamily = dosisFontFamily,
                 lineHeight = TextUnit.Unspecified,
                 letterSpacing = TextUnit.Unspecified
             ),
             cursorBrush = SolidColor(neutral0),
-            decorationBox = @Composable { innerTextField ->
+            decorationBox = @Composable { innerTextField -> 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -308,6 +311,7 @@ fun SortButton(
                 Text(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
+                    fontFamily = dosisFontFamily,
                     text = "Sort: ${selectedOption.value}",
                     overflow = TextOverflow.Visible,
                     maxLines = 1,
@@ -322,7 +326,7 @@ fun SortButton(
                     modifier = Modifier
                         .background(neutral1)
                 ) {
-                    sortOptions.forEach { option ->
+                    sortOptions.forEach { option -> 
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
@@ -333,6 +337,7 @@ fun SortButton(
                                     text = option.toString(),
                                     color = neutral4,
                                     fontSize = 16.sp,
+                                    fontFamily = dosisFontFamily,
                                     textAlign = TextAlign.Center
                                 )
                             },
@@ -390,7 +395,7 @@ private fun ListCard(
                         title = list.title,
                         textStyle = null,
                         modifier = null,
-                        onTitleChange = { newTitle ->
+                        onTitleChange = { newTitle -> 
                             viewModel.updateList(list.copy(title = newTitle))
                         },
                         onRenameComplete = {
@@ -400,7 +405,7 @@ private fun ListCard(
                 } else {
                     Text(
                         list.title,
-                        style = TextStyle(fontSize = 20.sp),
+                        style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
                         color = neutral0
@@ -419,10 +424,11 @@ private fun ListCard(
                             getTodoTitleWithHighlight(todo.title, search)
                         } else {
                             AnnotatedString(todo.title)
-                               },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = dosisFontFamily
+                    )
                 }
             }
         }
@@ -453,7 +459,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
     return buildAnnotatedString {
         var searchStringIndex = 0
         var searching = false
-        todoTitle.forEachIndexed { index, char ->
+        todoTitle.forEachIndexed { index, char -> 
             if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
                 searching = true
                 searchStringIndex++
@@ -465,6 +471,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                         style = SpanStyle(
                             color = primary0,
                             background = primary2,
+                            fontFamily = dosisFontFamily
                         )
                     ) {
                         append(
@@ -481,6 +488,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                         style = SpanStyle(
                             color = primary0,
                             background = primary2,
+                            fontFamily = dosisFontFamily
                         )
                     ) {
                         append(
@@ -491,7 +499,8 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             } else {
                 withStyle(
                     style = SpanStyle(
-                        color = neutral0
+                        color = neutral0,
+                        fontFamily = dosisFontFamily
                     )
                 ) {
                     append(char)
@@ -528,13 +537,14 @@ private fun NewListTextField(
         }
         BasicTextField(
             value = title,
-            onValueChange = { newTitle ->
+            onValueChange = { newTitle -> 
                 title = newTitle
             },
             singleLine = true,
             textStyle = TextStyle(
                 color = neutral0,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                fontFamily = dosisFontFamily
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -560,6 +570,7 @@ private fun NewListTextField(
                 text = "Enter new title",
                 color = neutral1,
                 fontSize = 20.sp,
+                fontFamily = dosisFontFamily
             )
         }
     }
