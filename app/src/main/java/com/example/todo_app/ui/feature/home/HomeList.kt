@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -176,6 +177,7 @@ fun HomeList(
                                     Text(
                                         viewModel.getSymbol(char),
                                         style = TextStyle(fontSize = 13.sp),
+                                        color = neutral1,
                                     )
                                     HorizontalDivider(
                                         modifier = Modifier
@@ -227,11 +229,11 @@ private fun SearchTextField(
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = Color.White,
+                color = neutral0,
                 lineHeight = TextUnit.Unspecified,
                 letterSpacing = TextUnit.Unspecified
             ),
-            cursorBrush = SolidColor(Color.White),
+            cursorBrush = SolidColor(neutral0),
             decorationBox = @Composable { innerTextField ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -239,7 +241,7 @@ private fun SearchTextField(
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = neutral1
                     )
                     Box(
                         modifier = Modifier
@@ -260,9 +262,9 @@ private fun SearchTextField(
             HorizontalDivider(
                 thickness = 2.dp,
                 color = if (focusState.value) {
-                    MaterialTheme.colorScheme.onBackground
+                    neutral1
                 } else {
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
+                    Color.Transparent
                 },
                 modifier = Modifier
                     .padding(
@@ -295,7 +297,7 @@ fun SortButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground
+                contentColor = neutral1
             ),
             modifier = Modifier
                 //.border(1.dp, Color.Red)
@@ -318,7 +320,7 @@ fun SortButton(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(neutral1)
                 ) {
                     sortOptions.forEach { option ->
                         DropdownMenuItem(
@@ -329,7 +331,7 @@ fun SortButton(
                             text = {
                                 Text(
                                     text = option.toString(),
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = neutral4,
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
@@ -401,6 +403,7 @@ private fun ListCard(
                         style = TextStyle(fontSize = 20.sp),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
+                        color = neutral0
                     )
 
                     DropdownSettingsMenu(
@@ -460,8 +463,8 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                     val end = index + searchStringIndex - (searchStringIndex - 1)
                     withStyle(
                         style = SpanStyle(
-                            color = Color.White,
-                            background = Color.Blue,
+                            color = primary0,
+                            background = primary2,
                         )
                     ) {
                         append(
@@ -474,10 +477,25 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                 searching = false
                 val start = index - searchStringIndex
                 val end = index + searchStringIndex - (searchStringIndex - 1)
-                append(todoTitle.substring(start, end))
+                withStyle(
+                        style = SpanStyle(
+                            color = primary0,
+                            background = primary2,
+                        )
+                    ) {
+                        append(
+                            todoTitle.substring(start, end)
+                        )
+                    }
                 searchStringIndex = 0
             } else {
-                append(char)
+                withStyle(
+                    style = SpanStyle(
+                        color = neutral0
+                    )
+                ) {
+                    append(char)
+                }
             }
         }
     }
@@ -515,7 +533,7 @@ private fun NewListTextField(
             },
             singleLine = true,
             textStyle = TextStyle(
-                color = Color.White,
+                color = neutral0,
                 fontSize = 16.sp
             ),
             modifier = Modifier
@@ -540,7 +558,7 @@ private fun NewListTextField(
         if (title.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 20.sp,
             )
         }
