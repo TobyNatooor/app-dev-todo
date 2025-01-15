@@ -4,6 +4,7 @@ import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
@@ -71,6 +72,12 @@ class ToDoListViewModel(
     fun deleteToDo(toDo: ToDo) {
         this.viewModelScope.launch {
             db.toDoDao().delete(toDo)
+        }
+    }
+
+    fun updateList(listId: Int, newTitle: String) {
+        this.viewModelScope.launch {
+            db.checkListDao().updateTitle(listId, newTitle)
         }
     }
 }

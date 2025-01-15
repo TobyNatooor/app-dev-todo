@@ -32,8 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +59,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
 
 @Composable
@@ -73,6 +71,8 @@ fun HomeList(
     gridState: LazyGridState
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     val horizontalPadding = 40.dp
 
     Box(
@@ -338,11 +338,14 @@ private fun ListCard(
 ) {
 
     val focusManager = LocalFocusManager.current
+    var isNaming by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
 
     return Card(
         onClick = {
-            viewModel.clickList(list)
+            if (!isNaming) {
+                viewModel.clickList(list)
+            }
             focusManager.clearFocus()
         },
         modifier = if (todos.isEmpty()) {
@@ -355,36 +358,47 @@ private fun ListCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (list.title != null) {
+                if (isNaming || list.title == null) {
+                    NameList(
+                        title = list.title,
+                        textStyle = null,
+                        modifier = null,
+                        onTitleChange = { newTitle ->
+                            viewModel.updateList(list.copy(title = newTitle))
+                        },
+                        onRenameComplete = {
+                            isNaming = false // Reset naming state
+                        }
+                    )
+                } else {
                     Text(
                         list.title,
                         style = TextStyle(fontSize = 20.sp),
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.weight(5f),
                     )
-                } else {
-                    ListTextField(list, focusRequester, viewModel)
-                }
 
-                DropdownSettingsMenu()
-
-            }
-            for (todo in todos) {
-                if (!todo.title.isNullOrEmpty()) {
-                    Text(
-                        if (search.isNotEmpty()) {
-                            getTodoTitleWithHighlight(todo.title, search)
-                        } else {
-                            AnnotatedString(todo.title)
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                    DropdownSettingsMenu(
+                        onRenameClicked = { isNaming = true }
                     )
+
+                }
+                for (todo in todos) {
+                    if (!todo.title.isNullOrEmpty()) {
+                        Text(
+                            if (search.isNotEmpty()) {
+                                getTodoTitleWithHighlight(todo.title, search)
+                            } else {
+                                AnnotatedString(todo.title)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
     }
-
 }
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
@@ -420,74 +434,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             } else {
                 append(char)
             }
-        }
-    }
-}
-
-@Composable
-private fun ListTextField(
-    list: CheckList,
-    focusRequester: FocusRequester,
-    viewModel: HomeViewModel
-) {
-    val blankTitle = "Unnamed list"
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
-
-    Box {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-                viewModel.updateList(
-                    list.copy(title = title)
-                )
-            }
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewModel.updateList(
-                            list.copy(title = title)
-                        )
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = Color.Gray,
-                fontSize = 20.sp,
-            )
         }
     }
 }
