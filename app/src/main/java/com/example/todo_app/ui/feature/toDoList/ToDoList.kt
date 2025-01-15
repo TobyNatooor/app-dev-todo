@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ fun ToDoList(
     var listTitle by remember { mutableStateOf(title) }
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val addingToDo = viewmodel.addingNewToDo.collectAsState()
 
     Box(
         modifier = modifier
@@ -110,6 +112,9 @@ fun ToDoList(
                     .padding(horizontal = 32.dp)
                     .fillMaxSize()
             ) {
+                if (addingToDo.value){
+                    item { NewToDoItem(viewmodel, listId) }
+                }
                 if (toDos.isEmpty()) {
                     item {
                         Text(
@@ -166,15 +171,11 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
             )
-            if (toDo.title == null) {
-                ToDoTextField(toDo, viewModel)
-            } else {
-                Text(
-                    text = toDo.title.toString(),
-                    fontSize = 18.sp,
-                    color = Color.White
-                )
-            }
+            Text(
+                text = toDo.title.toString(),
+                fontSize = 18.sp,
+                color = Color.White
+            )
         }
         ToDoOptionsButton(
             toDo, viewModel,
@@ -186,7 +187,6 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
 
 @Composable
 private fun ToDoTextField(
-    toDo: ToDo,
     viewmodel: ToDoListViewModel
 ) {
     val blankTitle = "Unnamed to do item"
@@ -210,9 +210,6 @@ private fun ToDoTextField(
                 if (title.isBlank()) {
                     title = blankTitle
                 }
-                viewmodel.updateToDoItem(
-                    toDo.copy(title = title)
-                )
             }
         }
         BasicTextField(
@@ -236,9 +233,7 @@ private fun ToDoTextField(
                         if (title.isBlank()) {
                             title = blankTitle
                         }
-                        viewmodel.updateToDoItem(
-                            toDo.copy(title = title)
-                        )
+                        viewmodel.addToDoItem(title)
                         isEnabled = false
                     }
                 },
@@ -313,4 +308,38 @@ fun ToDoOptionsButton(
                 focusManager.clearFocus()
             }
     )
+}
+
+@Composable
+private fun NewToDoItem(viewModel: ToDoListViewModel, listId: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(4.dp)
+            )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(8.dp)
+                        .size(28.dp)
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                )
+            }
+            Spacer(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+            ToDoTextField(viewModel)
+        }
+    }
 }

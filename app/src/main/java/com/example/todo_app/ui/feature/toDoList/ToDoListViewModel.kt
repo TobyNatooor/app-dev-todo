@@ -10,6 +10,7 @@ import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,9 @@ class ToDoListViewModel(
 ) : ViewModel() {
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
+
+    private val _addingNewToDo = MutableStateFlow(false)
+    val addingNewToDo = _addingNewToDo.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -32,9 +36,9 @@ class ToDoListViewModel(
         }
     }
 
-    fun addToDoItem() {
+    fun addToDoItem(title: String) {
         val newToDo = ToDo(
-            title = null,
+            title = title,
             description = "Add Description",
             listId = listId,
             order = -1, //TODO: Add query to find max order
@@ -86,6 +90,10 @@ class ToDoListViewModel(
             db.checkListDao().deleteWithId(listId)
             nav.navigate("home")
         }
+    }
+
+    fun addClicked(){
+        _addingNewToDo.value = true
     }
 }
 

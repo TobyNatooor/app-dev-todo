@@ -79,7 +79,7 @@ fun ToDoListScreen(
 fun AddButton(viewModel: ToDoListViewModel) {
     FloatingActionButton(
         onClick = {
-            viewModel.addToDoItem()
+            viewModel.addClicked()
         },
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
