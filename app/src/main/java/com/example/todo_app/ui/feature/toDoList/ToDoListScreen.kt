@@ -8,24 +8,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
-import com.example.todo_app.ui.theme.*
+import com.example.todo_app.ui.feature.common.*
 
 @Composable
 fun ToDoListScreen(
@@ -53,8 +46,12 @@ fun ToDoListScreen(
                 ) {
                     focusManager.clearFocus()
                 },
-            floatingActionButton = { AddButton(viewmodel) },
-        ) { innerPadding -> 
+            floatingActionButton = {
+                AddButton(onClick = {
+                    viewmodel.addToDoItem()
+                })
+            },
+        ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 //appBar()
                 Box(modifier = modifier) {
@@ -75,25 +72,5 @@ fun ToDoListScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun AddButton(viewModel: ToDoListViewModel) {
-    FloatingActionButton(
-        onClick = {
-            viewModel.addToDoItem()
-        },
-        shape = RoundedCornerShape(45, 45, 45, 45),
-        containerColor = primary2,
-        modifier = Modifier
-            .padding(20.dp)
-            .border(1.dp, primary4, RoundedCornerShape(45, 45, 45, 45))
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add new to do",
-            tint = primary4
-        )
     }
 }

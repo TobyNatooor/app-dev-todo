@@ -4,19 +4,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -27,9 +20,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,6 +40,7 @@ fun HomeScreen(
     val homeUIState = viewModel.homeState.collectAsState().value
     val searchQuery = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier
@@ -57,7 +51,17 @@ fun HomeScreen(
             ) {
                 focusManager.clearFocus()
             },
-        floatingActionButton = { AddButton(viewModel, searchQuery, gridState) },
+        floatingActionButton = {
+            AddButton(onClick = {
+                coroutineScope.launch {
+                    searchQuery.value = ""
+                    viewModel.searchForTodos("")
+                    gridState.animateScrollToItem(0)
+                    delay(200L)
+                    viewModel.addClicked()
+                }
+            } )
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -97,38 +101,5 @@ private fun HomeContent(
         )
 
         else -> LoadingScreen(modifier)
-    }
-}
-
-
-@Composable
-fun AddButton(
-    viewModel: HomeViewModel,
-    searchQuery: MutableState<String>,
-    gridState: LazyGridState
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    FloatingActionButton(
-        onClick = {
-            coroutineScope.launch {
-                searchQuery.value = ""
-                viewModel.searchForTodos("")
-                gridState.animateScrollToItem(0)
-                delay(200L)
-                viewModel.addClicked()
-            }
-        },
-        shape = RoundedCornerShape(45, 45, 45, 45),
-        containerColor = primary2,
-        modifier = Modifier
-            .padding(20.dp)
-            .border(1.dp, primary4, RoundedCornerShape(45, 45, 45, 45))
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add new list",
-            tint = primary4,
-        )
     }
 }
