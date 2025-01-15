@@ -48,6 +48,7 @@ import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
+import com.example.todo_app.ui.theme.*
 
 @OptIn(ExperimentalFoundationApi::class)
 
@@ -100,7 +101,7 @@ fun ToDoList(
                             title = listTitle,
                             textStyle = TextStyle(
                                 fontSize = 54.sp,
-                                color = Color.White,
+                                color = neutral1,
                                 textAlign = TextAlign.Center
                             ),
                             modifier = Modifier
@@ -115,6 +116,7 @@ fun ToDoList(
                         )
                     } else {
                         Text(
+                            color = neutral1,
                             text = listTitle,
                             textAlign = TextAlign.Center,
                             style = TextStyle(fontSize = 54.sp),
@@ -132,6 +134,7 @@ fun ToDoList(
             if (toDos.isEmpty()) {
                 item {
                     Text(
+                        color = neutral1,
                         text = "No to-do items in this list",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
@@ -161,7 +164,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = neutral2,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
@@ -179,7 +182,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 Text(
                     text = toDo.title.toString(),
                     fontSize = 18.sp,
-                    color = Color.White
+                    color = neutral0
                 )
             }
         }
@@ -229,7 +232,7 @@ private fun ToDoTextField(
             },
             singleLine = true,
             textStyle = TextStyle(
-                color = Color.White,
+                color = neutral0,
                 fontSize = 16.sp
             ),
             modifier = Modifier
@@ -255,7 +258,7 @@ private fun ToDoTextField(
         if (title.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 16.sp,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -279,7 +282,7 @@ fun ToDoCheckBox(
                 .padding(8.dp)
                 .size(size)
                 .background(
-                    color = if (toDo.status.isDone()) MaterialTheme.colorScheme.primary else Color.White,
+                    color = if (toDo.status.isDone()) green1 else neutral1,
                     shape = RoundedCornerShape(5.dp)
                 )
                 .clickable {
@@ -292,7 +295,7 @@ fun ToDoCheckBox(
             Icon(
                 imageVector = Icons.Filled.Check,
                 contentDescription = "Check Icon",
-                tint = MaterialTheme.colorScheme.onSecondary,
+                tint = green4,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(size * 1.1f)
@@ -312,7 +315,7 @@ fun ToDoOptionsButton(
     Icon(
         imageVector = Icons.Rounded.MoreVert,
         contentDescription = "ToDo Options Icon",
-        tint = Color.White,
+        tint = neutral0,
         modifier = modifier
             .padding(8.dp)
             .clickable {

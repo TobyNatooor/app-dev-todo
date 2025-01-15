@@ -121,7 +121,6 @@ fun AddButton(
         // Remove shape parameter for default shape (square with rounded corners)
         shape = RoundedCornerShape(45, 45, 45, 45),
         containerColor = primary2,
-        contentColor = primary1,
         modifier = Modifier.padding(20.dp)
     ) {
         Icon(

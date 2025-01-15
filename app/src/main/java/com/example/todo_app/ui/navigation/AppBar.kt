@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material.icons.filled.*
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun AppBar(navController: NavController) {
@@ -30,6 +31,7 @@ fun AppBar(navController: NavController) {
         Icon(
             Icons.Filled.ChevronLeft,
             contentDescription = null,
+            tint = neutral1,
             modifier = Modifier
                 .fillMaxHeight()
                 .aspectRatio(1f)
@@ -41,6 +43,7 @@ fun AppBar(navController: NavController) {
         Icon(
             Icons.AutoMirrored.Filled.Sort,
             contentDescription = null,
+            tint = neutral1,
             modifier = Modifier
                 .fillMaxHeight()
                 .aspectRatio(1f)
@@ -51,6 +54,7 @@ fun AppBar(navController: NavController) {
         Icon(
             Icons.Filled.Search,
             contentDescription = null,
+            tint = neutral1,
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(start = 8.dp) // Space between the two right-most icons
