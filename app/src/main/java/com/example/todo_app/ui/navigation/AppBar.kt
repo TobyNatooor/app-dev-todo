@@ -21,47 +21,54 @@ import androidx.compose.material.icons.filled.*
 import com.example.todo_app.ui.theme.*
 
 @Composable
-fun AppBar(navController: NavController) {
+fun AppBar(
+        navController: NavController,
+        backButton: Boolean,
+        sortButton: Boolean,
+        searchButton: Boolean
+) {
     return Row(
         modifier = Modifier
-            .height(25.dp)
+            .height(32.dp)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()
     ) {
-        Icon(
-            Icons.Filled.ChevronLeft,
-            contentDescription = null,
-            tint = neutral1,
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
+        if (backButton) {
+            Icon(
+                Icons.Filled.ChevronLeft,
+                contentDescription = null,
+                tint = neutral1,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .clickable {
+                        navController.popBackStack()
+                    }
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            Icons.AutoMirrored.Filled.Sort,
-            contentDescription = null,
-            tint = neutral1,
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clickable {
-                    // Open drawer
-                }
-        )
-        Icon(
-            Icons.Filled.Search,
-            contentDescription = null,
-            tint = neutral1,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(start = 8.dp) // Space between the two right-most icons
-                .aspectRatio(1f)
-                .clickable {
-                    // Open drawer
-                }
-        )
+        if (sortButton) {
+            Icon(
+                Icons.AutoMirrored.Filled.Sort,
+                contentDescription = null,
+                tint = neutral1,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .clickable {}
+            )
+        }
+        if (searchButton) {
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = null,
+                tint = neutral1,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(start = 8.dp) // Space between the two right-most icons
+                    .aspectRatio(1f)
+                    .clickable {}
+            )
+        }
     }
 }

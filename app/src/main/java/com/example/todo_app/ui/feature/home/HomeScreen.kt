@@ -1,6 +1,5 @@
 package com.example.todo_app.ui.feature.home
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
@@ -31,7 +30,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     modifier: Modifier = Modifier,
     db: AppDatabase,
-    navController: NavController
+    navController: NavController,
+    appBar: @Composable () -> Unit
 ) {
     val gridState = rememberLazyGridState()
     val viewModel: HomeViewModel = viewModel(
