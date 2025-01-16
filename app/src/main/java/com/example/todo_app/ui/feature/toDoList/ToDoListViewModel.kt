@@ -44,7 +44,6 @@ class ToDoListViewModel(
             title = title,
             description = "Add Description",
             listId = listId,
-            order = -1, //TODO: Add query to find max order
         )
         this.viewModelScope.launch {
             db.toDoDao().insert(newToDo)
@@ -55,21 +54,6 @@ class ToDoListViewModel(
     fun updateToDoItem(updatedToDo: ToDo) {
         this.viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
-
-            val existingList = db
-                .toDoDao()
-                .getAllWithListId(updatedToDo.listId)
-                .first()
-                .toMutableList()
-
-            existingList.sortWith(
-                compareBy<ToDo> { it.status == ToDoStatus.DONE }.thenBy { it.order }
-            )
-
-            existingList.forEachIndexed { index, toDo ->
-                val reorderedToDo: ToDo = toDo.copy(order = index)
-                db.toDoDao().update(reorderedToDo)
-            }
         }
     }
 

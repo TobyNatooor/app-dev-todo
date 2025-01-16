@@ -34,9 +34,6 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList ORDER BY Checklist.title COLLATE NOCASE ASC")
     fun getAllSortedByName(): Flow<List<CheckList>>
 
-    @Query("SELECT * FROM CheckList WHERE CheckList.folderId = :vFolderId")
-    fun getAllWithFolderId(vFolderId: Int): Flow<List<CheckList>>
-
     @Query("SELECT * FROM CheckList WHERE CheckList.id = :vId")
     fun getWithId(vId: Int): Flow<CheckList>
 
