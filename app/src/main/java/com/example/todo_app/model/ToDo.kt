@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class ToDo(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val title: String? = null,
+    val title: String,
     val description: String,
     val created: LocalDateTime = LocalDateTime.now(),
     val listId: Int,

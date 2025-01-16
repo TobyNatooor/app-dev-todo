@@ -48,7 +48,7 @@ fun ToDoListScreen(
                 },
             floatingActionButton = {
                 AddButton(onClick = {
-                    viewmodel.addToDoItem()
+                    viewmodel.addClicked()
                 })
             },
         ) { innerPadding ->
