@@ -31,7 +31,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -66,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(

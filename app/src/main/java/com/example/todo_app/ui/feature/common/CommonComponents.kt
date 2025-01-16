@@ -1,18 +1,20 @@
 package com.example.todo_app.ui.feature.common
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,11 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -36,19 +38,30 @@ import com.example.todo_app.ui.theme.*
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = onClick,
-        // Remove shape parameter for default shape (square with rounded corners)
-        shape = RoundedCornerShape(45, 45, 45, 45),
-        containerColor = primary2,
-        contentColor = primary1,
-        modifier = Modifier.padding(20.dp)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(65.dp)
+            .border(1.dp, neutral4, RoundedCornerShape(25, 25, 25, 25))
     ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add new item",
-            tint = primary4,
-        )
+        FloatingActionButton(
+            onClick = onClick,
+            // Remove shape parameter for default shape (square with rounded corners)
+            // shape = RoundedCornerShape(45, 45, 45, 45),
+            containerColor = primary2,
+            contentColor = primary1,
+            modifier = Modifier
+                .padding(0.dp)
+                .size(64.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                modifier = Modifier
+                    .size(48.dp),
+                contentDescription = "Add new item",
+                tint = primary4,
+            )
+        }
     }
 }
 

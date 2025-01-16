@@ -14,13 +14,12 @@ import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
 @Composable
 fun AppNavigation(db: AppDatabase) {
     val navController = rememberNavController()
-    val appBar = @Composable { AppBar(navController) }
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(
                 db = db,
-                navController = navController
+                navController = navController,
             )
         }
         composable(
@@ -36,7 +35,7 @@ fun AppNavigation(db: AppDatabase) {
             ToDoListScreen(
                 title = title,
                 listId = listId,
-                appBar = appBar,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) },
                 db = db,
                 navController = navController
             )
@@ -51,7 +50,7 @@ fun AppNavigation(db: AppDatabase) {
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                appBar = appBar,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton = false) },
                 db = db
             )
         }

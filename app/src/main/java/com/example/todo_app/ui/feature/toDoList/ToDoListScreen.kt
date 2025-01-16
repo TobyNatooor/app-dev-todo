@@ -1,6 +1,5 @@
 package com.example.todo_app.ui.feature.toDoList
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
@@ -53,7 +52,6 @@ fun ToDoListScreen(
             },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                //appBar()
                 Box(modifier = modifier) {
                     when (toDosUIState) {
                         is ToDosUIState.Loading -> LoadingScreen(
