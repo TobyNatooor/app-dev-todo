@@ -72,7 +72,6 @@ import com.example.todo_app.ui.theme.*
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    searchQuery: MutableState<String>,
     focusManager: FocusManager,
     gridState: LazyGridState
 ) {
@@ -122,7 +121,6 @@ fun HomeList(
                 SearchTextField(
                     viewModel,
                     focusRequester,
-                    searchQuery,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -182,7 +180,7 @@ fun HomeList(
                                     currChar
                                 ) { viewModel.getSymbol(currChar) }
                             }
-                            ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
+                            ListCard(lists[index], viewModel)
                         }
                     }
                 }
@@ -217,10 +215,14 @@ private fun AlphabeticalHeader(prevChar: Char, currChar: Char, getSymbol: (Char)
 private fun SearchTextField(
     viewModel: HomeViewModel,
     focusRequester: FocusRequester,
-    searchQuery: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
     val focusState = remember { mutableStateOf(false) }
+    val searchQuery = viewModel.filteringQuery.collectAsState()
+    val userInput = remember { mutableStateOf(searchQuery.value) }
+
+
+
 
     val onFocusChange: (Boolean) -> Unit = { isFocused -> 
         focusState.value = isFocused
@@ -232,10 +234,10 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            value = searchQuery.value,
-            onValueChange = {
-                searchQuery.value = it
-                viewModel.searchForTodos(it)
+            value = userInput.value,
+            onValueChange = { newTitle ->
+                userInput.value = newTitle
+                viewModel.searchForTodos(userInput.value)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -366,8 +368,6 @@ fun SortButton(
 @Composable
 private fun ListCard(
     list: CheckList,
-    search: String,
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
 
@@ -375,6 +375,7 @@ private fun ListCard(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+
 
     if (showDeleteDialog) {
         DeleteList(
@@ -433,7 +434,8 @@ private fun ListCard(
                 }
             }
             for (todo in todos) {
-                if (!todo.title.isNullOrEmpty()) {
+                if (todo.title.isNotEmpty()) {
+                    val search = viewModel.getQuery()
                     Text(
                         if (search.isNotEmpty()) {
                             getTodoTitleWithHighlight(todo.title, search)
