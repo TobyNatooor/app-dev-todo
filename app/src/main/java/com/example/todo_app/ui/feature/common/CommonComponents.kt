@@ -3,10 +3,15 @@ package com.example.todo_app.ui.feature.common
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +32,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todo_app.model.CheckList
+import com.example.todo_app.ui.theme.*
+
+@Composable
+fun AddButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        // Remove shape parameter for default shape (square with rounded corners)
+        shape = RoundedCornerShape(45, 45, 45, 45),
+        containerColor = primary2,
+        contentColor = primary1,
+        modifier = Modifier.padding(20.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add new item",
+            tint = primary4,
+        )
+    }
+}
 
 @Composable
 fun NameList(
@@ -63,8 +86,8 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            textStyle = textStyle?: TextStyle(fontSize = 20.sp, color = Color.White),
-            cursorBrush = SolidColor(Color.White),
+            textStyle = textStyle ?: TextStyle(fontSize = 20.sp, color = neutral0, fontFamily = dosisFontFamily),
+            cursorBrush = SolidColor(neutral0),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
@@ -87,8 +110,9 @@ fun NameList(
         if (textFieldValue.text.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = Color.Gray,
+                color = neutral1,
                 fontSize = 20.sp,
+                fontFamily = dosisFontFamily
             )
         }
     }
@@ -102,35 +126,36 @@ fun DeleteList(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        containerColor = Color.White,
-        titleContentColor = Color.Black,
-        textContentColor = Color.Blue,
+        containerColor = primary0,
+        titleContentColor = primary4,
+        textContentColor = primary3,
         onDismissRequest = onDismiss,
-        title = { Text("Delete list \"$title\"?") },
-        text = { Text("Are you sure you want to delete this list?") },
+        title = { Text("Delete list \"$title\"?", fontFamily = dosisFontFamily) },
+        text = { Text("Are you sure you want to delete this list?", fontFamily = dosisFontFamily) },
         confirmButton = {
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error, // Red for destructive action
-                    contentColor = Color.White // White text for contrast
+                    containerColor = primary3,
+                    contentColor = primary0
                 ),
                 onClick = {
                     onDelete(listId)
                     onDismiss()
                 }
             ) {
-                Text("Delete")
+                Text("Delete", fontFamily = dosisFontFamily)
             }
         },
         dismissButton = {
             Button(
+                border = BorderStroke(3.dp, primary3),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface, // Neutral background
-                    contentColor = MaterialTheme.colorScheme.onSurface // Text color based on theme
+                    containerColor = primary0,
+                    contentColor = primary3
                 ),
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text("Cancel", fontFamily = dosisFontFamily)
             }
         }
     )

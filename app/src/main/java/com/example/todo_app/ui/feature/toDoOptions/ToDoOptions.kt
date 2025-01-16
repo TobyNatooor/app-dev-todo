@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,13 +38,15 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.CustomDropdownMenu
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun ToDoOptions(
     toDo: ToDo,
     checklists: List<CheckList>,
     viewmodel: ToDoOptionsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    appBar: @Composable () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Top,
@@ -51,16 +55,30 @@ fun ToDoOptions(
     ) {
         // Title
         Text(
+            color = neutral1,
+            fontFamily = dosisFontFamily,
             text = "Edit Task",
             textAlign = TextAlign.Center,
             style = TextStyle(fontSize = 54.sp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 75.dp, bottom = 75.dp)
+                .padding(top = 100.dp, bottom = 100.dp)
         )
+        Box(
+            modifier = Modifier.padding(32.dp)
+        ) {
+            appBar()
+        }
         // Options
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = neutral2,
+            ),
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+        ) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier
                 .padding(horizontal = 32.dp)
                 .fillMaxSize()
@@ -142,7 +160,7 @@ fun ToDoOptions(
                         TextFieldOption(
                             startText = toDo.description,
                             hintText = "Enter task description",
-                            height = 192.dp,
+                            height = 150.dp,
                             contentAlign = Alignment.TopStart,
                             onTextChanged = { description ->
                                 viewmodel.updateToDo(
@@ -157,6 +175,7 @@ fun ToDoOptions(
             }
 
         }
+        }
     }
 }
 
@@ -169,8 +188,9 @@ private fun Option(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
         Text(
             text = optionTitle,
-            color = Color.White,
+            color = neutral0,
             fontSize = 16.sp,
+            fontFamily = dosisFontFamily,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
         )
@@ -203,9 +223,8 @@ private fun TextFieldOption(
     Box(
         modifier = modifier
             .height(height)
-            .border(1.dp, Color.White, shape = shape)
             .background(
-                color = Color(0xFF6A6E90),
+                color = primary0,
                 shape = shape
             ),
         contentAlignment = contentAlign
@@ -219,10 +238,11 @@ private fun TextFieldOption(
             modifier = modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
-            cursorBrush = SolidColor(Color.White),
+            cursorBrush = SolidColor(primary4),
             textStyle = TextStyle(
                 fontSize = 18.sp,
-                color = Color.White,
+                fontFamily = dosisFontFamily,
+                color = primary4,
                 textAlign = textAlign
             ),
             decorationBox = @Composable { innerTextField ->
@@ -235,7 +255,8 @@ private fun TextFieldOption(
                         Text(
                             text = hintText,
                             fontSize = 18.sp,
-                            color = Color.Gray,
+                            fontFamily = dosisFontFamily,
+                            color = primary1,
                             textAlign = textAlign,
                             modifier = modifier
                         )
@@ -269,15 +290,15 @@ private fun DropdownMenuOption(
         Box(
             modifier = modifier
                 .height(height)
-                .background(color = Color(0xFF6A6E90), shape = shape)
-                .border(1.dp, Color.White, shape = shape)
+                .background(color = primary0, shape = shape)
                 .clickable { expanded = !expanded },
             contentAlignment = contentAlign
         ) {
             Text(
                 text = selectedOption?.title ?: hintText,
                 fontSize = 18.sp,
-                color = Color.White,
+                fontFamily = dosisFontFamily,
+                color = primary4,
                 textAlign = textAlign,
                 modifier = Modifier.padding(10.dp)
             )
@@ -285,13 +306,12 @@ private fun DropdownMenuOption(
 
         CustomDropdownMenu(
             modifier = modifier
-                .background(color = Color(0xFF6A6E90), shape = shape)
-                .border(1.dp, Color.White, shape = shape)
+                .background(color = primary0, shape = shape)
                 .padding(vertical = 4.dp),
             divider = {
                 HorizontalDivider(
                     thickness = 1.dp,
-                    color = Color.White.copy(alpha = 0.125f),
+                    color = primary4,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             },
@@ -315,7 +335,8 @@ private fun DropdownMenuOption(
                     Text(
                         text = item.title,
                         fontSize = 16.sp,
-                        color = Color.White,
+                        fontFamily = dosisFontFamily,
+                        color = primary4,
                         textAlign = textAlign
                     )
                 }
