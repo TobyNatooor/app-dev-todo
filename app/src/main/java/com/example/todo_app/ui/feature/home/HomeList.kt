@@ -3,7 +3,6 @@ package com.example.todo_app.ui.feature.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -33,8 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -63,10 +59,17 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.ui.theme.*
+import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.NameList
+import com.example.todo_app.ui.theme.dosisFontFamily
+import com.example.todo_app.ui.theme.neutral0
+import com.example.todo_app.ui.theme.neutral1
+import com.example.todo_app.ui.theme.neutral2
+import com.example.todo_app.ui.theme.neutral4
+import com.example.todo_app.ui.theme.primary0
+import com.example.todo_app.ui.theme.primary2
 
 @Composable
 fun HomeList(
@@ -77,7 +80,6 @@ fun HomeList(
     val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
-    val sortedOption = viewModel.sortedOption.collectAsState()
     val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
@@ -140,19 +142,6 @@ fun HomeList(
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                    if (addingNewList.value) {
-                        Column {
-                            if (sortedOption.value == SortOption.NAME) {
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
-                            NewListCard(viewModel)
-                        }
-                    }
-                }
-            }
-
-            item {
-                Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                     if (lists.isEmpty() && !addingNewList.value) {
                         Text(
                             text = "No checklists found",
@@ -160,10 +149,19 @@ fun HomeList(
                             fontWeight = FontWeight.Bold,
                             fontFamily = dosisFontFamily
                         )
-                    }
+                    } else {
+                        val cards = buildList {
+                            if (addingNewList.value) add(ChecklistCardItem("") {
+                                NewListCard(viewModel)
+                            })
+                            lists.forEach { checklist ->
+                                add(ChecklistCardItem(checklist.title) {
+                                    ListCard(checklist, viewModel)
+                                })
+                            }
+                        }
 
-                    if (lists.isNotEmpty()) {
-                        CheckListGrid(viewModel, lists, horizontalPadding, sortedOption)
+                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = 8.dp)
                     }
                 }
             }
@@ -174,50 +172,35 @@ fun HomeList(
 @Composable
 private fun CheckListGrid(
     viewModel: HomeViewModel,
-    lists: List<CheckList>,
-    horizontalPadding: Dp,
-    sortedOption: State<SortOption>,
-    modifier: Modifier = Modifier
+    cards: List<ChecklistCardItem>,
+    cardSpacing: Dp
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(horizontalPadding)
-    ) {
-        lists.chunked(2).forEachIndexed { chunkIndex, rowItems ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                rowItems.forEach { checklist ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(8.dp)
-                    ) {
+    val sortedOption = viewModel.sortedOption.collectAsState()
+    var previousChar = '\u0000'
+
+    Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        cards.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                rowItems.forEach { card ->
+                    Column(modifier = Modifier.weight(1f)) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val currChar: Char = checklist.title[0].uppercaseChar()
-                            val prevChar = if (chunkIndex == 0 && rowItems.indexOf(checklist) == 0) {
-                                '\u0000'
-                            } else {
-                                val flatIndex = chunkIndex * 2 + rowItems.indexOf(checklist)
-                                lists[flatIndex - 1].title[0].uppercaseChar()
-                            }
+                            val currentChar = card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+
                             AlphabeticalHeader(
-                                prevChar,
-                                currChar,
-                                viewModel.isNextChar(currChar, prevChar)
-                            ) { viewModel.getSymbol(currChar) }
+                                prevChar = previousChar,
+                                currChar = currentChar,
+                                isNext = viewModel.isNextChar(currentChar, previousChar)
+                            ) { viewModel.getSymbol(currentChar) }
+
+                            if (previousChar != currentChar) {
+                                previousChar = currentChar
+                            }
                         }
-                        ListCard(checklist, viewModel)
+
+                        card.item()
                     }
                 }
-
-                // Add a spacer if rowItems.size < 2
-                if (rowItems.size < 2) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
+                if (rowItems.size == 1) Box(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -239,10 +222,9 @@ private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, 
         )
     } else {
         // Space instead of text
-        Spacer(modifier = Modifier.height(19.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
     Spacer(modifier = Modifier.height(5.dp))
-
 }
 
 @Composable
@@ -402,7 +384,7 @@ private fun ListCard(
     if (showDeleteDialog) {
         DeleteList(
             listId = list.id,
-            title = list.title ?: "",
+            title = list.title,
             onDelete = { viewModel.deleteList( list.id ) },
             onDismiss = { showDeleteDialog = false }
         )
@@ -584,7 +566,7 @@ private fun NewListTextField(
             singleLine = true,
             textStyle = TextStyle(
                 color = neutral0,
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 fontFamily = dosisFontFamily
             ),
             modifier = Modifier
@@ -616,3 +598,8 @@ private fun NewListTextField(
         }
     }
 }
+
+data class ChecklistCardItem(
+    val title: String,
+    val item: @Composable () -> Unit
+)
