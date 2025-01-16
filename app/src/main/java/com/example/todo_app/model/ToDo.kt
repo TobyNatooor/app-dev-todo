@@ -13,6 +13,7 @@ data class ToDo(
     val created: LocalDateTime = LocalDateTime.now(),
     val listId: Int,
     val order: Int,
+    val location: String? = null,
     val status: ToDoStatus = ToDoStatus.NOT_DONE,
     //val doneWhen: LocalDateTime? = null - TODO: Room cannot save this variable.
 )
