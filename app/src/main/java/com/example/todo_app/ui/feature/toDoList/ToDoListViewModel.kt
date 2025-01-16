@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -19,19 +20,21 @@ class ToDoListViewModel(
     private val db: AppDatabase,
     private val nav: NavController
 ) : ViewModel() {
+
+    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
+
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
     private val _addingNewToDo = MutableStateFlow(false)
     val addingNewToDo = _addingNewToDo.asStateFlow()
 
+
+
     init {
         viewModelScope.launch {
-            val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
             toDos.collect { list ->
-                val sortedList = list
-                    .sortedWith(compareBy { it.order })
-                _mutableToDosState.value = ToDosUIState.Data(sortedList)
+                _mutableToDosState.value = ToDosUIState.Data(list.sortedBy { it.status })
             }
         }
     }
@@ -45,6 +48,7 @@ class ToDoListViewModel(
         )
         this.viewModelScope.launch {
             db.toDoDao().insert(newToDo)
+            _addingNewToDo.value = false
         }
     }
 
