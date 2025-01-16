@@ -98,7 +98,6 @@ private fun HomeContent(
     }
 }
 
-
 @Composable
 fun AddButton(
     viewModel: HomeViewModel,

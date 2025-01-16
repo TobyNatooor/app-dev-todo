@@ -1,6 +1,7 @@
 package com.example.todo_app.ui.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.BasicTextField
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,101 +87,155 @@ fun HomeList(
                 })
             }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        // Lists
+        LazyVerticalGrid(
+            state = gridState,
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(40.dp),
+            contentPadding = PaddingValues(
+                horizontal = horizontalPadding
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             // Title
-            Text(
-                "My Lists",
-                textAlign = TextAlign.Center,
-                fontSize = 54.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 100.dp, bottom = 80.dp)
-            )
-
-            // Search bar and sort button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = horizontalPadding / 2, end = horizontalPadding / 4
-                    ),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                val childrenHeight = 42.dp
-                val horizontalDistribution = 8f / 15f
-
-                SearchTextField(
-                    viewModel,
-                    focusRequester,
-                    searchQuery,
+            item(span = { GridItemSpan(2) }) {
+                Text(
+                    "My Lists",
+                    textAlign = TextAlign.Center,
+                    fontSize = 54.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .weight(horizontalDistribution)
-                        //.border(1.dp, Color.Red)
-                        .height(childrenHeight)
-                )
-
-                SortButton(
-                    viewModel,
-                    modifier = Modifier
-                        .weight(1f - horizontalDistribution)
-                        //.border(1.dp, Color.Blue)
-                        .height(childrenHeight)
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, bottom = 80.dp)
                 )
             }
 
-            // Lists
-            LazyVerticalGrid(
-                state = gridState,
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(40.dp),
-                verticalArrangement = Arrangement.spacedBy(40.dp),
-                contentPadding = PaddingValues(
-                    horizontal = horizontalPadding,
-                    vertical = 4.dp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
+            item(span = { GridItemSpan(2) }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    val childrenHeight = 42.dp
+                    val horizontalDistribution = 8f / 15f
+
+                    SearchTextField(
+                        viewModel,
+                        focusRequester,
+                        searchQuery,
+                        modifier = Modifier
+                            .weight(horizontalDistribution)
+                            //.border(1.dp, Color.Red)
+                            .height(childrenHeight)
+                    )
+
+                    SortButton(
+                        viewModel,
+                        modifier = Modifier
+                            .weight(1f - horizontalDistribution)
+                            //.border(1.dp, Color.Blue)
+                            .height(childrenHeight)
+                    )
+                }
+            }
+
+            item(span = { GridItemSpan(2) }) {
                 if (lists.isEmpty()) {
-                    item {
-                        Text(
-                            text = "No checklists found",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "No checklists found",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 } else {
-                    viewModel.currentChar = '\u0000'
-                    items(lists.size) { index ->
-                        Column {
-                            if (viewModel.sortedOption == SortOption.NAME) {
-                                val char = viewModel.isNextChar(lists[index])
-                                if (char != '!') {
-                                    Text(
-                                        char.toString(),
-                                        style = TextStyle(fontSize = 13.sp),
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .width(15.dp)
-                                            .height(4.dp)
-                                    )
-                                } else {
-                                    // Space instead of text
-                                    Spacer(modifier = Modifier.height(19.dp))
-                                }
-                                Spacer(modifier = Modifier.height(5.dp))
-                            }
-                            ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
-                        }
-                    }
+                    CheckListGrid(viewModel, lists, searchQuery, horizontalPadding)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CheckListGrid(
+    viewModel: HomeViewModel,
+    lists: List<CheckList>,
+    searchQuery: MutableState<String>,
+    horizontalPadding: Dp,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+    viewModel.currentChar = '\u0000'
+
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(horizontalPadding)
+    ) {
+        lists.chunked(2).forEach { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { checklist ->
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(1.dp, Color.Red)
+                            .padding(8.dp)
+                    ) {
+                        if (viewModel.sortedOption == SortOption.NAME) {
+                            val char = viewModel.isNextChar(checklist)
+                            if (char != '!') {
+                                Text(
+                                    char.toString(),
+                                    style = TextStyle(fontSize = 13.sp),
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .width(15.dp)
+                                        .height(4.dp)
+                                )
+                            } else {
+                                // Space instead of text
+                                Spacer(modifier = Modifier.height(19.dp))
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                        }
+                        ListCard(checklist, searchQuery.value, focusRequester, viewModel)
+                    }
+                }
+
+                if (rowItems.size < 2) {
+                    Spacer(modifier = Modifier.width(horizontalPadding))
+                }
+            }
+        }
+    }
+
+    /*
+    Column (modifier = Modifier.border(1.dp, Color.Red)) {
+        if (viewModel.sortedOption == SortOption.NAME) {
+            val char = viewModel.isNextChar(lists[index])
+            if (char != '!') {
+                Text(
+                    char.toString(),
+                    style = TextStyle(fontSize = 13.sp),
+                )
+                HorizontalDivider(
+                    modifier = Modifier
+                        .width(15.dp)
+                        .height(4.dp)
+                )
+            } else {
+                // Space instead of text
+                Spacer(modifier = Modifier.height(19.dp))
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+        ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
+    }
+     */
 }
 
 @Composable
@@ -336,7 +393,6 @@ private fun ListCard(
     focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
-
     val focusManager = LocalFocusManager.current
     val todos = viewModel.getTodosByListId(list.id)
 
