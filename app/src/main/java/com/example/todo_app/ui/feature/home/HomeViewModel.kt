@@ -30,7 +30,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         else db.checkListDao().findWithTodosTitle(query)
     }
 
-    private var lists: Flow<List<CheckList>> = combine(
+    private val lists: Flow<List<CheckList>> = combine(
         filteredList,
         _sortingOption
     ) { list, sort ->
