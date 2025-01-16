@@ -2,10 +2,12 @@ package com.example.todo_app.ui.feature.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -15,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -34,6 +37,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
+import com.example.todo_app.model.ToDo
+import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
 import com.example.todo_app.ui.theme.*
 
 @Composable
@@ -172,4 +178,40 @@ fun DeleteList(
             }
         }
     )
+}
+
+@Composable
+fun ToDoCheckBox(
+    toDo: ToDo,
+    viewModel: ToDoListViewModel,
+    size: Dp = 28.dp,
+    modifier: Modifier = Modifier
+) {
+    Box {
+        Box(
+            modifier = modifier
+                .align(Alignment.Center)
+                .padding(8.dp)
+                .size(size)
+                .background(
+                    color = if (toDo.status.isDone()) green1 else neutral1,
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .clickable {
+                    viewModel.updateToDoItem(
+                        toDo.copy(status = toDo.status.check())
+                    )
+                }
+        )
+        if (toDo.status.isDone()) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Check Icon",
+                tint = green4,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(size * 1.1f)
+            )
+        }
+    }
 }

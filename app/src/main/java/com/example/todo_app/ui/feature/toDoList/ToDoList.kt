@@ -50,6 +50,7 @@ import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.*
+import com.example.todo_app.ui.feature.common.*
 
 @OptIn(ExperimentalFoundationApi::class)
 
@@ -263,42 +264,6 @@ private fun ToDoTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun ToDoCheckBox(
-    toDo: ToDo,
-    viewModel: ToDoListViewModel,
-    size: Dp = 28.dp,
-    modifier: Modifier = Modifier
-) {
-    Box {
-        Box(
-            modifier = modifier
-                .align(Alignment.Center)
-                .padding(8.dp)
-                .size(size)
-                .background(
-                    color = if (toDo.status.isDone()) green1 else neutral1,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable {
-                    viewModel.updateToDoItem(
-                        toDo.copy(status = toDo.status.check())
-                    )
-                }
-        )
-        if (toDo.status.isDone()) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Check Icon",
-                tint = green4,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(size * 1.1f)
             )
         }
     }
