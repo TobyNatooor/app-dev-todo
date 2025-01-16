@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -40,7 +42,7 @@ fun HomeScreen(
     db: AppDatabase,
     navController: NavController
 ) {
-    val gridState = rememberLazyGridState()
+    val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
@@ -57,14 +59,14 @@ fun HomeScreen(
             ) {
                 focusManager.clearFocus()
             },
-        floatingActionButton = { AddButton(viewModel, searchQuery, gridState) },
+        floatingActionButton = { AddButton(viewModel, searchQuery, columnState) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, searchQuery, focusManager, viewModel, gridState)
+                HomeContent(homeUIState, searchQuery, focusManager, viewModel, columnState)
             }
         }
     }
@@ -76,7 +78,7 @@ private fun HomeContent(
     searchQuery: MutableState<String>,
     focusManager: FocusManager,
     viewModel: HomeViewModel,
-    gridState: LazyGridState,
+    columnState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
     when (homeUIState) {
@@ -85,7 +87,7 @@ private fun HomeContent(
             viewModel = viewModel,
             searchQuery = searchQuery,
             focusManager = focusManager,
-            gridState = gridState
+            columnState = columnState
         )
 
         is HomeUIState.Data -> HomeList(
@@ -93,19 +95,18 @@ private fun HomeContent(
             viewModel = viewModel,
             searchQuery = searchQuery,
             focusManager = focusManager,
-            gridState = gridState
+            columnState = columnState
         )
 
         else -> LoadingScreen(modifier)
     }
 }
 
-
 @Composable
 fun AddButton(
     viewModel: HomeViewModel,
     searchQuery: MutableState<String>,
-    gridState: LazyGridState
+    columnState: LazyListState
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -114,7 +115,7 @@ fun AddButton(
             coroutineScope.launch {
                 searchQuery.value = ""
                 viewModel.searchForTodos("")
-                gridState.animateScrollToItem(0)
+                columnState.animateScrollToItem(0)
                 delay(200L)
                 viewModel.addClicked()
             }
