@@ -72,7 +72,6 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    searchQuery: MutableState<String>,
     columnState: LazyListState
 ) {
     val focusManager = LocalFocusManager.current
@@ -141,8 +140,6 @@ fun HomeList(
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                    // NOTE: Branching here is a bit "off", but I'm keeping it like this for readability for the moment being.
-
                     if (addingNewList.value) {
                         Column {
                             if (sortedOption.value == SortOption.NAME) {
@@ -151,7 +148,11 @@ fun HomeList(
                             NewListCard(viewModel)
                         }
                     }
+                }
+            }
 
+            item {
+                Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                     if (lists.isEmpty() && !addingNewList.value) {
                         Text(
                             text = "No checklists found",
@@ -162,7 +163,7 @@ fun HomeList(
                     }
 
                     if (lists.isNotEmpty()) {
-                        CheckListGrid(viewModel, lists, searchQuery, horizontalPadding, sortedOption)
+                        CheckListGrid(viewModel, lists, horizontalPadding, sortedOption)
                     }
                 }
             }
@@ -174,14 +175,10 @@ fun HomeList(
 private fun CheckListGrid(
     viewModel: HomeViewModel,
     lists: List<CheckList>,
-    searchQuery: MutableState<String>,
     horizontalPadding: Dp,
     sortedOption: State<SortOption>,
     modifier: Modifier = Modifier
 ) {
-    val focusRequester = remember { FocusRequester() }
-    viewModel.currentChar = '\u0000'
-
     Column(
         modifier = modifier
             .fillMaxSize(),
