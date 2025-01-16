@@ -177,24 +177,10 @@ fun HomeList(
                                 val prevChar = if(index == 0) '\u0000'
                                 else lists[index - 1].title[0].uppercaseChar()
                                 val currChar: Char = lists[index].title[0].uppercaseChar()
-
-                                if (prevChar < currChar) {
-                                    println("Creating header with $currChar")
-                                    Text(
-                                        viewModel.getSymbol(currChar),
-                                        style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
-                                        color = neutral1,
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .width(15.dp)
-                                            .height(4.dp)
-                                    )
-                                } else {
-                                    // Space instead of text
-                                    Spacer(modifier = Modifier.height(19.dp))
-                                }
-                                Spacer(modifier = Modifier.height(5.dp))
+                                AlphabeticalHeader(
+                                    prevChar,
+                                    currChar
+                                ) { viewModel.getSymbol(currChar) }
                             }
                             ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
                         }
@@ -205,26 +191,27 @@ fun HomeList(
     }
 }
 
-//@Composable
-//private fun alphabeticalHeader(prevChar: Char, currChar: Char, insertHeader: Boolean){
-//    if (insertHeader) {
-//        Text(
-//            viewModel.getSymbol(char),
-//            style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
-//            color = neutral1,
-//        )
-//        HorizontalDivider(
-//            modifier = Modifier
-//                .width(15.dp)
-//                .height(4.dp)
-//        )
-//    } else {
-//        // Space instead of text
-//        Spacer(modifier = Modifier.height(19.dp))
-//    }
-//    Spacer(modifier = Modifier.height(5.dp))
-//
-//}
+@Composable
+private fun AlphabeticalHeader(prevChar: Char, currChar: Char, getSymbol: (Char) -> String){
+    if (prevChar < currChar) {
+        println("Creating header with $currChar")
+        Text(
+            getSymbol(currChar),
+            style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
+            color = neutral1,
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .width(15.dp)
+                .height(4.dp)
+        )
+    } else {
+        // Space instead of text
+        Spacer(modifier = Modifier.height(19.dp))
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
 
 @Composable
 private fun SearchTextField(
