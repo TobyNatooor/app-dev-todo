@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -166,7 +167,7 @@ fun HomeList(
                     }
 
                     if (lists.isNotEmpty()) {
-                        CheckListGrid(viewModel, lists, searchQuery, horizontalPadding)
+                        CheckListGrid(viewModel, lists, searchQuery, horizontalPadding, sortedOption)
                     }
                 }
             }
@@ -180,7 +181,7 @@ private fun CheckListGrid(
     lists: List<CheckList>,
     searchQuery: MutableState<String>,
     horizontalPadding: Dp,
-    sortedOption: TODO,
+    sortedOption: State<SortOption>,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
