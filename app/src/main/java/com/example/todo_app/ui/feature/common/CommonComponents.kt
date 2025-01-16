@@ -18,6 +18,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -187,31 +189,43 @@ fun ToDoCheckBox(
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
-    Box {
-        Box(
-            modifier = modifier
-                .align(Alignment.Center)
-                .padding(8.dp)
-                .size(size)
-                .background(
-                    color = if (toDo.status.isDone()) green1 else neutral1,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable {
-                    viewModel.updateToDoItem(
-                        toDo.copy(status = toDo.status.check())
-                    )
-                }
-        )
-        if (toDo.status.isDone()) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Check Icon",
-                tint = green4,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(size * 1.1f)
+    val containerColor = when (toDo.status.getStatus()) {
+        1 -> green1
+        2 -> yellow1
+        3 -> red1
+        else -> neutral1
+    }
+    val contentColor = when (toDo.status.getStatus()) {
+        1 -> green4
+        2 -> yellow4
+        3 -> red4
+        else -> neutral1
+    }
+    val imageVector = when (toDo.status.getStatus()) {
+        1 -> Icons.Filled.Check
+        2 -> Icons.Filled.Update
+        3 -> Icons.Filled.Close
+        else -> Icons.Filled.Check
+    }
+
+    FloatingActionButton(
+        onClick = {
+            viewModel.updateToDoItem(
+                toDo.copy(status = toDo.status.check())
             )
-        }
+        },
+        containerColor = containerColor,
+        contentColor = contentColor,
+        shape = RoundedCornerShape(8.dp), // Make it square with rounded edges
+        modifier = modifier
+            .padding(8.dp)
+            .size(size)
+    ) {
+        Icon(
+                imageVector = imageVector,
+                contentDescription = "Check Icon",
+                tint = contentColor,
+                modifier = Modifier.size(size * 1.1f)
+            )
     }
 }
