@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.todo_app.data.AppDatabase
@@ -27,10 +28,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.ui.feature.common.LoadingScreen
+import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.primary4
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
