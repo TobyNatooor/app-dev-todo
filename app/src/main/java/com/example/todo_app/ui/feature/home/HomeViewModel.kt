@@ -115,8 +115,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             val newList = CheckList(
                 title = title,
                 description = "Add Description",
-                order = 2, //TODO: Add query to find max order
-                folderId = 0
             )
             db.checkListDao().insert(newList)
             _addingNewList.value = false
