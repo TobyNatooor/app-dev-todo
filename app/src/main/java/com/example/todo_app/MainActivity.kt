@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // UNCOMMENT WHEN TESTING
-        applicationContext.deleteDatabase("ToDoDB")
+        //applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
         val db = Room.databaseBuilder(
