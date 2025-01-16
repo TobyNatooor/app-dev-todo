@@ -66,7 +66,7 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, focusManager, viewModel, gridState)
+                HomeContent(homeUIState, viewModel, gridState)
             }
         }
     }
@@ -75,7 +75,6 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     homeUIState: HomeUIState,
-    focusManager: FocusManager,
     viewModel: HomeViewModel,
     gridState: LazyGridState,
     modifier: Modifier = Modifier,
@@ -84,14 +83,12 @@ private fun HomeContent(
         is HomeUIState.Empty -> HomeList(
             lists = ArrayList(),
             viewModel = viewModel,
-            focusManager = focusManager,
             gridState = gridState
         )
 
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel,
-            focusManager = focusManager,
             gridState = gridState
         )
 

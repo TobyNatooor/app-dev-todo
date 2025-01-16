@@ -72,10 +72,8 @@ import com.example.todo_app.ui.theme.*
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    focusManager: FocusManager,
     gridState: LazyGridState
 ) {
-    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
@@ -120,7 +118,6 @@ fun HomeList(
 
                 SearchTextField(
                     viewModel,
-                    focusRequester,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -155,7 +152,7 @@ fun HomeList(
                             if(sortedOption.value == SortOption.NAME){
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
-                            NewListCard(focusRequester, viewModel)
+                            NewListCard(viewModel)
                         }
                     }
                 }
@@ -214,15 +211,11 @@ private fun AlphabeticalHeader(prevChar: Char, currChar: Char, getSymbol: (Char)
 @Composable
 private fun SearchTextField(
     viewModel: HomeViewModel,
-    focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     val focusState = remember { mutableStateOf(false) }
     val searchQuery = viewModel.filteringQuery.collectAsState()
     val userInput = remember { mutableStateOf(searchQuery.value) }
-
-
-
 
     val onFocusChange: (Boolean) -> Unit = { isFocused -> 
         focusState.value = isFocused
@@ -241,7 +234,6 @@ private fun SearchTextField(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .focusRequester(focusRequester)
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
@@ -454,10 +446,9 @@ private fun ListCard(
 
 @Composable
 private fun NewListCard(
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
-
+    val focusRequester = remember { FocusRequester() }
     return Card(
         colors = CardDefaults.cardColors(
             containerColor = neutral2,
