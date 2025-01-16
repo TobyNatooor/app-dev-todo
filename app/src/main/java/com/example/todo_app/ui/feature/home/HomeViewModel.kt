@@ -146,6 +146,12 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         nav.navigate("todoList/${list.title}/${list.id}")
     }
 
+    fun isNextChar(curChar: Char, prevChar: Char): Boolean {
+        return if(curChar in '!' .. '/' && prevChar in '!' .. '/') false
+        else if(curChar in '0' .. '9' && prevChar in '0' .. '9') false
+        else curChar > prevChar
+    }
+
     fun getSymbol(char:Char): String {
         return when (char) {
             in '!' .. '/' -> {

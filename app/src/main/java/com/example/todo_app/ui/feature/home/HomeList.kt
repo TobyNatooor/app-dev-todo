@@ -174,7 +174,8 @@ fun HomeList(
                                 val currChar: Char = lists[index].title[0].uppercaseChar()
                                 AlphabeticalHeader(
                                     prevChar,
-                                    currChar
+                                    currChar,
+                                    viewModel.isNextChar(currChar, prevChar)
                                 ) { viewModel.getSymbol(currChar) }
                             }
                             ListCard(lists[index], viewModel)
@@ -187,8 +188,8 @@ fun HomeList(
 }
 
 @Composable
-private fun AlphabeticalHeader(prevChar: Char, currChar: Char, getSymbol: (Char) -> String){
-    if (prevChar < currChar) {
+private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, getSymbol: (Char) -> String){
+    if (isNext) {
         println("Creating header with $currChar")
         Text(
             getSymbol(currChar),
