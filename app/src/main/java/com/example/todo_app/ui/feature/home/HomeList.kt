@@ -109,7 +109,7 @@ fun HomeList(
                     color = neutral1,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 100.dp, bottom = 80.dp)
+                        .padding(top = 120.dp, bottom = 100.dp)
                 )
             }
 
