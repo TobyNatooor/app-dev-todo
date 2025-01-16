@@ -36,7 +36,7 @@ fun AppNavigation(db: AppDatabase) {
             ToDoListScreen(
                 title = title,
                 listId = listId,
-                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton =  true) },
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) },
                 db = db,
                 navController = navController
             )
@@ -51,7 +51,7 @@ fun AppNavigation(db: AppDatabase) {
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton =  false) },
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton = false) },
                 db = db
             )
         }
