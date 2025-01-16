@@ -49,7 +49,6 @@ fun HomeScreen(
         factory = HomeViewModelFactory(db, navController)
     )
     val homeUIState = viewModel.homeState.collectAsState().value
-    val searchQuery = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -65,7 +64,6 @@ fun HomeScreen(
         floatingActionButton = {
             AddButton(onClick = {
                 coroutineScope.launch {
-                    searchQuery.value = ""
                     viewModel.searchForTodos("")
                     columnState.animateScrollToItem(0)
                     delay(200L)
@@ -79,7 +77,7 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, searchQuery, focusManager, viewModel, columnState)
+                HomeContent(homeUIState, viewModel, columnState)
             }
         }
     }
@@ -88,8 +86,6 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     homeUIState: HomeUIState,
-    searchQuery: MutableState<String>,
-    focusManager: FocusManager,
     viewModel: HomeViewModel,
     columnState: LazyListState,
     modifier: Modifier = Modifier,
@@ -98,16 +94,12 @@ private fun HomeContent(
         is HomeUIState.Empty -> HomeList(
             lists = ArrayList(),
             viewModel = viewModel,
-            searchQuery = searchQuery,
-            focusManager = focusManager,
             columnState = columnState
         )
 
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel,
-            searchQuery = searchQuery,
-            focusManager = focusManager,
             columnState = columnState
         )
 

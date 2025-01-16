@@ -23,7 +23,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 
     private val _filterQuery = MutableStateFlow("")
-    private val filteringQuery = _filterQuery.asStateFlow()
+    val filteringQuery = _filterQuery.asStateFlow()
 
     private val filteredList: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
         if (query.isBlank()) db.checkListDao().getAll()
@@ -49,8 +49,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
 
-    var currentChar: Char = '\u0000'
-
     private val _addingNewList = MutableStateFlow(false)
     val addingNewList = _addingNewList.asStateFlow()
 
@@ -66,6 +64,10 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
                 _mutableHomeState.value = homeUIState
             }
         }
+    }
+
+    fun getQuery(): String{
+        return filteringQuery.value
     }
 
     fun getTodosByListId(listId: Int): List<ToDo> {
@@ -144,15 +146,10 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         nav.navigate("todoList/${list.title}/${list.id}")
     }
 
-    fun isNextChar(char: Char): Boolean {
-        if (char > currentChar){
-            currentChar = when (char) {
-                in '!' .. '/' -> '/'
-                in '0'..'9' -> '9'
-                else -> char
-            }
-            return true
-        } else return false
+    fun isNextChar(curChar: Char, prevChar: Char): Boolean {
+        return if(curChar in '!' .. '/' && prevChar in '!' .. '/') false
+        else if(curChar in '0' .. '9' && prevChar in '0' .. '9') false
+        else curChar > prevChar
     }
 
     fun getSymbol(char:Char): String {

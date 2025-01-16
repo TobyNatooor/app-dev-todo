@@ -73,10 +73,8 @@ fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
     searchQuery: MutableState<String>,
-    focusManager: FocusManager,
     columnState: LazyListState
 ) {
-    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
@@ -125,14 +123,12 @@ fun HomeList(
                     val childrenHeight = 42.dp
                     val horizontalDistribution = 8f / 15f
 
-                    SearchTextField(
-                        viewModel,
-                        focusRequester,
-                        searchQuery,
-                        modifier = Modifier
-                            .weight(horizontalDistribution)
-                            .height(childrenHeight)
-                    )
+                SearchTextField(
+                    viewModel,
+                    modifier = Modifier
+                        .weight(horizontalDistribution)
+                        .height(childrenHeight)
+                )
 
                     SortButton(
                         viewModel,
@@ -152,7 +148,7 @@ fun HomeList(
                             if (sortedOption.value == SortOption.NAME) {
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
-                            NewListCard(focusRequester, viewModel)
+                            NewListCard(viewModel)
                         }
                     }
 
@@ -191,7 +187,7 @@ private fun CheckListGrid(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(horizontalPadding)
     ) {
-        lists.chunked(2).forEach { rowItems ->
+        lists.chunked(2).forEachIndexed { chunkIndex, rowItems ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -204,30 +200,26 @@ private fun CheckListGrid(
                             .padding(8.dp)
                     ) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val char = checklist.title[0].uppercaseChar()
-                            if (viewModel.isNextChar(char)) {
-                                Text(
-                                    viewModel.getSymbol(char),
-                                    style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
-                                    color = neutral1,
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier
-                                        .width(15.dp)
-                                        .height(4.dp)
-                                )
+                            val currChar: Char = checklist.title[0].uppercaseChar()
+                            val prevChar = if (chunkIndex == 0 && rowItems.indexOf(checklist) == 0) {
+                                '\u0000'
                             } else {
-                                // Space instead of text
-                                Spacer(modifier = Modifier.height(19.dp))
+                                val flatIndex = chunkIndex * 2 + rowItems.indexOf(checklist)
+                                lists[flatIndex - 1].title[0].uppercaseChar()
                             }
-                            Spacer(modifier = Modifier.height(5.dp))
+                            AlphabeticalHeader(
+                                prevChar,
+                                currChar,
+                                viewModel.isNextChar(currChar, prevChar)
+                            ) { viewModel.getSymbol(currChar) }
                         }
-                        ListCard(checklist, searchQuery.value, focusRequester, viewModel)
+                        ListCard(checklist, viewModel)
                     }
                 }
 
+                // Add a spacer if rowItems.size < 2
                 if (rowItems.size < 2) {
-                    Spacer(modifier = Modifier.width(horizontalPadding))
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -235,13 +227,35 @@ private fun CheckListGrid(
 }
 
 @Composable
+private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, getSymbol: (Char) -> String){
+    if (isNext) {
+        println("Creating header with $currChar")
+        Text(
+            getSymbol(currChar),
+            style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
+            color = neutral1,
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .width(15.dp)
+                .height(4.dp)
+        )
+    } else {
+        // Space instead of text
+        Spacer(modifier = Modifier.height(19.dp))
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
+
+@Composable
 private fun SearchTextField(
     viewModel: HomeViewModel,
-    focusRequester: FocusRequester,
-    searchQuery: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
     val focusState = remember { mutableStateOf(false) }
+    val searchQuery = viewModel.filteringQuery.collectAsState()
+    val userInput = remember { mutableStateOf(searchQuery.value) }
 
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
         focusState.value = isFocused
@@ -250,14 +264,13 @@ private fun SearchTextField(
     Box(modifier = modifier) {
         // Search TextField
         BasicTextField(
-            value = searchQuery.value,
-            onValueChange = {
-                searchQuery.value = it
-                viewModel.searchForTodos(it)
+            value = userInput.value,
+            onValueChange = { newTitle ->
+                userInput.value = newTitle
+                viewModel.searchForTodos(userInput.value)
             },
             modifier = Modifier
                 .fillMaxSize()
-                .focusRequester(focusRequester)
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
@@ -382,8 +395,6 @@ fun SortButton(
 @Composable
 private fun ListCard(
     list: CheckList,
-    search: String,
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
     val focusManager = LocalFocusManager.current
@@ -448,7 +459,8 @@ private fun ListCard(
                 }
             }
             for (todo in todos) {
-                if (!todo.title.isNullOrEmpty()) {
+                if (todo.title.isNotEmpty()) {
+                    val search = viewModel.getQuery()
                     Text(
                         if (search.isNotEmpty()) {
                             getTodoTitleWithHighlight(todo.title, search)
@@ -467,10 +479,9 @@ private fun ListCard(
 
 @Composable
 private fun NewListCard(
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
-
+    val focusRequester = remember { FocusRequester() }
     return Card(
         colors = CardDefaults.cardColors(
             containerColor = neutral2,
