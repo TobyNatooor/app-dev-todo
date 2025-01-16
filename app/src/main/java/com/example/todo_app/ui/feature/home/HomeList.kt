@@ -1,13 +1,11 @@
 package com.example.todo_app.ui.feature.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,10 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -64,8 +60,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 
 @Composable
 fun HomeList(
@@ -73,7 +69,7 @@ fun HomeList(
     viewModel: HomeViewModel,
     searchQuery: MutableState<String>,
     focusManager: FocusManager,
-    gridState: LazyGridState
+    columnState: LazyListState
 ) {
     val focusRequester = remember { FocusRequester() }
     val horizontalPadding = 40.dp
@@ -88,18 +84,13 @@ fun HomeList(
             }
     ) {
         // Lists
-        LazyVerticalGrid(
-            state = gridState,
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(40.dp),
-            contentPadding = PaddingValues(
-                horizontal = horizontalPadding
-            ),
+        LazyColumn (
+            state = columnState,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             // Title
-            item(span = { GridItemSpan(2) }) {
+            item {
                 Text(
                     "My Lists",
                     textAlign = TextAlign.Center,
@@ -111,10 +102,14 @@ fun HomeList(
                 )
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(
+                            start = horizontalPadding / 2,
+                            end = horizontalPadding / 4,
+                        ),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     val childrenHeight = 42.dp
@@ -126,7 +121,6 @@ fun HomeList(
                         searchQuery,
                         modifier = Modifier
                             .weight(horizontalDistribution)
-                            //.border(1.dp, Color.Red)
                             .height(childrenHeight)
                     )
 
@@ -134,21 +128,22 @@ fun HomeList(
                         viewModel,
                         modifier = Modifier
                             .weight(1f - horizontalDistribution)
-                            //.border(1.dp, Color.Blue)
                             .height(childrenHeight)
                     )
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
-                if (lists.isEmpty()) {
-                    Text(
-                        text = "No checklists found",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                } else {
-                    CheckListGrid(viewModel, lists, searchQuery, horizontalPadding)
+            item {
+                Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                    if (lists.isEmpty()) {
+                        Text(
+                            text = "No checklists found",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    } else {
+                        CheckListGrid(viewModel, lists, searchQuery, horizontalPadding)
+                    }
                 }
             }
         }
@@ -181,7 +176,6 @@ private fun CheckListGrid(
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .border(1.dp, Color.Red)
                             .padding(8.dp)
                     ) {
                         if (viewModel.sortedOption == SortOption.NAME) {
@@ -212,30 +206,6 @@ private fun CheckListGrid(
             }
         }
     }
-
-    /*
-    Column (modifier = Modifier.border(1.dp, Color.Red)) {
-        if (viewModel.sortedOption == SortOption.NAME) {
-            val char = viewModel.isNextChar(lists[index])
-            if (char != '!') {
-                Text(
-                    char.toString(),
-                    style = TextStyle(fontSize = 13.sp),
-                )
-                HorizontalDivider(
-                    modifier = Modifier
-                        .width(15.dp)
-                        .height(4.dp)
-                )
-            } else {
-                // Space instead of text
-                Spacer(modifier = Modifier.height(19.dp))
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-        }
-        ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
-    }
-     */
 }
 
 @Composable
@@ -251,10 +221,7 @@ private fun SearchTextField(
         focusState.value = isFocused
     }
 
-    Box(
-        modifier = modifier
-            .padding(end = 0.dp)
-    ) {
+    Box(modifier = modifier) {
         // Search TextField
         BasicTextField(
             value = searchQuery.value,
@@ -308,7 +275,7 @@ private fun SearchTextField(
                 modifier = Modifier
                     .padding(
                         start = 4.dp,
-                        end = if (focusState.value) 0.dp else 64.dp,
+                        end = if (focusState.value) 4.dp else 64.dp,
                         bottom = 6.dp
                     )
             )
@@ -339,7 +306,6 @@ fun SortButton(
                 contentColor = MaterialTheme.colorScheme.onBackground
             ),
             modifier = Modifier
-                //.border(1.dp, Color.Red)
                 .align(Alignment.BottomCenter)
                 .padding(top = 4.dp)
         ) {
@@ -352,7 +318,6 @@ fun SortButton(
                     maxLines = 1,
                     modifier = Modifier
                         .wrapContentWidth()
-                    //.border(1.dp, Color.Green)
                 )
                 // DropdownMenu
                 DropdownMenu(
