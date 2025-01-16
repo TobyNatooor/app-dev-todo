@@ -2,6 +2,7 @@ package com.example.todo_app.ui.feature.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -24,7 +25,7 @@ import com.example.todo_app.ui.theme.*
 @Composable
 fun DropdownSettingsMenu(
         onRenameClicked: () -> Unit,
-        onDeleteClicked: () -> Unit
+        onDeleteClicked: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
@@ -68,7 +69,9 @@ fun DropdownSettingsMenu(
                 text = {
                     Text(
                         "Rename",
-                        style = menuTextStyle
+                        style = menuTextStyle,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                 },
                 onClick = { expanded = false
@@ -88,7 +91,9 @@ fun DropdownSettingsMenu(
                 text = {
                     Text(
                         "Delete",
-                        style = menuTextStyle
+                        style = menuTextStyle,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                 },
                 onClick = { expanded = false

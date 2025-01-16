@@ -20,7 +20,6 @@ fun AppNavigation(db: AppDatabase) {
             HomeScreen(
                 db = db,
                 navController = navController,
-                appBar = @Composable { AppBar(navController, backButton = false, sortButton = true, searchButton = true) }
             )
         }
         composable(

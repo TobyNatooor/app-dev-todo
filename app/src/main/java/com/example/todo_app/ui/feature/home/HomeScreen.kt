@@ -31,7 +31,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     db: AppDatabase,
     navController: NavController,
-    appBar: @Composable () -> Unit
 ) {
     val gridState = rememberLazyGridState()
     val viewModel: HomeViewModel = viewModel(

@@ -36,7 +36,7 @@ fun AppBar(
         if (backButton) {
             Icon(
                 Icons.Filled.ChevronLeft,
-                contentDescription = null,
+                contentDescription = "Back",
                 tint = neutral1,
                 modifier = Modifier
                     .fillMaxHeight()
@@ -50,7 +50,7 @@ fun AppBar(
         if (sortButton) {
             Icon(
                 Icons.AutoMirrored.Filled.Sort,
-                contentDescription = null,
+                contentDescription = "Sort",
                 tint = neutral1,
                 modifier = Modifier
                     .fillMaxHeight()
@@ -61,11 +61,11 @@ fun AppBar(
         if (searchButton) {
             Icon(
                 Icons.Filled.Search,
-                contentDescription = null,
+                contentDescription = "Search",
                 tint = neutral1,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(start = 8.dp) // Space between the two right-most icons
+                    .padding(start = 8.dp) // Space between the sort and search icons
                     .aspectRatio(1f)
                     .clickable {}
             )
