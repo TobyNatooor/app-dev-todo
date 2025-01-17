@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -193,10 +196,11 @@ fun ToDoOptions(
                         content = {
                             TextFieldOption(
                                 text.value,
-                                hintText = "Enter task address",
+                                textState = text,
+                                hintText = "Enter todo address",
                                 height = 42.dp,
                                 contentAlign = Alignment.TopStart,
-                                onTextChanged = { },
+                                onTextChanged = { text.value = it },
                                 onFocusChanged = { isFocused ->
                                     if (isFocused) {
                                         getLocation { place ->
@@ -223,7 +227,7 @@ fun ToDoOptions(
                         }
                     )
                 }
-                if (toDo.location != null)
+                if (toDo.location != null) {
                     item {
                         GoogleMap(
                             modifier = Modifier
@@ -239,6 +243,24 @@ fun ToDoOptions(
                             )
                         }
                     }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .background(color = Color.Gray)
+                        ) {
+                            Text(
+                                "Specify location to view map",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .wrapContentHeight()
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -270,10 +292,10 @@ private fun TextFieldOption(
     height: Dp,
     onTextChanged: (String) -> Unit,
     onFocusChanged: ((Boolean) -> Unit)? = null,
+    textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
     val focusRequester = remember { FocusRequester() }
-    val textState = remember { mutableStateOf(startText) }
     val focusState = remember { mutableStateOf(false) }
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
         focusState.value = isFocused
