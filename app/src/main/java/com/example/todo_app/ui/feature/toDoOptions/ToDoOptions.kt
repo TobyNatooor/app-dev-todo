@@ -206,15 +206,17 @@ fun ToDoOptions(
                                         getLocation { place ->
                                             Log.d("PLACE", "$place")
                                             val name = place?.displayName
-                                            val lati = place?.location?.latitude ?: 0.0
-                                            val longi = place?.location?.longitude ?: 0.0
-                                            markerPosition = LatLng(lati, longi)
+                                            val latitude = place?.location?.latitude ?: 0.0
+                                            val longitude = place?.location?.longitude ?: 0.0
+                                            markerPosition = LatLng(latitude, longitude)
                                             markerState.position = markerPosition
                                             cameraPositionState.position =
                                                 fromLatLngZoom(markerPosition, 10f)
                                             viewmodel.updateToDo(
                                                 toDo.copy(
-                                                    location = name
+                                                    location = name,
+                                                    latitude = latitude,
+                                                    longitude = longitude,
                                                 )
                                             )
                                             if (name != null) {
@@ -227,7 +229,7 @@ fun ToDoOptions(
                         }
                     )
                 }
-                if (toDo.location != null) {
+                if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
                     item {
                         GoogleMap(
                             modifier = Modifier
@@ -237,6 +239,9 @@ fun ToDoOptions(
                             cameraPositionState = cameraPositionState
                         ) {
                             // Add a marker
+                            markerPosition = LatLng(toDo.latitude, toDo.longitude)
+                            markerState.position = markerPosition
+                            cameraPositionState.position = fromLatLngZoom(markerPosition, 10f)
                             Marker(
                                 title = toDo.location,
                                 state = markerState
