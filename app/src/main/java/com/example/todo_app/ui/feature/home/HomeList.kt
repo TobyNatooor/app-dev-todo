@@ -73,6 +73,7 @@ import com.example.todo_app.ui.theme.primary2
 
 @Composable
 fun HomeList(
+    favorites: List<CheckList>,
     lists: List<CheckList>,
     viewModel: HomeViewModel,
     columnState: LazyListState

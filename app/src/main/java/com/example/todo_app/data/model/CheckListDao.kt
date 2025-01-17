@@ -25,6 +25,12 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList")
     fun getAll(): Flow<List<CheckList>>
 
+    @Query("SELECT * FROM CheckList WHERE favorite = 1")
+    fun getAllFavorites(): Flow<List<CheckList>>
+
+    @Query("SELECT * FROM CheckList WHERE favorite = 0")
+    fun getAllNonFavorite(): Flow<List<CheckList>>
+
     @Query("SELECT * FROM CheckList ORDER BY Checklist.created DESC")
     fun getAllSortedByCreated(): Flow<List<CheckList>>
 
