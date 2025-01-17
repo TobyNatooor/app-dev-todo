@@ -28,6 +28,7 @@ enum class ToDoStatus(private val status: String) {
             IN_PROGRESS -> 2
             CANCELED -> 3
             CANT_BE_DONE -> 4
+            else -> 0
         }
     }
     fun setStatus(status: Int): ToDoStatus {
