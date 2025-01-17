@@ -62,6 +62,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
 import com.example.todo_app.ui.theme.neutral0
@@ -432,6 +433,7 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
+                        actions = listOf(DropdownSettingsMenuItem.Rename, DropdownSettingsMenuItem.Delete),
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
                     )

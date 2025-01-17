@@ -9,7 +9,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +25,7 @@ import com.example.todo_app.ui.theme.*
 fun DropdownSettingsMenu(
         onRenameClicked: () -> Unit,
         onDeleteClicked: () -> Unit,
+        actions: List<DropdownSettingsMenuItem>
 ) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
@@ -37,7 +37,10 @@ fun DropdownSettingsMenu(
 
     Box {
         IconButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
+            Icon(
+                Icons.Rounded.MoreVert,
+                contentDescription = "Settings",
+                tint = neutral0)
         }
         DropdownMenu(
             expanded = expanded,
@@ -45,60 +48,80 @@ fun DropdownSettingsMenu(
             modifier = Modifier
                 .background(neutral1)
         ) {
-            /*DropdownMenuItem(
-                text = {
-                    Text(
-                        "Share",
-                        style = menuTextStyle
-                    )
-                },
-                onClick = { expanded = false
-                            /* Handle Share */ }
-            )*/
-            /*DropdownMenuItem(
-                text = {
-                    Text(
-                        "Edit",
-                        style = menuTextStyle
-                    )
-                },
-                onClick = { expanded = false
-                            /* Handle Edit */ }
-            )*/
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Rename",
-                        style = menuTextStyle,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                onClick = { expanded = false
-                            onRenameClicked() }
-            )
-            /*DropdownMenuItem(
-                text = {
-                    Text(
-                        "Merge",
-                        style = menuTextStyle
-                    )
-                },
-                onClick = { expanded = false
-                            /* Handle Merge */ }
-            )*/
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Delete",
-                        style = menuTextStyle,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                onClick = { expanded = false
-                            onDeleteClicked() }
-            )
+            actions.forEach { action ->
+                when (action) {
+                    is DropdownSettingsMenuItem.Share -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Share",
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = { expanded = false
+                                        /* Handle Share */ }
+                        )
+                    }
+                    is DropdownSettingsMenuItem.Edit -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Edit",
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = { expanded = false
+                                        /* Handle Edit */ }
+                        )
+                    }
+                    is DropdownSettingsMenuItem.Rename -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Rename",
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = { expanded = false
+                                        onRenameClicked() }
+                        )
+                    }
+                    is DropdownSettingsMenuItem.Merge -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Merge",
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = { expanded = false
+                                        /* Handle Merge */ }
+                        )
+                    }
+                    is DropdownSettingsMenuItem.Delete -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Delete",
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = { expanded = false
+                                onDeleteClicked() }
+                        )
+                    }
+                }
+            }
         }
     }
 }
