@@ -70,11 +70,8 @@ import com.example.todo_app.model.SortOption
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    searchQuery: MutableState<String>,
-    focusManager: FocusManager,
     gridState: LazyGridState
 ) {
-    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     val horizontalPadding = 40.dp
@@ -119,8 +116,6 @@ fun HomeList(
 
                 SearchTextField(
                     viewModel,
-                    focusRequester,
-                    searchQuery,
                     modifier = Modifier
                         .weight(horizontalDistribution)
                         //.border(1.dp, Color.Red)
@@ -155,7 +150,7 @@ fun HomeList(
                             if(sortedOption.value == SortOption.NAME){
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
-                            NewListCard(focusRequester, viewModel)
+                            NewListCard(viewModel)
                         }
                     }
                 }
@@ -169,29 +164,19 @@ fun HomeList(
                         )
                     }
                 } else {
-                    viewModel.currentChar = '\u0000'
                     items(lists.size) { index ->
                         Column {
                             if (sortedOption.value == SortOption.NAME) {
-                                val char = lists[index].title[0].uppercaseChar()
-                                if (viewModel.isNextChar(char)) {
-                                    Text(
-                                        viewModel.getSymbol(char),
-                                        style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
-                                        color = neutral1,
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .width(15.dp)
-                                            .height(4.dp)
-                                    )
-                                } else {
-                                    // Space instead of text
-                                    Spacer(modifier = Modifier.height(19.dp))
-                                }
-                                Spacer(modifier = Modifier.height(5.dp))
+                                val prevChar = if(index == 0) '\u0000'
+                                else lists[index - 1].title[0].uppercaseChar()
+                                val currChar: Char = lists[index].title[0].uppercaseChar()
+                                AlphabeticalHeader(
+                                    prevChar,
+                                    currChar,
+                                    viewModel.isNextChar(currChar, prevChar)
+                                ) { viewModel.getSymbol(currChar) }
                             }
-                            ListCard(lists[index], searchQuery.value, focusRequester, viewModel)
+                            ListCard(lists[index], viewModel)
                         }
                     }
                 }
@@ -201,13 +186,35 @@ fun HomeList(
 }
 
 @Composable
+private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, getSymbol: (Char) -> String){
+    if (isNext) {
+        println("Creating header with $currChar")
+        Text(
+            getSymbol(currChar),
+            style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
+            color = neutral1,
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .width(15.dp)
+                .height(4.dp)
+        )
+    } else {
+        // Space instead of text
+        Spacer(modifier = Modifier.height(19.dp))
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
+
+@Composable
 private fun SearchTextField(
     viewModel: HomeViewModel,
-    focusRequester: FocusRequester,
-    searchQuery: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
     val focusState = remember { mutableStateOf(false) }
+    val searchQuery = viewModel.filteringQuery.collectAsState()
+    val userInput = remember { mutableStateOf(searchQuery.value) }
 
     val onFocusChange: (Boolean) -> Unit = { isFocused -> 
         focusState.value = isFocused
@@ -219,14 +226,13 @@ private fun SearchTextField(
     ) {
         // Search TextField
         BasicTextField(
-            value = searchQuery.value,
-            onValueChange = {
-                searchQuery.value = it
-                viewModel.searchForTodos(it)
+            value = userInput.value,
+            onValueChange = { newTitle ->
+                userInput.value = newTitle
+                viewModel.searchForTodos(userInput.value)
             },
             modifier = Modifier
                 .fillMaxSize()
-                .focusRequester(focusRequester)
                 .onFocusChanged { state -> onFocusChange(state.isFocused) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
@@ -353,8 +359,6 @@ fun SortButton(
 @Composable
 private fun ListCard(
     list: CheckList,
-    search: String,
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
 
@@ -362,6 +366,7 @@ private fun ListCard(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+
 
     if (showDeleteDialog) {
         DeleteList(
@@ -420,7 +425,8 @@ private fun ListCard(
                 }
             }
             for (todo in todos) {
-                if (!todo.title.isNullOrEmpty()) {
+                if (todo.title.isNotEmpty()) {
+                    val search = viewModel.getQuery()
                     Text(
                         if (search.isNotEmpty()) {
                             getTodoTitleWithHighlight(todo.title, search)
@@ -439,10 +445,9 @@ private fun ListCard(
 
 @Composable
 private fun NewListCard(
-    focusRequester: FocusRequester,
     viewModel: HomeViewModel
 ) {
-
+    val focusRequester = remember { FocusRequester() }
     return Card(
         colors = CardDefaults.cardColors(
             containerColor = neutral2,
