@@ -111,7 +111,20 @@ fun HomeList(
                         .padding(top = 120.dp, bottom = 100.dp)
                 )
             }
-
+            if(favorites.isNotEmpty()){
+                item {
+                    Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                        val cards = buildList {
+                            favorites.forEach { checklist ->
+                                add(ChecklistCardItem(checklist.title) {
+                                    ListCard(checklist, viewModel)
+                                })
+                            }
+                        }
+                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
+                    }
+                }
+            }
             item {
                 Row(
                     modifier = Modifier
