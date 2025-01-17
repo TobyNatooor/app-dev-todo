@@ -79,7 +79,7 @@ fun HomeList(
 ) {
     val focusManager = LocalFocusManager.current
 
-    val horizontalPadding = 40.dp
+    val horizontalPadding = 24.dp
     val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
@@ -161,7 +161,7 @@ fun HomeList(
                             }
                         }
 
-                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = 8.dp)
+                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
                     }
                 }
             }
