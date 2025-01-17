@@ -23,9 +23,12 @@ import com.example.todo_app.ui.theme.*
 
 @Composable
 fun DropdownSettingsMenu(
-        onRenameClicked: () -> Unit,
-        onDeleteClicked: () -> Unit,
-        actions: List<DropdownSettingsMenuItem>
+    onShareClicked: (() -> Unit)? = null,
+    onEditClicked: (() -> Unit)? = null,
+    onRenameClicked: (() -> Unit)? = null,
+    onMergeClicked: (() -> Unit)? = null,
+    onDeleteClicked: (() -> Unit)? = null,
+    actions: List<DropdownSettingsMenuItem>
 ) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
@@ -40,7 +43,8 @@ fun DropdownSettingsMenu(
             Icon(
                 Icons.Rounded.MoreVert,
                 contentDescription = "Settings",
-                tint = neutral0)
+                tint = neutral0
+            )
         }
         DropdownMenu(
             expanded = expanded,
@@ -60,10 +64,13 @@ fun DropdownSettingsMenu(
                                     textAlign = TextAlign.Center
                                 )
                             },
-                            onClick = { expanded = false
-                                        /* Handle Share */ }
+                            onClick = {
+                                expanded = false
+                                onShareClicked?.invoke()
+                            }
                         )
                     }
+
                     is DropdownSettingsMenuItem.Edit -> {
                         DropdownMenuItem(
                             text = {
@@ -74,10 +81,13 @@ fun DropdownSettingsMenu(
                                     textAlign = TextAlign.Center
                                 )
                             },
-                            onClick = { expanded = false
-                                        /* Handle Edit */ }
+                            onClick = {
+                                expanded = false
+                                onEditClicked?.invoke()
+                            }
                         )
                     }
+
                     is DropdownSettingsMenuItem.Rename -> {
                         DropdownMenuItem(
                             text = {
@@ -88,10 +98,13 @@ fun DropdownSettingsMenu(
                                     textAlign = TextAlign.Center
                                 )
                             },
-                            onClick = { expanded = false
-                                        onRenameClicked() }
+                            onClick = {
+                                expanded = false
+                                onRenameClicked?.invoke()
+                            }
                         )
                     }
+
                     is DropdownSettingsMenuItem.Merge -> {
                         DropdownMenuItem(
                             text = {
@@ -102,10 +115,13 @@ fun DropdownSettingsMenu(
                                     textAlign = TextAlign.Center
                                 )
                             },
-                            onClick = { expanded = false
-                                        /* Handle Merge */ }
+                            onClick = {
+                                expanded = false
+                                onMergeClicked?.invoke()
+                            }
                         )
                     }
+
                     is DropdownSettingsMenuItem.Delete -> {
                         DropdownMenuItem(
                             text = {
@@ -116,8 +132,10 @@ fun DropdownSettingsMenu(
                                     textAlign = TextAlign.Center
                                 )
                             },
-                            onClick = { expanded = false
-                                onDeleteClicked() }
+                            onClick = {
+                                expanded = false
+                                onDeleteClicked?.invoke()
+                            }
                         )
                     }
                 }

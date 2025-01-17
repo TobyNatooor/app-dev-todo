@@ -87,8 +87,7 @@ fun ToDoList(
                     DropdownSettingsMenu(
                         actions = listOf(
                             DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete,
-                            DropdownSettingsMenuItem.Edit
+                            DropdownSettingsMenuItem.Delete
                         ),
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
