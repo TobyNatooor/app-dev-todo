@@ -1,6 +1,8 @@
 package com.example.todo_app.ui.feature.common
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -49,6 +51,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.MutableState
+import com.example.todo_app.model.ToDoStatus
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -91,7 +95,14 @@ fun NameList(
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
     val blankTitle = "Unnamed list"
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(title ?: "", TextRange((title ?: "").length))) }
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                title ?: "",
+                TextRange((title ?: "").length)
+            )
+        )
+    }
 
     Box {
         LaunchedEffect(Unit) {
@@ -113,7 +124,11 @@ fun NameList(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue -> textFieldValue = newValue },
-            textStyle = textStyle ?: TextStyle(fontSize = 20.sp, color = neutral0, fontFamily = dosisFontFamily),
+            textStyle = textStyle ?: TextStyle(
+                fontSize = 20.sp,
+                color = neutral0,
+                fontFamily = dosisFontFamily
+            ),
             cursorBrush = SolidColor(neutral0),
             modifier = Modifier
                 .fillMaxWidth()
@@ -188,6 +203,7 @@ fun DeleteList(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ToDoCheckBox(
     toDo: ToDo,
@@ -195,130 +211,30 @@ fun ToDoCheckBox(
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
-    val color = when (toDo.status.getStatus()) {
-        1 -> green1
-        2 -> yellow1
-        3 -> red1
+    val color = when (toDo.status) {
+        ToDoStatus.DONE -> green1
+        ToDoStatus.IN_PROGRESS -> yellow1
+        ToDoStatus.CANCELED -> red1
         else -> neutral1
     }
-    val iconColor = when (toDo.status.getStatus()) {
-        1 -> green4
-        2 -> yellow4
-        3 -> red4
+    val iconColor = when (toDo.status) {
+        ToDoStatus.DONE -> green4
+        ToDoStatus.IN_PROGRESS -> yellow4
+        ToDoStatus.CANCELED -> red4
         else -> neutral1
     }
-    val imageVector = when (toDo.status.getStatus()) {
-        1 -> Icons.Filled.Check
-        2 -> Icons.Filled.Update
-        3 -> Icons.Filled.Close
+    val imageVector = when (toDo.status) {
+        ToDoStatus.DONE -> Icons.Filled.Check
+        ToDoStatus.IN_PROGRESS -> Icons.Filled.Update
+        ToDoStatus.CANCELED -> Icons.Filled.Close
         else -> Icons.Filled.Check
     }
+    Log.d("ABCDEF", "${toDo.title} ${imageVector}")
 
-    var showDialog by remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
 
-    if (showDialog) {
-        AlertDialog(
-            containerColor = primary2,
-            onDismissRequest = { showDialog = false },
-            title = {},
-            text = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = neutral1,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable { 
-                                    viewModel.updateToDoItem(
-                                        toDo.copy(status = toDo.status.setStatus(0))
-                                    )
-                                    showDialog = false 
-                                }
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = green2,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable {
-                                    viewModel.updateToDoItem(
-                                        toDo.copy(status = toDo.status.setStatus(1))
-                                    )
-                                    showDialog = false 
-                                }
-                        ){
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = "Check Icon",
-                                tint = green4,
-                                modifier = Modifier
-                                    .size(size * 1.1f)
-                                    .align(Alignment.Center)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = yellow2,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable { 
-                                    viewModel.updateToDoItem(
-                                        toDo.copy(status = toDo.status.setStatus(2))
-                                    )
-                                    showDialog = false 
-                                }
-                        ){
-                            Icon(
-                                imageVector = Icons.Filled.Update,
-                                contentDescription = "Check Icon",
-                                tint = yellow4,
-                                modifier = Modifier
-                                    .size(size * 1.1f)
-                                    .align(Alignment.Center)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = red2,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable { 
-                                    viewModel.updateToDoItem(
-                                        toDo.copy(status = toDo.status.setStatus(3))
-                                    )
-                                    showDialog = false 
-                                }
-                        ){
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Check Icon",
-                                tint = red4,
-                                modifier = Modifier
-                                    .size(size * 1.1f)
-                                    .align(Alignment.Center)
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {}
-        )
+    if (showDialog.value) {
+        ChooseTodoStatus(viewModel, toDo, showDialog, size)
     }
 
     Box {
@@ -331,18 +247,16 @@ fun ToDoCheckBox(
                     color = color,
                     shape = RoundedCornerShape(5.dp)
                 )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = {
-                            viewModel.updateToDoItem(
-                                toDo.copy(status = toDo.status.check())
-                            )
-                        },
-                        onLongPress = {
-                            showDialog = true
-                        }
-                    )
-                }
+                .combinedClickable(
+                    onClick = {
+                        viewModel.updateToDoItem(
+                            toDo.copy(status = toDo.status.check())
+                        )
+                    },
+                    onLongClick = {
+                        showDialog.value = true
+                    },
+                ),
         )
         Icon(
             imageVector = imageVector,
@@ -353,4 +267,115 @@ fun ToDoCheckBox(
                 .align(Alignment.Center)
         )
     }
+}
+
+@Composable
+fun ChooseTodoStatus(
+    viewModel: ToDoListViewModel,
+    toDo: ToDo,
+    showDialog: MutableState<Boolean>,
+    size: Dp
+) {
+    AlertDialog(
+        containerColor = primary2,
+        onDismissRequest = { showDialog.value = false },
+        title = {},
+        text = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = neutral1,
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .clickable {
+                                viewModel.updateToDoItem(
+                                    toDo.copy(status = ToDoStatus.NOT_DONE)
+                                )
+                                showDialog.value = false
+                            }
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = green2,
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .clickable {
+                                viewModel.updateToDoItem(
+                                    toDo.copy(status = ToDoStatus.DONE)
+                                )
+                                showDialog.value = false
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Check Icon",
+                            tint = green4,
+                            modifier = Modifier
+                                .size(size * 1.1f)
+                                .align(Alignment.Center)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = yellow2,
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .clickable {
+                                viewModel.updateToDoItem(
+                                    toDo.copy(status = ToDoStatus.IN_PROGRESS)
+                                )
+                                showDialog.value = false
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Update,
+                            contentDescription = "Check Icon",
+                            tint = yellow4,
+                            modifier = Modifier
+                                .size(size * 1.1f)
+                                .align(Alignment.Center)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = red2,
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .clickable {
+                                viewModel.updateToDoItem(
+                                    toDo.copy(status = ToDoStatus.CANCELED)
+                                )
+                                showDialog.value = false
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Check Icon",
+                            tint = red4,
+                            modifier = Modifier
+                                .size(size * 1.1f)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {}
+    )
 }

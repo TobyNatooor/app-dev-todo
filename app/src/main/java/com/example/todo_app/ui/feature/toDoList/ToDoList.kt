@@ -49,8 +49,8 @@ import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.NameList
+import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
-import com.example.todo_app.ui.feature.common.*
 
 @OptIn(ExperimentalFoundationApi::class)
 
@@ -133,8 +133,8 @@ fun ToDoList(
             stickyHeader {
                 appBar()
             }
-            if (addingToDo.value){
-                    item { NewToDoItem(viewmodel, listId) }
+            if (addingToDo.value) {
+                item { NewToDoItem(viewmodel, listId) }
             }
             // To-do elements
 
@@ -185,7 +185,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     .padding(horizontal = 4.dp)
             )
             Text(
-                text = toDo.title.toString(),
+                text = toDo.title,
                 fontSize = 18.sp,
                 color = neutral0,
                 fontFamily = dosisFontFamily
