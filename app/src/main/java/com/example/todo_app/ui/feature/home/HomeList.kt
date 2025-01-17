@@ -433,7 +433,10 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
-                        actions = listOf(DropdownSettingsMenuItem.Rename, DropdownSettingsMenuItem.Delete),
+                        actions = listOf(
+                            DropdownSettingsMenuItem.Rename,
+                            DropdownSettingsMenuItem.Delete
+                        ),
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
                     )

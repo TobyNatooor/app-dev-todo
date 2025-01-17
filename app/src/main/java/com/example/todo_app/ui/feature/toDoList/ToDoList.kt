@@ -192,12 +192,20 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 color = neutral0,
                 fontFamily = dosisFontFamily
             )
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+            DropdownSettingsMenu(
+                actions = listOf(
+                    DropdownSettingsMenuItem.Rename,
+                    DropdownSettingsMenuItem.Delete,
+                    DropdownSettingsMenuItem.Edit
+                ),
+                onRenameClicked = { /* TODO */},
+                onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                onEditClicked = { viewModel.clickToDoOptions(toDo.id) }
+            )
         }
-        ToDoOptionsButton(
-            toDo, viewModel,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-        )
     }
 }
 
@@ -305,27 +313,6 @@ fun ToDoCheckBox(
             )
         }
     }
-}
-
-@Composable
-fun ToDoOptionsButton(
-    toDo: ToDo,
-    viewModel: ToDoListViewModel,
-    modifier: Modifier = Modifier
-) {
-    val focusManager = LocalFocusManager.current
-
-    Icon(
-        imageVector = Icons.Rounded.MoreVert,
-        contentDescription = "ToDo Options Icon",
-        tint = neutral0,
-        modifier = modifier
-            .padding(8.dp)
-            .clickable {
-                viewModel.clickToDoOptions(toDoId = toDo.id)
-                focusManager.clearFocus()
-            }
-    )
 }
 
 @Composable
