@@ -1,5 +1,8 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
+import android.content.Context
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -12,17 +15,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
+import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun ToDoOptionsScreen(
     modifier: Modifier = Modifier,
     toDoId: Int,
     appBar: @Composable () -> Unit,
+    getLocation: ((Place?) -> Unit?) -> Unit,
     db: AppDatabase
 ) {
     val viewModel: ToDoOptionsViewModel = viewModel(
@@ -31,6 +41,9 @@ fun ToDoOptionsScreen(
     )
     val toDoUIState by viewModel.toDoState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val cameraPositionState = rememberCameraPositionState {
+        position = fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+    }
 
     TodoappTheme {
         Scaffold(
@@ -46,7 +59,7 @@ fun ToDoOptionsScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 //appBar()
                 Box(modifier = modifier) {
-                    ToDoContent(toDoUIState, viewModel, appBar)
+                    ToDoContent(toDoUIState, viewModel, appBar, cameraPositionState, getLocation)
                 }
             }
         }
@@ -58,7 +71,9 @@ private fun ToDoContent(
     toDoUIState: ToDoUIState,
     viewModel: ToDoOptionsViewModel,
     appBar: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState,
+    getLocation: ((Place?) -> Unit?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     when (toDoUIState) {
         is ToDoUIState.Loading -> LoadingScreen(
@@ -69,6 +84,8 @@ private fun ToDoContent(
             toDo = toDoUIState.toDo,
             checklists = toDoUIState.checklists,
             viewmodel = viewModel,
+            cameraPositionState = cameraPositionState,
+            getLocation = getLocation,
             modifier = modifier,
             appBar = appBar
         )
