@@ -189,13 +189,13 @@ fun ToDoCheckBox(
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
-    val containerColor = when (toDo.status.getStatus()) {
+    val color = when (toDo.status.getStatus()) {
         1 -> green1
         2 -> yellow1
         3 -> red1
         else -> neutral1
     }
-    val contentColor = when (toDo.status.getStatus()) {
+    val iconColor = when (toDo.status.getStatus()) {
         1 -> green4
         2 -> yellow4
         3 -> red4
@@ -208,24 +208,29 @@ fun ToDoCheckBox(
         else -> Icons.Filled.Check
     }
 
-    FloatingActionButton(
-        onClick = {
-            viewModel.updateToDoItem(
-                toDo.copy(status = toDo.status.check())
-            )
-        },
-        containerColor = containerColor,
-        contentColor = contentColor,
-        shape = RoundedCornerShape(8.dp), // Make it square with rounded edges
-        modifier = modifier
-            .padding(8.dp)
-            .size(size)
-    ) {
+    Box {
+        Box(
+            modifier = modifier
+                .align(Alignment.Center)
+                .padding(8.dp)
+                .size(size)
+                .background(
+                    color = color,
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .clickable {
+                    viewModel.updateToDoItem(
+                        toDo.copy(status = toDo.status.check())
+                    )
+                }
+        )
         Icon(
                 imageVector = imageVector,
                 contentDescription = "Check Icon",
-                tint = contentColor,
-                modifier = Modifier.size(size * 1.1f)
+                tint = iconColor,
+                modifier = Modifier
+                    .size(size * 1.1f)
+                    .align(Alignment.Center)
             )
     }
 }

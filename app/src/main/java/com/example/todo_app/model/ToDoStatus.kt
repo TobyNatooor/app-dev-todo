@@ -30,4 +30,13 @@ enum class ToDoStatus(private val status: String) {
             CANT_BE_DONE -> 4
         }
     }
+    fun setStatus(status: Int): ToDoStatus {
+        return when (status) {
+            0 -> NOT_DONE
+            1 -> DONE
+            2 -> IN_PROGRESS
+            3 -> CANCELED
+            else -> NOT_DONE
+        }
+    }
 }
