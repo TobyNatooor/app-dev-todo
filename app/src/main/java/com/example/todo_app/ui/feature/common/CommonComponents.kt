@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.Dp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
 import com.example.todo_app.ui.theme.*
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -218,19 +221,26 @@ fun ToDoCheckBox(
                     color = color,
                     shape = RoundedCornerShape(5.dp)
                 )
-                .clickable {
-                    viewModel.updateToDoItem(
-                        toDo.copy(status = toDo.status.check())
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            viewModel.updateToDoItem(
+                                toDo.copy(status = toDo.status.check())
+                            )
+                        },
+                        onLongPress = {
+                            //pop up
+                        }
                     )
                 }
         )
         Icon(
-                imageVector = imageVector,
-                contentDescription = "Check Icon",
-                tint = iconColor,
-                modifier = Modifier
-                    .size(size * 1.1f)
-                    .align(Alignment.Center)
-            )
+            imageVector = imageVector,
+            contentDescription = "Check Icon",
+            tint = iconColor,
+            modifier = Modifier
+                .size(size * 1.1f)
+                .align(Alignment.Center)
+        )
     }
 }
