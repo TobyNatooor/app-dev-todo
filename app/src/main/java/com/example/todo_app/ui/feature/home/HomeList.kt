@@ -155,6 +155,11 @@ fun HomeList(
                             if (addingNewList.value) add(ChecklistCardItem("") {
                                 NewListCard(viewModel)
                             })
+                            add(ChecklistCardItem(
+                                "smart list"
+                            ){
+                                SmartList(viewModel)
+                            })
                             lists.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
                                     ListCard(checklist, viewModel)
@@ -600,6 +605,36 @@ private fun NewListTextField(
                 fontSize = 20.sp,
                 fontFamily = dosisFontFamily
             )
+        }
+    }
+}
+
+@Composable
+fun SmartList(
+    viewModel: HomeViewModel
+){
+    return Card(
+        onClick = {
+            //viewModel.clickSmartList()
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
+        modifier = Modifier.aspectRatio(1f)
+    ){
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Smart List",
+                    style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.weight(5f),
+                    color = neutral0
+                )
+
+            }
         }
     }
 }
