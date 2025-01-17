@@ -615,7 +615,7 @@ fun SmartList(
 ){
     return Card(
         onClick = {
-            //viewModel.clickSmartList()
+            viewModel.clickedSmartList()
         },
         colors = CardDefaults.cardColors(
             containerColor = neutral2,

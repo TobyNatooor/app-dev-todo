@@ -165,6 +165,9 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     fun addClicked() {
         _addingNewList.value = true
     }
+    fun clickedSmartList() {
+        nav.navigate("smartList")
+    }
 }
 
 sealed class HomeUIState {

@@ -64,19 +64,9 @@ fun HomeScreen(
                 focusManager.clearFocus()
             },
         floatingActionButton = {
-            Column {
-                AddButton(onClick = {
-                    coroutineScope.launch {
-                        viewModel.searchForTodos("")
-                        columnState.animateScrollToItem(0)
-                        delay(200L)
-                        viewModel.addClicked()
-                    }
-                })
-                Button(onClick = { navController.navigate("smartList") }) {
-                    Text("Smart List")
-                }
-            }
+            AddButton(onClick = {
+                viewModel.addClicked()
+            })
         },
     ) { innerPadding ->
         Column(
