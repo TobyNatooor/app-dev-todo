@@ -121,7 +121,7 @@ fun HomeList(
                                 })
                             }
                         }
-                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
+                        FavoriteCheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
                     }
                 }
             }
@@ -211,6 +211,26 @@ private fun CheckListGrid(
                             }
                         }
 
+                        card.item()
+                    }
+                }
+                if (rowItems.size == 1) Box(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun FavoriteCheckListGrid(
+    viewModel: HomeViewModel,
+    cards: List<ChecklistCardItem>,
+    cardSpacing: Dp
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        cards.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                rowItems.forEach { card ->
+                    Column(modifier = Modifier.weight(1f)) {
                         card.item()
                     }
                 }
@@ -446,7 +466,9 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
+                        isFavorite = list.favorite,
                         onRenameClicked = { isNaming = true },
+                        onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
                         onDeleteClicked = { showDeleteDialog = true }
                     )
                 }

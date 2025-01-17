@@ -67,6 +67,7 @@ fun ToDoList(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val addingToDo = viewmodel.addingNewToDo.collectAsState()
+    val isFavorite = viewmodel.isFavorite.collectAsState()
 
     Box(
         modifier = modifier
@@ -86,7 +87,9 @@ fun ToDoList(
                     horizontalArrangement = Arrangement.End
                 ) {
                     DropdownSettingsMenu(
+                        isFavorite = isFavorite.value,
                         onRenameClicked = { isNaming = true },
+                        onFavoriteClicked = { viewmodel.favoriteClicked() },
                         onDeleteClicked = { showDeleteDialog = true }
                     )
                 }

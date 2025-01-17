@@ -84,32 +84,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
     fun searchForTodos(query: String) {
         _filterQuery.value = query
-//        this.viewModelScope.launch {
-//            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
-//                flowOf(ArrayList())
-//            } else {
-//                db.toDoDao().findWithTitle(query)
-//            }
-//
-//            val lists: Flow<List<CheckList>> = if (query.isEmpty()) {
-//                db.checkListDao().getAll()
-//            } else {
-//                db.checkListDao().findWithTodosTitle(query)
-//            }
-//
-//            combine(lists, todos) { list, todo ->
-//                if (list.isEmpty()) {
-//                    //HomeUIState.Empty
-//                    HomeUIState.Data(ArrayList(), ArrayList())
-//                } else {
-//                    HomeUIState.Data(list, todo)
-//                }
-//            }.collect { homeUIState ->
-//                Log.d("TODOS", "ui state: $homeUIState")
-//                _mutableHomeState.value = homeUIState
-//            }
-//
-//        }
     }
 
     fun addList(title: String) {
