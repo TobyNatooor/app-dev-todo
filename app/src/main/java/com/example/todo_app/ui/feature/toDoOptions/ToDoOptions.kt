@@ -1,16 +1,18 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -19,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -38,16 +42,28 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.CustomDropdownMenu
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.example.todo_app.ui.theme.*
+import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
+import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun ToDoOptions(
     toDo: ToDo,
     checklists: List<CheckList>,
     viewmodel: ToDoOptionsViewModel,
+    cameraPositionState: CameraPositionState,
+    getLocation: ((Place?) -> Unit?) -> Unit,
     modifier: Modifier = Modifier,
     appBar: @Composable () -> Unit
 ) {
+    var markerPosition = remember { LatLng(0.0, 0.0) }
+    val markerState = remember { MarkerState(position = markerPosition) }
+
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = modifier
@@ -77,104 +93,180 @@ fun ToDoOptions(
             modifier = Modifier
                 .padding(horizontal = 32.dp)
         ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
-                .fillMaxSize()
-        ) {
-            // To-Do title
-            item {
-                Option(
-                    optionTitle = "Task title",
-                    content = {
-                        TextFieldOption(
-                            startText = toDo.title.toString(),
-                            hintText = "Enter task title",
-                            height = 42.dp,
-                            contentAlign = Alignment.Center,
-                            onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
-                        )
-                    }
-                )
-            }
-            // Move to list
-            item {
-                Option(
-                    optionTitle = "Move to list",
-                    content = {
-                        DropdownMenuOption(
-                            hintText = checklists.find { it.id == toDo.listId }?.title
-                                ?: "Select a list",
-                            height = 42.dp,
-                            contentAlign = Alignment.Center,
-                            sortOptions = checklists.filter { it.id != toDo.listId }
-                                .map { DropdownOptionItem(it.id, it.title.toString()) },
-                            onOptionSelected = { selectedOption ->
-                                val updatedToDo = toDo.copy(listId = selectedOption.id)
-                                viewmodel.updateToDo(updatedToDo)
-                            }
-                        )
-                    }
-                )
-            }
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(32.dp)
-                ) {
-                    // Deadline
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .fillMaxSize()
+            ) {
+                // To-Do title
+                item {
                     Option(
-                        optionTitle = "Deadline",
+                        optionTitle = "Task title",
                         content = {
                             TextFieldOption(
-                                startText = "01/10/25",
-                                hintText = "Select a date",
+                                startText = toDo.title.toString(),
+                                hintText = "Enter task title",
                                 height = 42.dp,
-                                contentAlign = Alignment.TopStart,
-                                onTextChanged = { }
+                                contentAlign = Alignment.Center,
+                                onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
                             )
-                        },
-                        modifier = Modifier.weight(0.5f)
-                    )
-                    // Time estimate
-                    Option(
-                        optionTitle = "Time estimate",
-                        content = {
-                            TextFieldOption(
-                                startText = "00:00",
-                                hintText = "00:00",
-                                height = 42.dp,
-                                contentAlign = Alignment.TopStart,
-                                onTextChanged = { }
-                            )
-                        },
-                        modifier = Modifier.weight(0.5f)
+                        }
                     )
                 }
-            }
-            // To-Do description
-            item {
-                Option(
-                    optionTitle = "Description",
-                    content = {
-                        TextFieldOption(
-                            startText = toDo.description,
-                            hintText = "Enter task description",
-                            height = 150.dp,
-                            contentAlign = Alignment.TopStart,
-                            onTextChanged = { description ->
-                                viewmodel.updateToDo(
-                                    toDo.copy(
-                                        description = description
-                                    )
+                // Move to list
+                item {
+                    Option(
+                        optionTitle = "Move to list",
+                        content = {
+                            DropdownMenuOption(
+                                hintText = checklists.find { it.id == toDo.listId }?.title
+                                    ?: "Select a list",
+                                height = 42.dp,
+                                contentAlign = Alignment.Center,
+                                sortOptions = checklists.filter { it.id != toDo.listId }
+                                    .map { DropdownOptionItem(it.id, it.title.toString()) },
+                                onOptionSelected = { selectedOption ->
+                                    val updatedToDo = toDo.copy(listId = selectedOption.id)
+                                    viewmodel.updateToDo(updatedToDo)
+                                }
+                            )
+                        }
+                    )
+                }
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(32.dp)
+                    ) {
+                        // Deadline
+                        Option(
+                            optionTitle = "Deadline",
+                            content = {
+                                TextFieldOption(
+                                    startText = "01/10/25",
+                                    hintText = "Select a date",
+                                    height = 42.dp,
+                                    contentAlign = Alignment.TopStart,
+                                    onTextChanged = { }
                                 )
-                            }
+                            },
+                            modifier = Modifier.weight(0.5f)
+                        )
+                        // Time estimate
+                        Option(
+                            optionTitle = "Time estimate",
+                            content = {
+                                TextFieldOption(
+                                    startText = "00:00",
+                                    hintText = "00:00",
+                                    height = 42.dp,
+                                    contentAlign = Alignment.TopStart,
+                                    onTextChanged = { }
+                                )
+                            },
+                            modifier = Modifier.weight(0.5f)
                         )
                     }
-                )
+                }
+                // To-Do description
+                item {
+                    Option(
+                        optionTitle = "Description",
+                        content = {
+                            TextFieldOption(
+                                startText = toDo.description,
+                                hintText = "Enter task description",
+                                height = 150.dp,
+                                contentAlign = Alignment.TopStart,
+                                onTextChanged = { description ->
+                                    viewmodel.updateToDo(
+                                        toDo.copy(
+                                            description = description
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+                item {
+                    val text = remember { mutableStateOf(toDo.location ?: "") }
+                    Option(
+                        optionTitle = "Location",
+                        content = {
+                            TextFieldOption(
+                                text.value,
+                                textState = text,
+                                hintText = "Enter todo address",
+                                height = 42.dp,
+                                contentAlign = Alignment.TopStart,
+                                onTextChanged = { text.value = it },
+                                onFocusChanged = { isFocused ->
+                                    if (isFocused) {
+                                        getLocation { place ->
+                                            Log.d("PLACE", "$place")
+                                            val name = place?.displayName
+                                            val latitude = place?.location?.latitude ?: 0.0
+                                            val longitude = place?.location?.longitude ?: 0.0
+                                            markerPosition = LatLng(latitude, longitude)
+                                            markerState.position = markerPosition
+                                            cameraPositionState.position =
+                                                fromLatLngZoom(markerPosition, 10f)
+                                            viewmodel.updateToDo(
+                                                toDo.copy(
+                                                    location = name,
+                                                    latitude = latitude,
+                                                    longitude = longitude,
+                                                )
+                                            )
+                                            if (name != null) {
+                                                text.value = name
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    )
+                }
+                if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
+                    item {
+                        GoogleMap(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            cameraPositionState = cameraPositionState
+                        ) {
+                            // Add a marker
+                            markerPosition = LatLng(toDo.latitude, toDo.longitude)
+                            markerState.position = markerPosition
+                            cameraPositionState.position = fromLatLngZoom(markerPosition, 10f)
+                            Marker(
+                                title = toDo.location,
+                                state = markerState
+                            )
+                        }
+                    }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .background(color = Color.Gray)
+                        ) {
+                            Text(
+                                "Specify location to view map",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .wrapContentHeight()
+                            )
+                        }
+                    }
+                }
             }
-
-        }
         }
     }
 }
@@ -204,10 +296,11 @@ private fun TextFieldOption(
     hintText: String,
     height: Dp,
     onTextChanged: (String) -> Unit,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
     val focusRequester = remember { FocusRequester() }
-    val textState = remember { mutableStateOf(startText) }
     val focusState = remember { mutableStateOf(false) }
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
         focusState.value = isFocused
@@ -237,7 +330,14 @@ private fun TextFieldOption(
             },
             modifier = modifier
                 .focusRequester(focusRequester)
-                .onFocusChanged { state -> onFocusChange(state.isFocused) },
+                .onFocusChanged { state ->
+                    if (onFocusChanged == null) {
+                        onFocusChange(state.isFocused)
+                    } else {
+                        onFocusChanged(state.isFocused)
+                    }
+                },
+
             cursorBrush = SolidColor(primary4),
             textStyle = TextStyle(
                 fontSize = 18.sp,

@@ -10,9 +10,13 @@ import androidx.navigation.navArgument
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
+import com.google.android.libraries.places.api.model.Place
 
 @Composable
-fun AppNavigation(db: AppDatabase) {
+fun AppNavigation(
+    db: AppDatabase,
+    getLocation: ((Place?) -> Unit?) -> Unit,
+) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
@@ -51,6 +55,7 @@ fun AppNavigation(db: AppDatabase) {
             ToDoOptionsScreen(
                 toDoId = toDoId,
                 appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton = false) },
+                getLocation = getLocation,
                 db = db
             )
         }

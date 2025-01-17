@@ -5,12 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
@@ -87,6 +86,10 @@ fun ToDoList(
                     horizontalArrangement = Arrangement.End
                 ) {
                     DropdownSettingsMenu(
+                        actions = listOf(
+                            DropdownSettingsMenuItem.Rename,
+                            DropdownSettingsMenuItem.Delete
+                        ),
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
                     )
@@ -190,12 +193,20 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 color = neutral0,
                 fontFamily = dosisFontFamily
             )
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+            DropdownSettingsMenu(
+                actions = listOf(
+                    DropdownSettingsMenuItem.Rename,
+                    DropdownSettingsMenuItem.Delete,
+                    DropdownSettingsMenuItem.Edit
+                ),
+                onRenameClicked = { /* TODO */},
+                onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                onEditClicked = { viewModel.clickToDoOptions(toDo.id) }
+            )
         }
-        ToDoOptionsButton(
-            toDo, viewModel,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-        )
     }
 }
 
@@ -264,6 +275,42 @@ private fun ToDoTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ToDoCheckBox(
+    toDo: ToDo,
+    viewModel: ToDoListViewModel,
+    size: Dp = 28.dp,
+    modifier: Modifier = Modifier
+) {
+    Box {
+        Box(
+            modifier = modifier
+                .align(Alignment.Center)
+                .padding(8.dp)
+                .size(size)
+                .background(
+                    color = if (toDo.status.isDone()) green1 else neutral1,
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .clickable {
+                    viewModel.updateToDoItem(
+                        toDo.copy(status = toDo.status.check())
+                    )
+                }
+        )
+        if (toDo.status.isDone()) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Check Icon",
+                tint = green4,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(size * 1.1f)
             )
         }
     }

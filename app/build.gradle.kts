@@ -3,11 +3,30 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.9.0"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
+
+//
+secrets {
+    // To add your Maps API key to this project:
+    // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+    // 2. Add this line, where YOUR_API_KEY is your API key:
+    //        MAPS_API_KEY=YOUR_API_KEY
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
 
 android {
     namespace = "com.example.todo_app"
-    compileSdk = 34
+    compileSdk = 35
 
     kotlinOptions {
         freeCompilerArgs += listOf("-Xjvm-default=all", "-opt-in=kotlin.RequiresOptIn")
@@ -16,7 +35,7 @@ android {
     defaultConfig {
         applicationId = "com.example.todo_app"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -65,6 +84,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.common)
     implementation(libs.material)
+    implementation(libs.places)
     ksp(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
@@ -89,6 +109,7 @@ dependencies {
     implementation (libs.androidx.foundation)
     implementation (libs.androidx.navigation.compose)
     implementation (libs.material.v190)
-    implementation("androidx.compose.material:material-icons-core:1.7.6")
-    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.maps.compose)
 }
