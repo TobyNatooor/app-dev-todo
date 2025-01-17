@@ -1,6 +1,7 @@
 package com.example.todo_app.ui.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -406,10 +409,8 @@ private fun ListCard(
             Modifier
         }
     ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.padding(10.dp)) {
                 if (isNaming) {
                     NameList(
                         title = list.title,
@@ -419,38 +420,46 @@ private fun ListCard(
                             viewModel.updateList(list.copy(title = newTitle))
                         },
                         onRenameComplete = {
-                            isNaming = false // Reset naming state
+                            isNaming = false
                         }
                     )
                 } else {
                     Text(
                         list.title,
-                        style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier.weight(5f),
+                        style = TextStyle(fontSize = 24.sp, fontFamily = dosisFontFamily),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
                         color = neutral0
                     )
-
-                    DropdownSettingsMenu(
-                        onRenameClicked = { isNaming = true },
-                        onDeleteClicked = { showDeleteDialog = true }
-                    )
+                }
+                for (todo in todos) {
+                    if (todo.title.isNotEmpty()) {
+                        val search = viewModel.getQuery()
+                        Text(
+                            if (search.isNotEmpty()) {
+                                getTodoTitleWithHighlight(todo.title, search)
+                            } else {
+                                AnnotatedString(todo.title)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = dosisFontFamily
+                        )
+                    }
                 }
             }
-            for (todo in todos) {
-                if (todo.title.isNotEmpty()) {
-                    val search = viewModel.getQuery()
-                    Text(
-                        if (search.isNotEmpty()) {
-                            getTodoTitleWithHighlight(todo.title, search)
-                        } else {
-                            AnnotatedString(todo.title)
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = dosisFontFamily
-                    )
-                }
+
+            if (!isNaming) {
+                DropdownSettingsMenu(
+                    onRenameClicked = { isNaming = true },
+                    onDeleteClicked = { showDeleteDialog = true },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(width = 38.dp, height = 44.dp)
+                        .offset(x = 8.dp, y = (-2).dp)
+                )
             }
         }
     }
