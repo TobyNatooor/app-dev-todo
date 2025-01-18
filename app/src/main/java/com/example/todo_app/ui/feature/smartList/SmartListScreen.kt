@@ -18,7 +18,8 @@ import com.example.todo_app.ui.theme.TodoappTheme
 fun SmartListScreen(
     modifier: Modifier = Modifier,
     db: AppDatabase,
-    navController: NavController
+    navController: NavController,
+    appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
         factory = SmartListViewModelFactory(db)
@@ -33,7 +34,11 @@ fun SmartListScreen(
                 Box(modifier = modifier) {
                     when (toDosUIState) {
                         is ToDosUIState.Loading -> LoadingScreen(modifier = modifier)
-                        is ToDosUIState.Data -> SmartList(toDos = toDosUIState.toDos)
+                        is ToDosUIState.Data -> SmartList(
+                            toDos = toDosUIState.toDos,
+                            viewmodel = viewModel,
+                            appBar = appBar
+                        )
                     }
                 }
             }

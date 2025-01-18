@@ -63,7 +63,8 @@ fun AppNavigation(
         composable("smartList") {
             SmartListScreen(
                 db = db,
-                navController = navController
+                navController = navController,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) }   
             )
         }
     }

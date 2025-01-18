@@ -21,6 +21,22 @@ class SmartListViewModel(db: AppDatabase) : ViewModel() {
             }
         }
     }
+
+    fun updateToDoItem(updatedToDo: ToDo) {
+        /*this.viewModelScope.launch {
+            db.toDoDao().update(updatedToDo)
+        }*/
+    }
+
+    fun clickToDoOptions(toDoId: Int) {
+        //nav.navigate("toDoOptions/${toDoId}")
+    }
+
+    fun deleteToDo(toDo: ToDo) {
+        /*this.viewModelScope.launch {
+            db.toDoDao().delete(toDo)
+        }*/
+    }
 }
 
 sealed class ToDosUIState {
