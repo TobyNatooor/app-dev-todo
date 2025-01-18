@@ -137,7 +137,7 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = primary2,
+                color = primary3,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {

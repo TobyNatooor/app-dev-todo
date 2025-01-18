@@ -13,6 +13,8 @@ import androidx.navigation.NavController
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
+import androidx.compose.foundation.background
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun SmartListScreen(
@@ -27,8 +29,10 @@ fun SmartListScreen(
     val toDosUIState = viewModel.toDosState.collectAsState().value
 
     TodoappTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
+        Scaffold( 
+            modifier = Modifier
+                .fillMaxSize()
+                .background(primary4)
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Box(modifier = modifier) {
