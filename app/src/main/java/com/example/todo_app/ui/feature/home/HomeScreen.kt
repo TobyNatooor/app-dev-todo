@@ -8,9 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -20,10 +30,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.ui.feature.common.LoadingScreen
+import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.primary4
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -33,7 +46,7 @@ fun HomeScreen(
     db: AppDatabase,
     navController: NavController
 ) {
-    val gridState = rememberLazyGridState()
+    val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(db, navController)
     )
@@ -52,13 +65,8 @@ fun HomeScreen(
             },
         floatingActionButton = {
             AddButton(onClick = {
-                coroutineScope.launch {
-                    viewModel.searchForTodos("")
-                    gridState.animateScrollToItem(0)
-                    delay(200L)
-                    viewModel.addClicked()
-                }
-            } )
+                viewModel.addClicked()
+            })
         },
     ) { innerPadding ->
         Column(
@@ -66,7 +74,7 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, viewModel, gridState)
+                HomeContent(homeUIState, viewModel, columnState)
             }
         }
     }
@@ -76,20 +84,20 @@ fun HomeScreen(
 private fun HomeContent(
     homeUIState: HomeUIState,
     viewModel: HomeViewModel,
-    gridState: LazyGridState,
+    columnState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
     when (homeUIState) {
         is HomeUIState.Empty -> HomeList(
             lists = ArrayList(),
             viewModel = viewModel,
-            gridState = gridState
+            columnState = columnState
         )
 
         is HomeUIState.Data -> HomeList(
             lists = homeUIState.lists,
             viewModel = viewModel,
-            gridState = gridState
+            columnState = columnState
         )
 
         else -> LoadingScreen(modifier)

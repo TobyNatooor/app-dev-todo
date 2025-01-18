@@ -3,13 +3,12 @@ package com.example.todo_app.ui.feature.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,12 +30,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -60,24 +56,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
-import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.ui.feature.common.DeleteList
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
+import com.example.todo_app.ui.feature.common.NameList
+import com.example.todo_app.ui.theme.dosisFontFamily
 import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    gridState: LazyGridState
+    columnState: LazyListState
 ) {
     val focusManager = LocalFocusManager.current
 
-    val horizontalPadding = 40.dp
-    val sortedOption = viewModel.sortedOption.collectAsState()
+    val horizontalPadding = 24.dp
     val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
@@ -89,99 +89,121 @@ fun HomeList(
                 })
             }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        // Lists
+        LazyColumn (
+            state = columnState,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             // Title
-            Text(
-                "My Lists",
-                textAlign = TextAlign.Center,
-                fontSize = 54.sp,
-                fontFamily = dosisFontFamily,
-                color = neutral1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 100.dp, bottom = 80.dp)
-            )
+            item {
+                Text(
+                    "My Lists",
+                    textAlign = TextAlign.Center,
+                    fontSize = 54.sp,
+                    fontFamily = dosisFontFamily,
+                    color = neutral1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 120.dp, bottom = 100.dp)
+                )
+            }
 
-            // Search bar and sort button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = horizontalPadding / 2, end = horizontalPadding / 4
-                    ),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                val childrenHeight = 42.dp
-                val horizontalDistribution = 8f / 15f
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = horizontalPadding / 2,
+                            end = horizontalPadding / 4,
+                        ),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    val childrenHeight = 42.dp
+                    val horizontalDistribution = 8f / 15f
 
                 SearchTextField(
                     viewModel,
                     modifier = Modifier
                         .weight(horizontalDistribution)
-                        //.border(1.dp, Color.Red)
                         .height(childrenHeight)
                 )
 
-                SortButton(
-                    viewModel,
-                    modifier = Modifier
-                        .weight(1f - horizontalDistribution)
-                        //.border(1.dp, Color.Blue)
-                        .height(childrenHeight)
-                )
+                    SortButton(
+                        viewModel,
+                        modifier = Modifier
+                            .weight(1f - horizontalDistribution)
+                            .height(childrenHeight)
+                    )
+                }
             }
 
-            // Lists
-            LazyVerticalGrid(
-                state = gridState,
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(40.dp),
-                verticalArrangement = Arrangement.spacedBy(40.dp),
-                contentPadding = PaddingValues(
-                    horizontal = horizontalPadding,
-                    vertical = 4.dp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                if(addingNewList.value) {
-                    item {
-                        Column {
-                            if(sortedOption.value == SortOption.NAME){
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
-                            NewListCard(viewModel)
-                        }
-                    }
-                }
-                if (lists.isEmpty()) {
-                    item {
+            item {
+                Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                    if (lists.isEmpty() && !addingNewList.value) {
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = dosisFontFamily
                         )
-                    }
-                } else {
-                    items(lists.size) { index ->
-                        Column {
-                            if (sortedOption.value == SortOption.NAME) {
-                                val prevChar = if(index == 0) '\u0000'
-                                else lists[index - 1].title[0].uppercaseChar()
-                                val currChar: Char = lists[index].title[0].uppercaseChar()
-                                AlphabeticalHeader(
-                                    prevChar,
-                                    currChar,
-                                    viewModel.isNextChar(currChar, prevChar)
-                                ) { viewModel.getSymbol(currChar) }
+                    } else {
+                        val cards = buildList {
+                            if (addingNewList.value) add(ChecklistCardItem("") {
+                                NewListCard(viewModel)
+                            })
+                            add(ChecklistCardItem(
+                                "smart list"
+                            ){
+                                SmartList(viewModel)
+                            })
+                            lists.forEach { checklist ->
+                                add(ChecklistCardItem(checklist.title) {
+                                    ListCard(checklist, viewModel)
+                                })
                             }
-                            ListCard(lists[index], viewModel)
                         }
+
+                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CheckListGrid(
+    viewModel: HomeViewModel,
+    cards: List<ChecklistCardItem>,
+    cardSpacing: Dp
+) {
+    val sortedOption = viewModel.sortedOption.collectAsState()
+    var previousChar = '\u0000'
+
+    Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        cards.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                rowItems.forEach { card ->
+                    Column(modifier = Modifier.weight(1f)) {
+                        if (sortedOption.value == SortOption.NAME) {
+                            val currentChar = card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+
+                            AlphabeticalHeader(
+                                prevChar = previousChar,
+                                currChar = currentChar,
+                                isNext = viewModel.isNextChar(currentChar, previousChar)
+                            ) { viewModel.getSymbol(currentChar) }
+
+                            if (previousChar != currentChar) {
+                                previousChar = currentChar
+                            }
+                        }
+
+                        card.item()
+                    }
+                }
+                if (rowItems.size == 1) Box(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -203,10 +225,9 @@ private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, 
         )
     } else {
         // Space instead of text
-        Spacer(modifier = Modifier.height(19.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
     Spacer(modifier = Modifier.height(5.dp))
-
 }
 
 @Composable
@@ -218,14 +239,11 @@ private fun SearchTextField(
     val searchQuery = viewModel.filteringQuery.collectAsState()
     val userInput = remember { mutableStateOf(searchQuery.value) }
 
-    val onFocusChange: (Boolean) -> Unit = { isFocused -> 
+    val onFocusChange: (Boolean) -> Unit = { isFocused ->
         focusState.value = isFocused
     }
 
-    Box(
-        modifier = modifier
-            .padding(end = 0.dp)
-    ) {
+    Box(modifier = modifier) {
         // Search TextField
         BasicTextField(
             value = userInput.value,
@@ -244,7 +262,7 @@ private fun SearchTextField(
                 letterSpacing = TextUnit.Unspecified
             ),
             cursorBrush = SolidColor(neutral0),
-            decorationBox = @Composable { innerTextField -> 
+            decorationBox = @Composable { innerTextField ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -279,7 +297,7 @@ private fun SearchTextField(
                 modifier = Modifier
                     .padding(
                         start = 4.dp,
-                        end = if (focusState.value) 0.dp else 64.dp,
+                        end = if (focusState.value) 4.dp else 64.dp,
                         bottom = 6.dp
                     )
             )
@@ -310,7 +328,6 @@ fun SortButton(
                 contentColor = neutral1
             ),
             modifier = Modifier
-                //.border(1.dp, Color.Red)
                 .align(Alignment.BottomCenter)
                 .padding(top = 4.dp)
         ) {
@@ -324,7 +341,6 @@ fun SortButton(
                     maxLines = 1,
                     modifier = Modifier
                         .wrapContentWidth()
-                    //.border(1.dp, Color.Green)
                 )
                 // DropdownMenu
                 DropdownMenu(
@@ -333,7 +349,7 @@ fun SortButton(
                     modifier = Modifier
                         .background(neutral1)
                 ) {
-                    sortOptions.forEach { option -> 
+                    sortOptions.forEach { option ->
                         DropdownMenuItem(
                             onClick = {
                                 viewModel.sortLists(option)
@@ -363,17 +379,15 @@ private fun ListCard(
     list: CheckList,
     viewModel: HomeViewModel
 ) {
-
     val focusManager = LocalFocusManager.current
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
 
-
     if (showDeleteDialog) {
         DeleteList(
             listId = list.id,
-            title = list.title ?: "",
+            title = list.title,
             onDelete = { viewModel.deleteList( list.id ) },
             onDismiss = { showDeleteDialog = false }
         )
@@ -404,7 +418,7 @@ private fun ListCard(
                         title = list.title,
                         textStyle = null,
                         modifier = null,
-                        onTitleChange = { newTitle -> 
+                        onTitleChange = { newTitle ->
                             viewModel.updateList(list.copy(title = newTitle))
                         },
                         onRenameComplete = {
@@ -421,6 +435,10 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
+                        actions = listOf(
+                            DropdownSettingsMenuItem.Rename,
+                            DropdownSettingsMenuItem.Delete
+                        ),
                         onRenameClicked = { isNaming = true },
                         onDeleteClicked = { showDeleteDialog = true }
                     )
@@ -471,7 +489,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
     return buildAnnotatedString {
         var searchStringIndex = 0
         var searching = false
-        todoTitle.forEachIndexed { index, char -> 
+        todoTitle.forEachIndexed { index, char ->
             if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
                 searching = true
                 searchStringIndex++
@@ -549,13 +567,13 @@ private fun NewListTextField(
         }
         BasicTextField(
             value = title,
-            onValueChange = { newTitle -> 
+            onValueChange = { newTitle ->
                 title = newTitle
             },
             singleLine = true,
             textStyle = TextStyle(
                 color = neutral0,
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 fontFamily = dosisFontFamily
             ),
             modifier = Modifier
@@ -587,3 +605,44 @@ private fun NewListTextField(
         }
     }
 }
+
+@Composable
+fun SmartList(
+    viewModel: HomeViewModel
+){
+    return Card(
+        onClick = {
+            viewModel.clickedSmartList()
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
+        modifier = Modifier.aspectRatio(1f)
+    ){
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Smart List",
+                    style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.weight(5f),
+                    color = neutral0
+                )
+                Icon(
+                    Icons.Filled.AutoAwesome,
+                    contentDescription = "Smart List Icon",
+                    tint = primary1,
+                    modifier = Modifier.size(32.dp)
+                )
+
+            }
+        }
+    }
+}
+
+data class ChecklistCardItem(
+    val title: String,
+    val item: @Composable () -> Unit
+)

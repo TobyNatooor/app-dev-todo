@@ -10,17 +10,21 @@ import androidx.navigation.navArgument
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
+import com.example.todo_app.ui.feature.smartList.SmartListScreen
+import com.google.android.libraries.places.api.model.Place
 
 @Composable
-fun AppNavigation(db: AppDatabase) {
+fun AppNavigation(
+    db: AppDatabase,
+    getLocation: ((Place?) -> Unit?) -> Unit,
+) {
     val navController = rememberNavController()
-    val appBar = @Composable { AppBar(navController) }
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(
                 db = db,
-                navController = navController
+                navController = navController,
             )
         }
         composable(
@@ -36,7 +40,7 @@ fun AppNavigation(db: AppDatabase) {
             ToDoListScreen(
                 title = title,
                 listId = listId,
-                appBar = appBar,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) },
                 db = db,
                 navController = navController
             )
@@ -51,8 +55,16 @@ fun AppNavigation(db: AppDatabase) {
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                appBar = appBar,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton = false) },
+                getLocation = getLocation,
                 db = db
+            )
+        }
+        composable("smartList") {
+            SmartListScreen(
+                db = db,
+                navController = navController,
+                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) }   
             )
         }
     }

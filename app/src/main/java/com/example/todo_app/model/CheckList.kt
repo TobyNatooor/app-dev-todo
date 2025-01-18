@@ -12,6 +12,4 @@ data class CheckList(
     val description: String,
     val created: LocalDateTime = LocalDateTime.now(),
     val lastModified: LocalDateTime = LocalDateTime.now(),
-    val order: Int,
-    val folderId: Int,
 )
