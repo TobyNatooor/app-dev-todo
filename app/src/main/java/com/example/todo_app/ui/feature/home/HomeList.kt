@@ -395,6 +395,7 @@ private fun ListCard(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
+    val search = viewModel.getQuery()
 
     if (showDeleteDialog) {
         DeleteList(
@@ -458,7 +459,6 @@ private fun ListCard(
             }
             for (todo in todos) {
                 if (todo.title.isNotEmpty()) {
-                    val search = viewModel.getQuery()
                     Text(
                         getTodoTitleWithHighlight(todo.title, search),
                         maxLines = 1,
@@ -508,7 +508,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
         return AnnotatedString(todoTitle, normalStyle)
     }
 
-    Log.d("ABCDEF", search)
     var i = 0
     var j = 0
     return buildAnnotatedString {
