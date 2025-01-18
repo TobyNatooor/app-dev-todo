@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.smartList
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
@@ -88,12 +90,13 @@ fun SmartList(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = "Settings",
-                        color = primary1,
-                        fontSize = 16.sp,
-                        fontFamily = dosisFontFamily,
+                    Icon(
+                        Icons.Filled.Tune,
+                        contentDescription = "Settings",
+                        tint = primary2,
                         modifier = Modifier
+                            .size(32.dp)
+                            .aspectRatio(1f)
                             .clickable {
                                 showSettings = true
                             }
