@@ -50,6 +50,7 @@ import com.google.maps.android.compose.MarkerState
 import com.example.todo_app.ui.theme.*
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun ToDoOptions(
@@ -235,7 +236,8 @@ fun ToDoOptions(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth()
-                                .aspectRatio(1f),
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(12.dp)),
                             cameraPositionState = cameraPositionState
                         ) {
                             // Add a marker
@@ -253,11 +255,16 @@ fun ToDoOptions(
                         Box(
                             modifier = Modifier
                                 .aspectRatio(1f)
-                                .background(color = Color.Gray)
+                                .background(
+                                    color = primary0,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
                         ) {
                             Text(
                                 "Specify location to view map",
                                 textAlign = TextAlign.Center,
+                                fontFamily = dosisFontFamily,
+                                color = primary4,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .align(Alignment.Center)

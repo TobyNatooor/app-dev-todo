@@ -18,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -70,7 +71,8 @@ fun AddButton(onClick: () -> Unit) {
             contentColor = primary1,
             modifier = Modifier
                 .padding(0.dp)
-                .size(64.dp)
+                .size(64.dp),
+            elevation = FloatingActionButtonDefaults.elevation(8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Add,
