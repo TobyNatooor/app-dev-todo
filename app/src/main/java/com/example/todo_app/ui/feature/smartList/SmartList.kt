@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.smartList
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +63,13 @@ fun SmartList(
     appBar: @Composable () -> Unit
 ) {
     val scrollState = rememberLazyListState()
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showSettings by remember { mutableStateOf(false) }
+
+    SettingsDialog(
+        showSettings = showSettings,
+        onDismiss = { showSettings = false },
+        onConfirm = { showSettings = false }
+    )
 
     Box(
         modifier = modifier
@@ -85,7 +95,7 @@ fun SmartList(
                         fontFamily = dosisFontFamily,
                         modifier = Modifier
                             .clickable {
-                                showDeleteDialog = true
+                                showSettings = true
                             }
                     )
                 }
@@ -227,4 +237,52 @@ fun ToDoOptionsButton(
                 focusManager.clearFocus()
             }
     )
+}
+
+@Composable
+fun SettingsDialog(
+    showSettings: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+
+    if (showSettings) {
+        AlertDialog(
+            containerColor = primary0,
+            titleContentColor = primary4,
+            textContentColor = primary3,
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primary3,
+                    contentColor = primary0
+                ),
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text("Save", fontFamily = dosisFontFamily)
+            }
+            },
+            dismissButton = {
+                Button(
+                border = BorderStroke(3.dp, primary3),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primary0,
+                    contentColor = primary3
+                ),
+                onClick = onDismiss
+            ) {
+                Text("Cancel", fontFamily = dosisFontFamily)
+            }
+            },
+            title = {
+                Text(text = "Settings")
+            },
+            text = {
+                Text(text = "Settings content goes here.")
+            }
+        )
+    }
 }
