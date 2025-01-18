@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -284,15 +285,64 @@ fun SettingsDialog(
                 Text(text = "Settings")
             },
             text = {
-                Text(text = "Settings content goes here.")
                 //to be done
                 //is in progress
                 //is done
                 //is cancelled
                 //added before given date
                 //added after given date
-                // deadline before given date
-                // duration less than given time
+                //deadline before given date
+                //duration less than given time
+                Column (modifier = Modifier.padding(10.dp, 10.dp)) {
+                Text(
+                    text = "To be done",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Is in progress",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Is done",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Is cancelled",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Added before given date",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Added after given date",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Deadline before given date",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+                Text(
+                    text = "Duration less than given time",
+                    fontSize = 18.sp,
+                    color = primary4,
+                    fontFamily = dosisFontFamily
+                )
+            }
             }
         )
     }
