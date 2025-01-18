@@ -58,7 +58,9 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
+import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.ui.theme.*
+import androidx.compose.foundation.border
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -70,17 +72,10 @@ fun SmartList(
 ) {
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
-    var includeNotDone by remember { mutableStateOf(false) }
-    var includeInProgress by remember { mutableStateOf(false) }
-    var includeCanceled by remember { mutableStateOf(false) }
-    var includeDone by remember { mutableStateOf(false) }
 
     SettingsDialog(
+        viewModel = viewmodel,
         showSettings = showSettings,
-        includeNotDone = includeNotDone,
-        includeInProgress = includeInProgress,
-        includeCanceled = includeCanceled,
-        includeDone = includeDone,
         onDismiss = { showSettings = false },
         onConfirm = { showSettings = false },
     )
@@ -256,16 +251,17 @@ fun ToDoOptionsButton(
 
 @Composable
 fun SettingsDialog(
+    viewModel: SmartListViewModel,
     showSettings: Boolean,
-    includeNotDone: Boolean,
-    includeInProgress: Boolean,
-    includeCanceled: Boolean,
-    includeDone: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-
     if (showSettings) {
+        var settings = viewModel.getSettings()
+        val notDoneOutlineColor = if (settings.includeNotDone) primary4 else primary0
+        val doneOutlineColor = if (settings.includeDone) primary4 else primary0
+        val inProgressOutlineColor = if (settings.includeInProgress) primary4 else primary0
+        val cancelledOutlineColor = if (settings.includeCancelled) primary4 else primary0
         AlertDialog(
             containerColor = primary0,
             titleContentColor = primary4,
@@ -281,20 +277,8 @@ fun SettingsDialog(
                     onConfirm()
                 }
                 ) {
-                    Text("Save", fontFamily = dosisFontFamily)
+                    Text("Done", fontFamily = dosisFontFamily)
                 }
-            },
-            dismissButton = {
-                Button(
-                border = BorderStroke(3.dp, primary3),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primary0,
-                    contentColor = primary3
-                ),
-                onClick = onDismiss
-            ) {
-                Text("Cancel", fontFamily = dosisFontFamily)
-            }
             },
             title = {
                 Text(text = "Settings")
@@ -318,8 +302,12 @@ fun SettingsDialog(
                                     color = neutral1,
                                     shape = RoundedCornerShape(5.dp)
                                 )
+                                .border(
+                                    BorderStroke(2.dp, notDoneOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                                 .clickable {
-                                    //change icon color
+                                    settings = settings.copy(includeNotDone = !settings.includeNotDone)
                                 }
                         )
                         Box(
@@ -329,8 +317,12 @@ fun SettingsDialog(
                                     color = green2,
                                     shape = RoundedCornerShape(5.dp)
                                 )
+                                .border(
+                                    BorderStroke(2.dp, doneOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                                 .clickable {
-                                    //change icon color
+                                    settings = settings.copy(includeDone = !settings.includeDone)
                                 }
                         ) {
                             Icon(
@@ -349,8 +341,12 @@ fun SettingsDialog(
                                     color = yellow2,
                                     shape = RoundedCornerShape(5.dp)
                                 )
+                                .border(
+                                    BorderStroke(2.dp, inProgressOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                                 .clickable {
-                                    //change icon color
+                                    settings = settings.copy(includeInProgress = !settings.includeInProgress)
                                 }
                         ) {
                             Icon(
@@ -369,8 +365,12 @@ fun SettingsDialog(
                                     color = red2,
                                     shape = RoundedCornerShape(5.dp)
                                 )
+                                .border(
+                                    BorderStroke(2.dp, cancelledOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                                 .clickable {
-                                    //change icon color
+                                    settings = settings.copy(includeCancelled = !settings.includeCancelled)
                                 }
                         ) {
                             Icon(

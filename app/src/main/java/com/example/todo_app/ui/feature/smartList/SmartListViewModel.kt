@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.model.SmartSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ class SmartListViewModel(
     private val nav: NavController
 ) : BaseViewModel(db) {
 
+    val smartSettings = SmartSettings()
     val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
@@ -35,6 +37,16 @@ class SmartListViewModel(
 
     fun clickToDoOptions(toDoId: Int) {
         nav.navigate("toDoOptions/${toDoId}")
+    }
+
+    fun getSettings(): SmartSettings{
+        return smartSettings
+    }
+
+    fun setSettings(settings: SmartSettings){
+        viewModelScope.launch {
+            //db.smartSettingsDao().update(settings)
+        }
     }
 
     /*override fun deleteToDo(toDo: ToDo) {
