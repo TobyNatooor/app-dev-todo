@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,12 +67,7 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
-import com.example.todo_app.ui.theme.neutral0
-import com.example.todo_app.ui.theme.neutral1
-import com.example.todo_app.ui.theme.neutral2
-import com.example.todo_app.ui.theme.neutral4
-import com.example.todo_app.ui.theme.primary0
-import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
@@ -632,6 +629,12 @@ fun SmartList(
                     textAlign = TextAlign.Justify,
                     modifier = Modifier.weight(5f),
                     color = neutral0
+                )
+                Icon(
+                    Icons.Filled.AutoAwesome,
+                    contentDescription = "Smart List Icon",
+                    tint = primary1,
+                    modifier = Modifier.size(32.dp)
                 )
 
             }
