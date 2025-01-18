@@ -285,6 +285,14 @@ fun SettingsDialog(
             },
             text = {
                 Text(text = "Settings content goes here.")
+                //to be done
+                //is in progress
+                //is done
+                //is cancelled
+                //added before given date
+                //added after given date
+                // deadline before given date
+                // duration less than given time
             }
         )
     }
