@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -58,6 +60,7 @@ import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SmartList(
     toDos: List<ToDo>,
@@ -67,11 +70,19 @@ fun SmartList(
 ) {
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
+    var includeNotDone by remember { mutableStateOf(false) }
+    var includeInProgress by remember { mutableStateOf(false) }
+    var includeCanceled by remember { mutableStateOf(false) }
+    var includeDone by remember { mutableStateOf(false) }
 
     SettingsDialog(
         showSettings = showSettings,
+        includeNotDone = includeNotDone,
+        includeInProgress = includeInProgress,
+        includeCanceled = includeCanceled,
+        includeDone = includeDone,
         onDismiss = { showSettings = false },
-        onConfirm = { showSettings = false }
+        onConfirm = { showSettings = false },
     )
 
     Box(
@@ -121,9 +132,9 @@ fun SmartList(
                     )
                 }
             }
-            /*stickyHeader {
+            stickyHeader {
                 appBar()
-            }*/
+            }
             // To-do elements
 
             if (toDos.isEmpty()) {
@@ -246,6 +257,10 @@ fun ToDoOptionsButton(
 @Composable
 fun SettingsDialog(
     showSettings: Boolean,
+    includeNotDone: Boolean,
+    includeInProgress: Boolean,
+    includeCanceled: Boolean,
+    includeDone: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -292,6 +307,82 @@ fun SettingsDialog(
                         color = primary4,
                         fontFamily = dosisFontFamily
                     )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    //change icon color
+                                }
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = green2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    //change icon color
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = "Check Icon",
+                                tint = green4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = yellow2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    //change icon color
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Update,
+                                contentDescription = "Check Icon",
+                                tint = yellow4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = red2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    //change icon color
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Check Icon",
+                                tint = red4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    }
                     Text(
                         text = "Added before given date",
                         fontSize = 18.sp,
