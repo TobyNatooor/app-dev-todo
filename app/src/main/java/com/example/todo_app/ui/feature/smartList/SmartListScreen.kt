@@ -24,7 +24,7 @@ fun SmartListScreen(
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModelFactory(db)
+        factory = SmartListViewModelFactory(db, navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
 

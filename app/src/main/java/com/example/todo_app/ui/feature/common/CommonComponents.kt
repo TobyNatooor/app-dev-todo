@@ -54,6 +54,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.MutableState
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.ui.feature.BaseViewModel
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -209,7 +210,7 @@ fun DeleteList(
 @Composable
 fun ToDoCheckBox(
     toDo: ToDo,
-    viewModel: ToDoListViewModel,
+    viewModel: BaseViewModel,
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
@@ -273,7 +274,7 @@ fun ToDoCheckBox(
 
 @Composable
 fun ChooseTodoStatus(
-    viewModel: ToDoListViewModel,
+    viewModel: BaseViewModel,
     toDo: ToDo,
     showDialog: MutableState<Boolean>,
     size: Dp

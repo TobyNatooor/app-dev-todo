@@ -2,16 +2,21 @@ package com.example.todo_app.ui.feature.smartList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.todo_app.data.AppDatabase
+import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SmartListViewModel(db: AppDatabase) : ViewModel() {
+class SmartListViewModel(
+    db: AppDatabase,
+    private val nav: NavController
+) : BaseViewModel(db) {
 
-    private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
+    val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
     init {
@@ -22,21 +27,21 @@ class SmartListViewModel(db: AppDatabase) : ViewModel() {
         }
     }
 
-    fun updateToDoItem(updatedToDo: ToDo) {
-        /*this.viewModelScope.launch {
+    /*override fun updateToDoItem(updatedToDo: ToDo) {
+        viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
-        }*/
-    }
+        }
+    }*/
 
     fun clickToDoOptions(toDoId: Int) {
-        //nav.navigate("toDoOptions/${toDoId}")
+        nav.navigate("toDoOptions/${toDoId}")
     }
 
-    fun deleteToDo(toDo: ToDo) {
-        /*this.viewModelScope.launch {
+    /*override fun deleteToDo(toDo: ToDo) {
+        viewModelScope.launch {
             db.toDoDao().delete(toDo)
-        }*/
-    }
+        }
+    }*/
 }
 
 sealed class ToDosUIState {

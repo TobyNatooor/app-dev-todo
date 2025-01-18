@@ -186,7 +186,7 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
     }
 }
 
-@Composable
+/*@Composable
 fun ToDoCheckBox(
     toDo: ToDo,
     viewModel: SmartListViewModel,
@@ -220,7 +220,7 @@ fun ToDoCheckBox(
             )
         }
     }
-}
+}*/
 
 @Composable
 fun ToDoOptionsButton(
@@ -315,7 +315,8 @@ fun SettingsDialog(
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
-                    )Text(
+                    )
+                    Text(
                         text = "From list",
                         fontSize = 18.sp,
                         color = primary4,
