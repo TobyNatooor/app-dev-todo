@@ -265,9 +265,9 @@ fun SettingsDialog(
                 onClick = {
                     onConfirm()
                 }
-            ) {
-                Text("Save", fontFamily = dosisFontFamily)
-            }
+                ) {
+                    Text("Save", fontFamily = dosisFontFamily)
+                }
             },
             dismissButton = {
                 Button(
@@ -285,64 +285,43 @@ fun SettingsDialog(
                 Text(text = "Settings")
             },
             text = {
-                //to be done
-                //is in progress
-                //is done
-                //is cancelled
-                //added before given date
-                //added after given date
-                //deadline before given date
-                //duration less than given time
                 Column (modifier = Modifier.padding(10.dp, 10.dp)) {
-                Text(
-                    text = "To be done",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Is in progress",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Is done",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Is cancelled",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Added before given date",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Added after given date",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Deadline before given date",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-                Text(
-                    text = "Duration less than given time",
-                    fontSize = 18.sp,
-                    color = primary4,
-                    fontFamily = dosisFontFamily
-                )
-            }
+                    Text(
+                        text = "Staus",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Text(
+                        text = "Added before given date",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Text(
+                        text = "Added after given date",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Text(
+                        text = "Deadline before given date",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Text(
+                        text = "Duration less than given time",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )Text(
+                        text = "From list",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                }
             }
         )
     }
