@@ -90,7 +90,7 @@ fun HomeList(
     columnState: LazyListState
 ) {
     val focusManager = LocalFocusManager.current
-
+    val searchQuery by viewModel.filteringQuery.collectAsState()
     val horizontalPadding = 24.dp
     val addingNewList = viewModel.addingNewList.collectAsState()
 
@@ -133,7 +133,7 @@ fun HomeList(
                         val cards = buildList {
                             favorites.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, viewModel)
+                                    ListCard(checklist, searchQuery, viewModel)
                                 })
                             }
                         }
@@ -191,7 +191,7 @@ fun HomeList(
                             })
                             lists.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, viewModel)
+                                    ListCard(checklist, searchQuery, viewModel)
                                 })
                             }
                         }
@@ -440,13 +440,14 @@ fun SortButton(
 @Composable
 private fun ListCard(
     list: CheckList,
+    searchQuery: String,
     viewModel: HomeViewModel
 ) {
     val focusManager = LocalFocusManager.current
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val todos = viewModel.getTodosByListId(list.id)
-    val search = viewModel.getQuery()
+    //val search = viewModel.getQuery()
 
     if (showDeleteDialog) {
         DeleteList(
@@ -514,7 +515,7 @@ private fun ListCard(
             for (todo in todos) {
                 if (todo.title.isNotEmpty()) {
                     Text(
-                        getTodoTitleWithHighlight(todo.title, search),
+                        getTodoTitleWithHighlight(todo.title, searchQuery),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontFamily = dosisFontFamily
