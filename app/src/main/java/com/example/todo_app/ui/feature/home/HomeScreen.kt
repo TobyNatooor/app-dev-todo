@@ -19,6 +19,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -63,13 +65,8 @@ fun HomeScreen(
             },
         floatingActionButton = {
             AddButton(onClick = {
-                coroutineScope.launch {
-                    viewModel.searchForTodos("")
-                    columnState.animateScrollToItem(0)
-                    delay(200L)
-                    viewModel.addClicked()
-                }
-            } )
+                viewModel.addClicked()
+            })
         },
     ) { innerPadding ->
         Column(
@@ -104,37 +101,5 @@ private fun HomeContent(
         )
 
         else -> LoadingScreen(modifier)
-    }
-}
-
-@Composable
-fun AddButton(
-    viewModel: HomeViewModel,
-    searchQuery: MutableState<String>,
-    columnState: LazyListState
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    FloatingActionButton(
-        onClick = {
-            coroutineScope.launch {
-                searchQuery.value = ""
-                viewModel.searchForTodos("")
-                columnState.animateScrollToItem(0)
-                delay(200L)
-                viewModel.addClicked()
-            }
-        },
-        shape = RoundedCornerShape(45, 45, 45, 45),
-        containerColor = primary2,
-        modifier = Modifier
-            .padding(20.dp)
-            .border(1.dp, primary4, RoundedCornerShape(45, 45, 45, 45))
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add new list",
-            tint = primary4,
-        )
     }
 }
