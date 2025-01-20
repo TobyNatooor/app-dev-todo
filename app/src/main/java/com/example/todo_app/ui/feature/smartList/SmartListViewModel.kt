@@ -41,10 +41,18 @@ class SmartListViewModel(
     val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
+    private val _checkListsState = MutableStateFlow<List<CheckList>>(emptyList())
+    val checkListsState: StateFlow<List<CheckList>> = _checkListsState.asStateFlow()
+
     init {
         viewModelScope.launch {
             filteredList.collect { list ->
                 _mutableToDosState.value = ToDosUIState.Data(list)
+            }
+        }
+        viewModelScope.launch {
+            db.checkListDao().getAll().collect { list ->
+                _checkListsState.value = list
             }
         }
     }
@@ -73,14 +81,8 @@ class SmartListViewModel(
         }
     }*/
 
-    fun getCheckLists(): List<CheckList> {
-        var checkLists: List<CheckList> = emptyList()
-        viewModelScope.launch {
-            db.checkListDao().getAll().collect { list ->
-                checkLists = list
-            }
-        }
-        return checkLists
+    fun getCheckLists(): StateFlow<List<CheckList>> {
+        return checkListsState
     }
 
     private fun includeOnStatus(status: ToDoStatus, smartSettings: SmartSettings): Boolean {
