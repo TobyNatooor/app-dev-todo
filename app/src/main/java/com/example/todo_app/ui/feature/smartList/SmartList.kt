@@ -469,8 +469,9 @@ private fun DropdownMenuOption(
         }
 
         CustomDropdownMenu(
+            height = 150.dp,
             modifier = modifier
-                .background(color = primary0, shape = shape)
+                .background(color = primary1, shape = shape)
                 .padding(vertical = 4.dp),
             divider = {
                 HorizontalDivider(
