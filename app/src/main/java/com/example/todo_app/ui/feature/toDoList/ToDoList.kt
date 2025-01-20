@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
@@ -67,6 +68,7 @@ fun ToDoList(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val addingToDo = viewmodel.addingNewToDo.collectAsState()
+    val isFavorite = viewmodel.isFavorite.collectAsState()
 
     Box(
         modifier = modifier
@@ -85,13 +87,17 @@ fun ToDoList(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    FavoriteButton(isFavorite) { viewmodel.favoriteClicked() }
                     DropdownSettingsMenu(
+                        isFavorite = isFavorite.value,
                         actions = listOf(
                             DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete
+                            DropdownSettingsMenuItem.Delete,
+                            DropdownSettingsMenuItem.Favorite
                         ),
                         onRenameClicked = { isNaming = true },
-                        onDeleteClicked = { showDeleteDialog = true }
+                        onDeleteClicked = { showDeleteDialog = true },
+                        onFavoriteClicked = { viewmodel.favoriteClicked() },
                     )
                 }
             }
@@ -204,7 +210,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 ),
                 onRenameClicked = { /* TODO */},
                 onDeleteClicked = { viewModel.deleteToDo(toDo) },
-                onEditClicked = { viewModel.clickToDoOptions(toDo.id) }
+                onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
             )
         }
     }

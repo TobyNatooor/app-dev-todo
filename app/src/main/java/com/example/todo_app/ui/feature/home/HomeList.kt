@@ -22,6 +22,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -67,10 +69,18 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
+import com.example.todo_app.ui.theme.neutral0
+import com.example.todo_app.ui.theme.neutral1
+import com.example.todo_app.ui.theme.neutral2
+import com.example.todo_app.ui.theme.neutral4
+import com.example.todo_app.ui.theme.primary0
+import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.yellow2
 import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
+    favorites: List<CheckList>,
     lists: List<CheckList>,
     viewModel: HomeViewModel,
     columnState: LazyListState
@@ -108,7 +118,25 @@ fun HomeList(
                         .padding(top = 120.dp, bottom = 100.dp)
                 )
             }
-
+            if(favorites.isNotEmpty()){
+//                item {
+//                    Box(modifier = Modifier) {
+//                        Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
+//                    }
+//                }
+                item {
+                    Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                        val cards = buildList {
+                            favorites.forEach { checklist ->
+                                add(ChecklistCardItem(checklist.title) {
+                                    ListCard(checklist, viewModel)
+                                })
+                            }
+                        }
+                        FavoriteCheckListGrid(cards = cards, cardSpacing = horizontalPadding)
+                    }
+                }
+            }
             item {
                 Row(
                     modifier = Modifier
@@ -200,6 +228,28 @@ private fun CheckListGrid(
                             }
                         }
 
+                        card.item()
+                    }
+                }
+                if (rowItems.size == 1) Box(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun FavoriteCheckListGrid(
+    cards: List<ChecklistCardItem>,
+    cardSpacing: Dp
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        Box(modifier = Modifier) {
+            Icon(Icons.Rounded.Star, contentDescription = "Favorite", tint = yellow2)
+        }
+        cards.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                rowItems.forEach { card ->
+                    Column(modifier = Modifier.weight(1f)) {
                         card.item()
                     }
                 }
@@ -435,12 +485,15 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
+                        isFavorite = list.favorite,
                         actions = listOf(
                             DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete
+                            DropdownSettingsMenuItem.Delete,
+                            DropdownSettingsMenuItem.Favorite
                         ),
                         onRenameClicked = { isNaming = true },
-                        onDeleteClicked = { showDeleteDialog = true }
+                        onDeleteClicked = { showDeleteDialog = true },
+                        onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
                     )
                 }
             }

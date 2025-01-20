@@ -89,12 +89,14 @@ private fun HomeContent(
 ) {
     when (homeUIState) {
         is HomeUIState.Empty -> HomeList(
+            favorites = ArrayList(),
             lists = ArrayList(),
             viewModel = viewModel,
             columnState = columnState
         )
 
         is HomeUIState.Data -> HomeList(
+            favorites = homeUIState.favorites,
             lists = homeUIState.lists,
             viewModel = viewModel,
             columnState = columnState
