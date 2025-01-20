@@ -61,6 +61,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -570,7 +571,7 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
             if (search[j].lowercaseChar() == todoTitle[i].lowercaseChar()) {
                 j++
                 if (j == search.length) {
-                    withStyle(style = highlightStyle) { append(search) } // TODO: take into account lowercase letters
+                    withStyle(style = highlightStyle) { append(todoTitle.substring(i-j+1, i+1)) }
                     j = 0
                 }
             } else {
