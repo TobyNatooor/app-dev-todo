@@ -29,9 +29,12 @@ class ToDoListViewModel(
     private val _addingNewToDo = MutableStateFlow(false)
     val addingNewToDo = _addingNewToDo.asStateFlow()
 
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite = _isFavorite.asStateFlow()
 
 
     init {
+        observeFavoriteStatus()
         viewModelScope.launch {
             toDos.collect { list ->
                 _mutableToDosState.value = ToDosUIState.Data(list.sortedBy { it.status })
@@ -70,6 +73,21 @@ class ToDoListViewModel(
     fun updateList(listId: Int, newTitle: String) {
         this.viewModelScope.launch {
             db.checkListDao().updateTitle(listId, newTitle)
+        }
+    }
+
+    fun favoriteClicked(){
+        this.viewModelScope.launch {
+            db.checkListDao().updateFavorite(listId, !isFavorite.value)
+        }
+    }
+
+    private fun observeFavoriteStatus() {
+        viewModelScope.launch {
+            db.checkListDao().isFavorite(listId)
+                .collect { favorite ->
+                    _isFavorite.value = favorite
+                }
         }
     }
 

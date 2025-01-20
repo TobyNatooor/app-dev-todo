@@ -14,12 +14,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Update
@@ -42,6 +46,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.State
+import com.example.todo_app.ui.feature.home.HomeViewModel
 import androidx.compose.ui.unit.Dp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
@@ -203,6 +209,23 @@ fun DeleteList(
             }
         }
     )
+}
+
+@Composable
+fun FavoriteButton(
+    isFavorite: State<Boolean>,
+    onFavClicked: () -> Unit,
+){
+
+    val icon = if (isFavorite.value) Icons.Rounded.Star
+    else Icons.Rounded.StarBorder
+
+    val color = if (isFavorite.value) yellow2
+    else neutral0
+
+    IconButton(onClick = { onFavClicked() }) {
+        Icon(icon, contentDescription = "Favorite", tint = color)
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
