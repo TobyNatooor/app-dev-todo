@@ -7,22 +7,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDateTime
 
-//@Entity(tableName = "settings")
 data class SmartSettings(
-    //@PrimaryKey(autoGenerate = true)
     val includeNotDone: Boolean = false,
     val includeInProgress: Boolean = false,
     val includeDone: Boolean = false,
     val includeCancelled: Boolean = false,
     val listId: Int? = null,
-    val includeDeadlineLessThan: Boolean = false,
-    val DeadlineLessThanDays: Int = 0,
-    //val includeAddedBeforeDate: Boolean = false,
-    //val includeAddedAfterDate: Boolean = false,
-    //val includeDurationLessThan: Boolean = false,
-    //val AddedBeforeDate: LocalDateTime? = null,
-    //val AddedAfterDate: LocalDateTime? = null,
-    //val DurationLessThanMin: Int = 0,
+    val deadlineWithinDays: Int = 0,
 )
 
 object SmartSettingsSingleton {

@@ -264,6 +264,7 @@ fun SettingsDialog(
     onConfirm: () -> Unit
 ) {
     if (showSettings) {
+        var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
         val checkLists by viewModel.getCheckLists().collectAsState()
         val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
         dropdownSelections.add(DropdownOptionItem(null, "All lists"))
@@ -405,10 +406,27 @@ fun SettingsDialog(
                         fontFamily = dosisFontFamily
                     )*/
                     Text(
-                        text = "Deadline before given date",
+                        text = "Deadline within given days",
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
+                    )
+                    BasicTextField(
+                        value = deadlineWithin,
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() }) {
+                                deadlineWithin = newValue
+                                viewModel.setSettings(settings.value.copy(deadlineWithinDays = newValue.toIntOrNull() ?: 0))
+                            }
+                        },
+                        textStyle = TextStyle(
+                            color = primary4,
+                            fontSize = 18.sp,
+                            fontFamily = dosisFontFamily
+                        ),
+                        modifier = Modifier
+                            .background(color = primary0, shape = RoundedCornerShape(5.dp))
+                            .padding(8.dp)
                     )
                     /*Text(
                         text = "Duration less than given time",
