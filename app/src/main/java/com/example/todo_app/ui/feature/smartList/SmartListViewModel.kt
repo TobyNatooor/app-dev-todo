@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.Duration
 
 class SmartListViewModel(
     db: AppDatabase,
@@ -86,11 +88,16 @@ class SmartListViewModel(
     }
 
     private fun filter(toDo: ToDo, smartSettings: SmartSettings): Boolean {
-        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
-        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
-        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
-        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
+        val timeNow = LocalDateTime.now()
+        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
         else false
+    }
+
+    private fun getDifferenceInHours(start: LocalDateTime, end: LocalDateTime?): Int {
+        return Duration.between(start, end).toHours().toInt()
     }
 }
 
