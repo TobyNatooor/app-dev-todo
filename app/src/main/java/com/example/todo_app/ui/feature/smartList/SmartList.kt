@@ -1,10 +1,13 @@
 package com.example.todo_app.ui.feature.smartList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -55,8 +60,13 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
+import com.example.todo_app.model.SmartSettings
+import com.example.todo_app.ui.feature.common.CustomDropdownMenu
 import com.example.todo_app.ui.theme.*
+import androidx.compose.foundation.border
+import androidx.compose.runtime.State
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SmartList(
     toDos: List<ToDo>,
@@ -66,11 +76,14 @@ fun SmartList(
 ) {
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
+    val settings = viewmodel.smartSettings.collectAsState()
 
     SettingsDialog(
+        settings = settings,
+        viewModel = viewmodel,
         showSettings = showSettings,
         onDismiss = { showSettings = false },
-        onConfirm = { showSettings = false }
+        onConfirm = { showSettings = false },
     )
 
     Box(
@@ -120,9 +133,9 @@ fun SmartList(
                     )
                 }
             }
-            /*stickyHeader {
+            stickyHeader {
                 appBar()
-            }*/
+            }
             // To-do elements
 
             if (toDos.isEmpty()) {
@@ -185,7 +198,7 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
     }
 }
 
-@Composable
+/*@Composable
 fun ToDoCheckBox(
     toDo: ToDo,
     viewModel: SmartListViewModel,
@@ -219,7 +232,7 @@ fun ToDoCheckBox(
             )
         }
     }
-}
+}*/
 
 @Composable
 fun ToDoOptionsButton(
@@ -244,12 +257,21 @@ fun ToDoOptionsButton(
 
 @Composable
 fun SettingsDialog(
+    settings: State<SmartSettings>,
+    viewModel: SmartListViewModel,
     showSettings: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-
     if (showSettings) {
+        var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
+        val checkLists by viewModel.getCheckLists().collectAsState()
+        val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
+        dropdownSelections.add(DropdownOptionItem(null, "All lists"))
+        val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
+        val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
+        val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
+        val cancelledOutlineColor = if (settings.value.includeCancelled) primary4 else primary0
         AlertDialog(
             containerColor = primary0,
             titleContentColor = primary4,
@@ -264,28 +286,249 @@ fun SettingsDialog(
                 onClick = {
                     onConfirm()
                 }
-            ) {
-                Text("Save", fontFamily = dosisFontFamily)
-            }
-            },
-            dismissButton = {
-                Button(
-                border = BorderStroke(3.dp, primary3),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primary0,
-                    contentColor = primary3
-                ),
-                onClick = onDismiss
-            ) {
-                Text("Cancel", fontFamily = dosisFontFamily)
-            }
+                ) {
+                    Text("Done", fontFamily = dosisFontFamily)
+                }
             },
             title = {
                 Text(text = "Settings")
             },
             text = {
-                Text(text = "Settings content goes here.")
+                Column (modifier = Modifier.padding(10.dp, 10.dp)) {
+                    Text(
+                        text = "Staus",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .border(
+                                    BorderStroke(2.dp, notDoneOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    viewModel.setSettings(settings.value.copy(includeNotDone = !settings.value.includeNotDone))
+                                }
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = green2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .border(
+                                    BorderStroke(2.dp, doneOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    viewModel.setSettings(settings.value.copy(includeDone = !settings.value.includeDone))
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = "Check Icon",
+                                tint = green4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = yellow2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .border(
+                                    BorderStroke(2.dp, inProgressOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    viewModel.setSettings(settings.value.copy(includeInProgress = !settings.value.includeInProgress))
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Update,
+                                contentDescription = "Check Icon",
+                                tint = yellow4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = red2,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .border(
+                                    BorderStroke(2.dp, cancelledOutlineColor),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .clickable {
+                                    viewModel.setSettings(settings.value.copy(includeCancelled = !settings.value.includeCancelled))
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Check Icon",
+                                tint = red4,
+                                modifier = Modifier
+                                    .size(26.dp * 1.1f)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    }
+                    /*Text(
+                        text = "Added before given date",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    Text(
+                        text = "Added after given date",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )*/
+                    Text(
+                        text = "Deadline within given days",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )
+                    BasicTextField(
+                        value = deadlineWithin,
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() }) {
+                                deadlineWithin = newValue
+                                viewModel.setSettings(settings.value.copy(deadlineWithinDays = newValue.toIntOrNull() ?: 0))
+                            }
+                        },
+                        textStyle = TextStyle(
+                            color = primary4,
+                            fontSize = 18.sp,
+                            fontFamily = dosisFontFamily
+                        ),
+                        modifier = Modifier
+                            .background(color = primary0, shape = RoundedCornerShape(5.dp))
+                            .padding(8.dp)
+                    )
+                    /*Text(
+                        text = "Duration less than given time",
+                        fontSize = 18.sp,
+                        color = primary4,
+                        fontFamily = dosisFontFamily
+                    )*/
+                    DropdownMenuOption(
+                        settings = settings,
+                        viewModel = viewModel,
+                        height = 42.dp,
+                        contentAlign = Alignment.Center,
+                        options = dropdownSelections,
+                    )
+                }
             }
         )
     }
 }
+
+@Composable
+private fun DropdownMenuOption(
+    viewModel: SmartListViewModel,
+    settings: State<SmartSettings>,
+    height: Dp,
+    options: List<DropdownOptionItem>,
+    contentAlign: Alignment = Alignment.Center
+) {
+    var selectedId = settings.value.listId
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
+        options.find { it.id == selectedId }
+    ) }
+    val shape = RoundedCornerShape(12.dp)
+    val textAlign = when (contentAlign) {
+        Alignment.Center -> TextAlign.Center
+        Alignment.TopStart -> TextAlign.Left
+        else -> TextAlign.Center
+    }
+    val modifier = Modifier.fillMaxWidth()
+
+    Column(verticalArrangement = Arrangement.spacedBy((-1).dp)) {
+        Box(
+            modifier = modifier
+                .height(height)
+                .background(color = primary0, shape = shape)
+                .clickable { expanded = !expanded },
+            contentAlignment = contentAlign
+        ) {
+            Text(
+                text = selectedOption?.title ?: "All lists",
+                fontSize = 18.sp,
+                fontFamily = dosisFontFamily,
+                color = primary4,
+                textAlign = textAlign,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
+
+        CustomDropdownMenu(
+            height = 150.dp,
+            modifier = modifier
+                .background(color = primary1, shape = shape)
+                .padding(vertical = 4.dp),
+            divider = {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = primary4,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            },
+            contentAlign = contentAlign,
+            expanded = expanded,
+            items = options,
+            onDismiss = { expanded = false },
+            onItemSelected = {
+                selectedOption = it
+                viewModel.setSettings(settings.value.copy(listId = it.id))
+            },
+            itemContent = { item, index ->
+                Box(
+                    modifier = modifier
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ),
+                    contentAlignment = contentAlign
+                ) {
+                    Text(
+                        text = item.title,
+                        fontSize = 16.sp,
+                        fontFamily = dosisFontFamily,
+                        color = primary4,
+                        textAlign = textAlign
+                    )
+                }
+            }
+        )
+    }
+}
+
+data class DropdownOptionItem(
+    val id: Int?,
+    val title: String
+)

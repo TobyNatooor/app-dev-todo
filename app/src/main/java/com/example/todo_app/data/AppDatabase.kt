@@ -12,10 +12,11 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.Folder
 import com.example.todo_app.model.ToDo
 
-@Database(entities = [ToDo::class, CheckList::class, Folder::class], version = 2)
+@Database(entities = [ToDo::class, CheckList::class, Folder::class/*SmartSettings::class */], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
     abstract fun checkListDao(): CheckListDao
     abstract fun folderDao(): FolderDao
+    //abstract fun smartSettingsDao(): SmartSettingsDao
 }

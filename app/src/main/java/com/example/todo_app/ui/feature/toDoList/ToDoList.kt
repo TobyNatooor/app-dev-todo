@@ -286,7 +286,7 @@ private fun ToDoTextField(
     }
 }
 
-@Composable
+/*@Composable
 fun ToDoCheckBox(
     toDo: ToDo,
     viewModel: ToDoListViewModel,
@@ -320,7 +320,7 @@ fun ToDoCheckBox(
             )
         }
     }
-}
+}*/
 
 @Composable
 fun ToDoOptionsButton(
