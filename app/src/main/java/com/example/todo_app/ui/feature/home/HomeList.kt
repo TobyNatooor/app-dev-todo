@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
@@ -628,6 +629,11 @@ private fun NewListTextField(
                 color = neutral0,
                 fontSize = 20.sp,
                 fontFamily = dosisFontFamily
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    isEnabled = false
+                }
             ),
             modifier = Modifier
                 .fillMaxWidth()
