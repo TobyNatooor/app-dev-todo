@@ -1,9 +1,16 @@
 package com.example.todo_app.ui.feature.smartList
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.todo_app.MyApplication
 import com.example.todo_app.data.AppDatabase
+import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
@@ -22,8 +29,20 @@ import kotlinx.coroutines.launch
 
 class SmartListViewModel(
     db: AppDatabase,
+    private val userRepository: UserRepository,
     private val nav: NavController
 ) : BaseViewModel(db) {
+
+    companion object {
+        fun createFactory(db: AppDatabase, navController: NavController): ViewModelProvider.Factory {
+            return viewModelFactory {
+                initializer {
+                    val application = (this[APPLICATION_KEY] as MyApplication)
+                    SmartListViewModel(db, application.userRepository, navController)
+                }
+            }
+        }
+    }
 
     val smartSettings = SmartSettingsSingleton.settings
     private val toDos: Flow<List<ToDo>> = db.toDoDao().getAll()
