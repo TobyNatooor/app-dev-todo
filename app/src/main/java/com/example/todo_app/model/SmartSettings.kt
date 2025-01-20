@@ -2,6 +2,9 @@ package com.example.todo_app.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDateTime
 
 //@Entity(tableName = "settings")
@@ -22,3 +25,21 @@ data class SmartSettings(
     //val AddedAfterDate: LocalDateTime? = null,
     //val DurationLessThanMin: Int = 0,
 )
+
+object SmartSettingsSingleton {
+    // Internal mutable state
+    private val _settings = MutableStateFlow(SmartSettings())
+
+    // Exposed state as an immutable StateFlow
+    val settings: StateFlow<SmartSettings> = _settings.asStateFlow()
+
+    // Function to update the settings
+    fun updateSettings(newSettings: SmartSettings) {
+        _settings.value = newSettings
+    }
+
+    // Function to reset settings to defaults
+    fun resetSettings() {
+        _settings.value = SmartSettings()
+    }
+}
