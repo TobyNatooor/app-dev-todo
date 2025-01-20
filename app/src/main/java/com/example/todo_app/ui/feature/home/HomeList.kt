@@ -512,23 +512,19 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
     var j = 0
     return buildAnnotatedString {
         while (i < todoTitle.length) {
-
             if (search[j].lowercaseChar() == todoTitle[i].lowercaseChar()) {
                 j++
                 if (j == search.length) {
                     withStyle(style = highlightStyle) { append(search) } // TODO: take into account lowercase letters
                     j = 0
                 }
+            } else {
+                while (j > 0) {
+                    withStyle(style = normalStyle) { append(todoTitle[i - j]) }
+                    j--
+                }
+                withStyle(style = normalStyle) { append(todoTitle[i]) }
             }
-
-            else {
-                    while (j > 0) {
-                        withStyle(style = normalStyle) { append(todoTitle[i - j]) }
-                        j--
-                    }
-                    withStyle(style = normalStyle) { append(todoTitle[i]) }
-            }
-
             i++
         }
     }
