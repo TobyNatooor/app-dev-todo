@@ -91,51 +91,6 @@ class ToDoListViewModel(
         }
     }
 
-    fun favoriteClicked(){
-        this.viewModelScope.launch {
-            db.checkListDao().updateFavorite(listId, !isFavorite.value)
-        }
-    }
-
-    private fun observeFavoriteStatus() {
-        viewModelScope.launch {
-            db.checkListDao().isFavorite(listId)
-                .collect { favorite ->
-                    _isFavorite.value = favorite
-                }
-        }
-    }
-
-    fun favoriteClicked(){
-        this.viewModelScope.launch {
-            db.checkListDao().updateFavorite(listId, !isFavorite.value)
-        }
-    }
-
-    private fun observeFavoriteStatus() {
-        viewModelScope.launch {
-            db.checkListDao().isFavorite(listId)
-                .collect { favorite ->
-                    _isFavorite.value = favorite
-                }
-        }
-    }
-
-    fun favoriteClicked(){
-        this.viewModelScope.launch {
-            db.checkListDao().updateFavorite(listId, !isFavorite.value)
-        }
-    }
-
-    private fun observeFavoriteStatus() {
-        viewModelScope.launch {
-            db.checkListDao().isFavorite(listId)
-                .collect { favorite ->
-                    _isFavorite.value = favorite
-                }
-        }
-    }
-
     fun deleteList(listId: Int) {
         viewModelScope.launch {
             db.checkListDao().deleteWithId(listId)
