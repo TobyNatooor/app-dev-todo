@@ -1,6 +1,5 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +19,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -31,9 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -51,6 +53,13 @@ import com.example.todo_app.ui.theme.*
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
 import androidx.compose.ui.draw.clip
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ToDoOptions(
@@ -64,6 +73,10 @@ fun ToDoOptions(
 ) {
     var markerPosition = remember { LatLng(0.0, 0.0) }
     val markerState = remember { MarkerState(position = markerPosition) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var deadline by remember {
+        mutableStateOf(if (toDo.deadline == null) "" else formatDeadline(toDo.deadline))
+    }
 
     Column(
         verticalArrangement = Arrangement.Top,
@@ -135,6 +148,26 @@ fun ToDoOptions(
                         }
                     )
                 }
+                if (showDatePicker)
+                    item {
+                        DatePickerModal(
+                            onDateSelected = { selectedDate ->
+                                if (selectedDate != null) {
+                                    val date = Date(selectedDate)
+                                    val formattedDate = SimpleDateFormat(
+                                        "yyyy-MM-dd",
+                                        Locale.getDefault()
+                                    ).format(date)
+                                    val localDate = LocalDate.parse(formattedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                    val localDateTime = LocalDateTime.of(localDate, LocalTime.of(0, 0, 0))
+                                    deadline = formatDeadline(localDateTime)
+                                    viewmodel.updateToDo(toDo.copy(deadline = localDateTime))
+                                }
+                                showDatePicker = false
+                            },
+                            onDismiss = { showDatePicker = false }
+                        )
+                    }
                 item {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(32.dp)
@@ -144,10 +177,15 @@ fun ToDoOptions(
                             optionTitle = "Deadline",
                             content = {
                                 TextFieldOption(
-                                    startText = "01/10/25",
+                                    startText = deadline,
                                     hintText = "Select a date",
                                     height = 42.dp,
                                     contentAlign = Alignment.TopStart,
+                                    onFocusChanged = { isFocused ->
+                                        if (isFocused) {
+                                            showDatePicker = true
+                                        }
+                                    },
                                     onTextChanged = { }
                                 )
                             },
@@ -205,7 +243,6 @@ fun ToDoOptions(
                                 onFocusChanged = { isFocused ->
                                     if (isFocused) {
                                         getLocation { place ->
-                                            Log.d("PLACE", "$place")
                                             val name = place?.displayName
                                             val latitude = place?.location?.latitude ?: 0.0
                                             val longitude = place?.location?.longitude ?: 0.0
@@ -450,6 +487,39 @@ private fun DropdownMenuOption(
             }
         )
     }
+}
+
+// https://developer.android.com/develop/ui/compose/components/datepickers
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
+
+fun formatDeadline(deadline: LocalDateTime): String {
+    return deadline.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
 }
 
 data class DropdownOptionItem(
