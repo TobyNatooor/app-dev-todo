@@ -490,8 +490,10 @@ private fun ListCard(
                             DropdownSettingsMenuItem.Rename,
                             DropdownSettingsMenuItem.Delete,
                             DropdownSettingsMenuItem.Favorite
-                            // onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))}
                         ),
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true },
+                        onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
                     )
                 }
             }

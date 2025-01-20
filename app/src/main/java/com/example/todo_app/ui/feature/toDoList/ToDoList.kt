@@ -95,6 +95,10 @@ fun ToDoList(
                             DropdownSettingsMenuItem.Delete,
                             DropdownSettingsMenuItem.Favorite
                         ),
+                        onRenameClicked = { isNaming = true },
+                        onDeleteClicked = { showDeleteDialog = true },
+                        onFavoriteClicked = { viewmodel.favoriteClicked() },
+                    )
                 }
             }
             item {
