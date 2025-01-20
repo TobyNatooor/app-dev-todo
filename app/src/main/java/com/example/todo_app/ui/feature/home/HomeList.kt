@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -70,6 +72,7 @@ import com.example.todo_app.ui.theme.neutral2
 import com.example.todo_app.ui.theme.neutral4
 import com.example.todo_app.ui.theme.primary0
 import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.yellow2
 
 @Composable
 fun HomeList(
@@ -112,6 +115,11 @@ fun HomeList(
                 )
             }
             if(favorites.isNotEmpty()){
+//                item {
+//                    Box(modifier = Modifier) {
+//                        Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
+//                    }
+//                }
                 item {
                     Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                         val cards = buildList {
@@ -227,6 +235,9 @@ private fun FavoriteCheckListGrid(
     cardSpacing: Dp
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        Box(modifier = Modifier) {
+            Icon(Icons.Rounded.Star, contentDescription = "Settings", tint = yellow2)
+        }
         cards.chunked(2).forEach { rowItems ->
             Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
                 rowItems.forEach { card ->
