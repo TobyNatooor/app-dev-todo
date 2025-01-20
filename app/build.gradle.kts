@@ -112,4 +112,5 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.maps.compose)
+    implementation(libs.androidx.datastore.preferences)
 }
