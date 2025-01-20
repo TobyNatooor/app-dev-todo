@@ -1,8 +1,10 @@
-package com.example.todo_app.ui.feature.toDoList
+package com.example.todo_app.ui.feature.smartList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,9 +21,13 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,29 +52,26 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
-import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
 
-@OptIn(ExperimentalFoundationApi::class)
-
 @Composable
-fun ToDoList(
+fun SmartList(
     toDos: List<ToDo>,
-    listId: Int,
-    viewmodel: ToDoListViewModel,
     modifier: Modifier = Modifier,
-    title: String = "",
+    viewmodel: SmartListViewModel,
     appBar: @Composable () -> Unit
 ) {
     val scrollState = rememberLazyListState()
-    var listTitle by remember { mutableStateOf(title) }
-    var isNaming by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    val addingToDo = viewmodel.addingNewToDo.collectAsState()
-    val isFavorite = viewmodel.isFavorite.collectAsState()
+    var showSettings by remember { mutableStateOf(false) }
+
+    SettingsDialog(
+        showSettings = showSettings,
+        onDismiss = { showSettings = false },
+        onConfirm = { showSettings = false }
+    )
 
     Box(
         modifier = modifier
@@ -87,14 +90,17 @@ fun ToDoList(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    FavoriteButton(isFavorite) { viewmodel.favoriteClicked() }
-                    DropdownSettingsMenu(
-                            isFavorite = isFavorite.value,
-                        actions = listOf(
-                            DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete,
-                            onFavoriteClicked = { viewmodel.favoriteClicked() },
-                        ),
+                    Icon(
+                        Icons.Filled.Tune,
+                        contentDescription = "Settings",
+                        tint = primary2,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .aspectRatio(1f)
+                            .clickable {
+                                showSettings = true
+                            }
+                    )
                 }
             }
             item {
@@ -104,50 +110,26 @@ fun ToDoList(
                         .fillMaxWidth()
                         .padding(top = 0.dp, bottom = 75.dp)
                 ) {
-                    if (isNaming) {
-                        NameList(
-                            title = listTitle,
-                            textStyle = TextStyle(
-                                fontSize = 54.sp,
-                                color = neutral1,
-                                textAlign = TextAlign.Center,
-                                fontFamily = dosisFontFamily
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onTitleChange = { newTitle ->
-                                viewmodel.updateList(listId, newTitle)
-                                listTitle = newTitle
-                            },
-                            onRenameComplete = {
-                                isNaming = false
-                            }
-                        )
-                    } else {
-                        Text(
-                            color = neutral1,
-                            text = listTitle,
-                            textAlign = TextAlign.Center,
-                            style = TextStyle(fontSize = 54.sp, fontFamily = dosisFontFamily),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
+                    Text(
+                        color = primary1,
+                        text = "Smart List",
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontSize = 54.sp, fontFamily = dosisFontFamily),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
                 }
             }
-            stickyHeader {
+            /*stickyHeader {
                 appBar()
-            }
-            if (addingToDo.value) {
-                item { NewToDoItem(viewmodel, listId) }
-            }
+            }*/
             // To-do elements
 
             if (toDos.isEmpty()) {
                 item {
                     Text(
-                        color = neutral1,
-                        text = "No to-do items in this list",
+                        color = primary1,
+                        text = "No to-do items in your smart list, try changing the settings",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = dosisFontFamily
@@ -159,25 +141,16 @@ fun ToDoList(
                 }
             }
         }
-
-        if (showDeleteDialog) {
-            DeleteList(
-                listId = listId,
-                title = listTitle,
-                onDelete = { id -> viewmodel.deleteList(listId) },
-                onDismiss = { showDeleteDialog = false }
-            )
-        }
     }
 }
 
 @Composable
-private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
+private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = neutral2,
+                color = primary3,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
@@ -192,7 +165,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
             Text(
                 text = toDo.title,
                 fontSize = 18.sp,
-                color = neutral0,
+                color = primary0,
                 fontFamily = dosisFontFamily
             )
             Spacer(
@@ -213,79 +186,9 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
 }
 
 @Composable
-private fun ToDoTextField(
-    viewmodel: ToDoListViewModel
-) {
-    val blankTitle = "Unnamed to do item"
-    val focusRequester = remember { FocusRequester() }
-    var isEnabled by remember { mutableStateOf(true) }
-    var title by remember { mutableStateOf("") }
-    var isFocused by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 8.dp)
-            .fillMaxWidth()
-    ) {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-            }
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = neutral0,
-                fontSize = 16.sp,
-                fontFamily = dosisFontFamily
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewmodel.addToDoItem(title)
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = neutral1,
-                fontSize = 16.sp,
-                fontFamily = dosisFontFamily,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp)
-            )
-        }
-    }
-}
-
-@Composable
 fun ToDoCheckBox(
     toDo: ToDo,
-    viewModel: ToDoListViewModel,
+    viewModel: SmartListViewModel,
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
@@ -321,7 +224,7 @@ fun ToDoCheckBox(
 @Composable
 fun ToDoOptionsButton(
     toDo: ToDo,
-    viewModel: ToDoListViewModel,
+    viewModel: SmartListViewModel,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -340,35 +243,49 @@ fun ToDoOptionsButton(
 }
 
 @Composable
-private fun NewToDoItem(viewModel: ToDoListViewModel, listId: Int) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(4.dp)
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(8.dp)
-                        .size(28.dp)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                )
+fun SettingsDialog(
+    showSettings: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+
+    if (showSettings) {
+        AlertDialog(
+            containerColor = primary0,
+            titleContentColor = primary4,
+            textContentColor = primary3,
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primary3,
+                    contentColor = primary0
+                ),
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text("Save", fontFamily = dosisFontFamily)
             }
-            Spacer(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-            ToDoTextField(viewModel)
-        }
+            },
+            dismissButton = {
+                Button(
+                border = BorderStroke(3.dp, primary3),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primary0,
+                    contentColor = primary3
+                ),
+                onClick = onDismiss
+            ) {
+                Text("Cancel", fontFamily = dosisFontFamily)
+            }
+            },
+            title = {
+                Text(text = "Settings")
+            },
+            text = {
+                Text(text = "Settings content goes here.")
+            }
+        )
     }
 }

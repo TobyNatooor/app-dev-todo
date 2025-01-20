@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Star
@@ -64,6 +66,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
 import com.example.todo_app.ui.theme.neutral0
@@ -73,6 +76,7 @@ import com.example.todo_app.ui.theme.neutral4
 import com.example.todo_app.ui.theme.primary0
 import com.example.todo_app.ui.theme.primary2
 import com.example.todo_app.ui.theme.yellow2
+import com.example.todo_app.ui.theme.*
 
 @Composable
 fun HomeList(
@@ -175,6 +179,11 @@ fun HomeList(
                         val cards = buildList {
                             if (addingNewList.value) add(ChecklistCardItem("") {
                                 NewListCard(viewModel)
+                            })
+                            add(ChecklistCardItem(
+                                "smart list"
+                            ){
+                                SmartList(viewModel)
                             })
                             lists.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
@@ -476,10 +485,12 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
-                        isFavorite = list.favorite,
-                        onRenameClicked = { isNaming = true },
-                        onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
-                        onDeleteClicked = { showDeleteDialog = true }
+                        actions = listOf(
+                            isFavorite = list.favorite
+                            DropdownSettingsMenuItem.Rename,
+                            DropdownSettingsMenuItem.Delete
+                            onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))}
+                        ),
                     )
                 }
             }
@@ -641,6 +652,42 @@ private fun NewListTextField(
                 fontSize = 20.sp,
                 fontFamily = dosisFontFamily
             )
+        }
+    }
+}
+
+@Composable
+fun SmartList(
+    viewModel: HomeViewModel
+){
+    return Card(
+        onClick = {
+            viewModel.clickedSmartList()
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
+        modifier = Modifier.aspectRatio(1f)
+    ){
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Smart List",
+                    style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.weight(5f),
+                    color = neutral0
+                )
+                Icon(
+                    Icons.Filled.AutoAwesome,
+                    contentDescription = "Smart List Icon",
+                    tint = primary1,
+                    modifier = Modifier.size(32.dp)
+                )
+
+            }
         }
     }
 }
