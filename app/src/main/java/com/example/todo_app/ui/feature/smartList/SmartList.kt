@@ -264,13 +264,8 @@ fun SettingsDialog(
     onConfirm: () -> Unit
 ) {
     if (showSettings) {
-        val dropdownSelections = (viewModel.getCheckLists()
-            .map { DropdownOptionItem(
-                it.id, it.title.toString()
-            ) })
-            .plus(DropdownOptionItem(null, "All lists"))
-        //val dropdownSelections = listOfB.map { b -> A(b.id, b.name) }.toMutableList()
-        //listOfA.add(A(0, "default"))
+        val dropdownSelections = viewModel.getCheckLists().map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
+        dropdownSelections.add(DropdownOptionItem(null, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
         val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
         val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
