@@ -264,7 +264,13 @@ fun SettingsDialog(
     onConfirm: () -> Unit
 ) {
     if (showSettings) {
-        val dropdownSelections = (viewModel.getCheckLists().map { DropdownOptionItem(it.id, it.title.toString()) }).plus(DropdownOptionItem(null, "All lists"))
+        val dropdownSelections = (viewModel.getCheckLists()
+            .map { DropdownOptionItem(
+                it.id, it.title.toString()
+            ) })
+            .plus(DropdownOptionItem(null, "All lists"))
+        //val dropdownSelections = listOfB.map { b -> A(b.id, b.name) }.toMutableList()
+        //listOfA.add(A(0, "default"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
         val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
         val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
@@ -414,11 +420,12 @@ fun SettingsDialog(
                         color = primary4,
                         fontFamily = dosisFontFamily
                     )*/
-                    Text(
-                        text = "From list",
-                        fontSize = 18.sp,
-                        color = primary4,
-                        fontFamily = dosisFontFamily
+                    DropdownMenuOption(
+                        settings = settings,
+                        viewModel = viewModel,
+                        height = 42.dp,
+                        contentAlign = Alignment.Center,
+                        options = dropdownSelections,
                     )
                 }
             }
@@ -430,12 +437,11 @@ fun SettingsDialog(
 private fun DropdownMenuOption(
     viewModel: SmartListViewModel,
     settings: State<SmartSettings>,
-    selectedId: Int?,
     height: Dp,
     options: List<DropdownOptionItem>,
-    onOptionSelected: (DropdownOptionItem) -> Unit,
     contentAlign: Alignment = Alignment.Center
 ) {
+    var selectedId = settings.value.listId
     var expanded by remember { mutableStateOf(false) }
     var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
         options.find { it.id == selectedId }
