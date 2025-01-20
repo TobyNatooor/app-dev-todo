@@ -169,9 +169,9 @@ fun ToDoOptions(
                         )
                     }
                 item {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(32.dp)
-                    ) {
+                    // Row(
+                    //     horizontalArrangement = Arrangement.spacedBy(32.dp)
+                    // ) {
                         // Deadline
                         Option(
                             optionTitle = "Deadline",
@@ -191,21 +191,21 @@ fun ToDoOptions(
                             },
                             modifier = Modifier.weight(0.5f)
                         )
-                        // Time estimate
-                        Option(
-                            optionTitle = "Time estimate",
-                            content = {
-                                TextFieldOption(
-                                    startText = "00:00",
-                                    hintText = "00:00",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onTextChanged = { }
-                                )
-                            },
-                            modifier = Modifier.weight(0.5f)
-                        )
-                    }
+                        // // Time estimate
+                        // Option(
+                        //     optionTitle = "Time estimate",
+                        //     content = {
+                        //         TextFieldOption(
+                        //             startText = "00:00",
+                        //             hintText = "00:00",
+                        //             height = 42.dp,
+                        //             contentAlign = Alignment.TopStart,
+                        //             onTextChanged = { }
+                        //         )
+                        //     },
+                        //     modifier = Modifier.weight(0.5f)
+                        // )
+                    // }
                 }
                 // To-Do description
                 item {
