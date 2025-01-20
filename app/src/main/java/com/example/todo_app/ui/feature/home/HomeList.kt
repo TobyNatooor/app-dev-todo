@@ -149,13 +149,13 @@ fun HomeList(
                         )
                     } else {
                         val cards = buildList {
-                            if (addingNewList.value) add(ChecklistCardItem("") {
-                                NewListCard(viewModel)
-                            })
                             add(ChecklistCardItem(
                                 "smart list"
                             ){
                                 SmartList(viewModel)
+                            })
+                            if (addingNewList.value) add(ChecklistCardItem("") {
+                                NewListCard(viewModel)
                             })
                             lists.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
@@ -187,12 +187,16 @@ private fun CheckListGrid(
                 rowItems.forEach { card ->
                     Column(modifier = Modifier.weight(1f)) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val currentChar = card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+                            val currentChar = if(card.title == "smart list") '\u0000'
+                            else card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+
+                            val isNext = if(card.title == "smart list") false
+                            else viewModel.isNextChar(currentChar, previousChar)
 
                             AlphabeticalHeader(
                                 prevChar = previousChar,
                                 currChar = currentChar,
-                                isNext = viewModel.isNextChar(currentChar, previousChar)
+                                isNext = isNext
                             ) { viewModel.getSymbol(currentChar) }
 
                             if (previousChar != currentChar) {
