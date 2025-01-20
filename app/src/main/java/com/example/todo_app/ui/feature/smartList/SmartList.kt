@@ -61,6 +61,7 @@ import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.border
+import androidx.compose.runtime.State
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -75,6 +76,7 @@ fun SmartList(
     val settings = viewmodel.smartSettings.collectAsState()
 
     SettingsDialog(
+        settings = settings,
         viewModel = viewmodel,
         showSettings = showSettings,
         onDismiss = { showSettings = false },
@@ -252,17 +254,17 @@ fun ToDoOptionsButton(
 
 @Composable
 fun SettingsDialog(
+    settings: State<SmartSettings>,
     viewModel: SmartListViewModel,
     showSettings: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
     if (showSettings) {
-        var settings = viewModel.getSettings()
-        val notDoneOutlineColor = if (settings.includeNotDone) primary4 else primary0
-        val doneOutlineColor = if (settings.includeDone) primary4 else primary0
-        val inProgressOutlineColor = if (settings.includeInProgress) primary4 else primary0
-        val cancelledOutlineColor = if (settings.includeCancelled) primary4 else primary0
+        val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
+        val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
+        val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
+        val cancelledOutlineColor = if (settings.value.includeCancelled) primary4 else primary0
         AlertDialog(
             containerColor = primary0,
             titleContentColor = primary4,
@@ -308,7 +310,7 @@ fun SettingsDialog(
                                     shape = RoundedCornerShape(5.dp)
                                 )
                                 .clickable {
-                                    settings = settings.copy(includeNotDone = !settings.includeNotDone)
+                                    viewModel.setSettings(settings.value.copy(includeNotDone = !settings.value.includeNotDone))
                                 }
                         )
                         Box(
@@ -323,7 +325,7 @@ fun SettingsDialog(
                                     shape = RoundedCornerShape(5.dp)
                                 )
                                 .clickable {
-                                    settings = settings.copy(includeDone = !settings.includeDone)
+                                    viewModel.setSettings(settings.value.copy(includeDone = !settings.value.includeDone))
                                 }
                         ) {
                             Icon(
@@ -347,7 +349,7 @@ fun SettingsDialog(
                                     shape = RoundedCornerShape(5.dp)
                                 )
                                 .clickable {
-                                    settings = settings.copy(includeInProgress = !settings.includeInProgress)
+                                    viewModel.setSettings(settings.value.copy(includeInProgress = !settings.value.includeInProgress))
                                 }
                         ) {
                             Icon(
@@ -371,7 +373,7 @@ fun SettingsDialog(
                                     shape = RoundedCornerShape(5.dp)
                                 )
                                 .clickable {
-                                    settings = settings.copy(includeCancelled = !settings.includeCancelled)
+                                    viewModel.setSettings(settings.value.copy(includeCancelled = !settings.value.includeCancelled))
                                 }
                         ) {
                             Icon(

@@ -64,9 +64,7 @@ class SmartListViewModel(
 //    }
 
     fun setSettings(settings: SmartSettings){
-        viewModelScope.launch {
-            //db.smartSettingsDao().update(settings)
-        }
+        SmartSettingsSingleton.updateSettings(settings)
     }
 
     /*override fun deleteToDo(toDo: ToDo) {
