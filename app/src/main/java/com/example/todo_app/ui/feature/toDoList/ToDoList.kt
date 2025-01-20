@@ -89,11 +89,11 @@ fun ToDoList(
                 ) {
                     FavoriteButton(isFavorite) { viewmodel.favoriteClicked() }
                     DropdownSettingsMenu(
-                            isFavorite = isFavorite.value,
+                        isFavorite = isFavorite.value,
                         actions = listOf(
                             DropdownSettingsMenuItem.Rename,
                             DropdownSettingsMenuItem.Delete,
-                            onFavoriteClicked = { viewmodel.favoriteClicked() },
+                            DropdownSettingsMenuItem.Favorite
                         ),
                 }
             }
@@ -204,10 +204,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     DropdownSettingsMenuItem.Delete,
                     DropdownSettingsMenuItem.Edit
                 ),
-                onRenameClicked = { /* TODO */},
-                onDeleteClicked = { viewModel.deleteToDo(toDo) },
-                onEditClicked = { viewModel.clickToDoOptions(toDo.id) }
-            )
+
         }
     }
 }

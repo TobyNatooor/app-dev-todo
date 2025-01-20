@@ -485,11 +485,12 @@ private fun ListCard(
                     )
 
                     DropdownSettingsMenu(
+                        isFavorite = list.favorite,
                         actions = listOf(
-                            isFavorite = list.favorite
                             DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete
-                            onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))}
+                            DropdownSettingsMenuItem.Delete,
+                            DropdownSettingsMenuItem.Favorite
+                            // onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))}
                         ),
                     )
                 }
