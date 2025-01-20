@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -87,7 +86,7 @@ fun HomeList(
     columnState: LazyListState
 ) {
     val focusManager = LocalFocusManager.current
-
+    val searchQuery by viewModel.filteringQuery.collectAsState()
     val horizontalPadding = 24.dp
     val addingNewList = viewModel.addingNewList.collectAsState()
 
@@ -101,7 +100,7 @@ fun HomeList(
             }
     ) {
         // Lists
-        LazyColumn (
+        LazyColumn(
             state = columnState,
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,7 +129,7 @@ fun HomeList(
                         val cards = buildList {
                             favorites.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, viewModel)
+                                    ListCard(checklist, searchQuery, viewModel)
                                 })
                             }
                         }
@@ -151,12 +150,12 @@ fun HomeList(
                     val childrenHeight = 42.dp
                     val horizontalDistribution = 8f / 15f
 
-                SearchTextField(
-                    viewModel,
-                    modifier = Modifier
-                        .weight(horizontalDistribution)
-                        .height(childrenHeight)
-                )
+                    SearchTextField(
+                        viewModel,
+                        modifier = Modifier
+                            .weight(horizontalDistribution)
+                            .height(childrenHeight)
+                    )
 
                     SortButton(
                         viewModel,
@@ -180,7 +179,7 @@ fun HomeList(
                         val cards = buildList {
                             add(ChecklistCardItem(
                                 "smart list"
-                            ){
+                            ) {
                                 SmartList(viewModel)
                             })
                             if (addingNewList.value) add(ChecklistCardItem("") {
@@ -188,12 +187,16 @@ fun HomeList(
                             })
                             lists.forEach { checklist ->
                                 add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, viewModel)
+                                    ListCard(checklist, searchQuery, viewModel)
                                 })
                             }
                         }
 
-                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
+                        CheckListGrid(
+                            viewModel = viewModel,
+                            cards = cards,
+                            cardSpacing = horizontalPadding
+                        )
                     }
                 }
             }
@@ -265,7 +268,12 @@ private fun FavoriteCheckListGrid(
 }
 
 @Composable
-private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, getSymbol: (Char) -> String){
+private fun AlphabeticalHeader(
+    prevChar: Char,
+    currChar: Char,
+    isNext: Boolean,
+    getSymbol: (Char) -> String
+) {
     if (isNext) {
         println("Creating header with $currChar")
         Text(
@@ -432,6 +440,7 @@ fun SortButton(
 @Composable
 private fun ListCard(
     list: CheckList,
+    searchQuery: String,
     viewModel: HomeViewModel
 ) {
     val focusManager = LocalFocusManager.current
@@ -443,7 +452,7 @@ private fun ListCard(
         DeleteList(
             listId = list.id,
             title = list.title,
-            onDelete = { viewModel.deleteList( list.id ) },
+            onDelete = { viewModel.deleteList(list.id) },
             onDismiss = { showDeleteDialog = false }
         )
     }
@@ -504,13 +513,8 @@ private fun ListCard(
             }
             for (todo in todos) {
                 if (todo.title.isNotEmpty()) {
-                    val search = viewModel.getQuery()
                     Text(
-                        if (search.isNotEmpty()) {
-                            getTodoTitleWithHighlight(todo.title, search)
-                        } else {
-                            AnnotatedString(todo.title)
-                        },
+                        getTodoTitleWithHighlight(todo.title, searchQuery),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontFamily = dosisFontFamily
@@ -544,59 +548,40 @@ private fun NewListCard(
 }
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
-    return buildAnnotatedString {
-        var searchStringIndex = 0
-        var searching = false
-        todoTitle.forEachIndexed { index, char ->
-            if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
-                searching = true
-                searchStringIndex++
-                if (searchStringIndex == search.length) {
-                    searching = false
-                    val start = index - (searchStringIndex - 1)
-                    val end = index + searchStringIndex - (searchStringIndex - 1)
-                    withStyle(
-                        style = SpanStyle(
-                            color = primary0,
-                            background = primary2,
-                            fontFamily = dosisFontFamily
-                        )
-                    ) {
-                        append(
-                            todoTitle.substring(start, end)
-                        )
-                    }
-                    searchStringIndex = 0
-                }
-            } else if (searching) {
-                searching = false
-                val start = index - searchStringIndex
-                val end = index + searchStringIndex - (searchStringIndex - 1)
-                withStyle(
-                        style = SpanStyle(
-                            color = primary0,
-                            background = primary2,
-                            fontFamily = dosisFontFamily
-                        )
-                    ) {
-                        append(
-                            todoTitle.substring(start, end)
-                        )
-                    }
-                searchStringIndex = 0
-            } else {
-                withStyle(
-                    style = SpanStyle(
-                        color = neutral0,
-                        fontFamily = dosisFontFamily
-                    )
-                ) {
-                    append(char)
-                }
-            }
-        }
+    val highlightStyle = SpanStyle(
+        color = primary0,
+        background = primary2,
+        fontFamily = dosisFontFamily
+    )
+    val normalStyle = SpanStyle(
+        color = primary0,
+        fontFamily = dosisFontFamily
+    )
+
+    if (search.isEmpty()) {
+        return AnnotatedString(todoTitle, normalStyle)
     }
 
+    var i = 0
+    var j = 0
+    return buildAnnotatedString {
+        while (i < todoTitle.length) {
+            if (search[j].lowercaseChar() == todoTitle[i].lowercaseChar()) {
+                j++
+                if (j == search.length) {
+                    withStyle(style = highlightStyle) { append(todoTitle.substring(i-j+1, i+1)) }
+                    j = 0
+                }
+            } else {
+                while (j > 0) {
+                    withStyle(style = normalStyle) { append(todoTitle[i - j]) }
+                    j--
+                }
+                withStyle(style = normalStyle) { append(todoTitle[i]) }
+            }
+            i++
+        }
+    }
 }
 
 @Composable
@@ -672,7 +657,7 @@ private fun NewListTextField(
 @Composable
 fun SmartList(
     viewModel: HomeViewModel
-){
+) {
     return Card(
         onClick = {
             viewModel.clickedSmartList()
@@ -681,7 +666,7 @@ fun SmartList(
             containerColor = neutral2,
         ),
         modifier = Modifier.aspectRatio(1f)
-    ){
+    ) {
         Column(modifier = Modifier.padding(10.dp, 10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth()
