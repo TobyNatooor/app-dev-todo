@@ -23,7 +23,7 @@ import com.example.todo_app.ui.theme.*
 
 @Composable
 fun DropdownSettingsMenu(
-    isFavorite: Boolean,
+    isFavorite: Boolean? = false,
     onFavoriteClicked: (() -> Unit)? = null,
     onShareClicked: (() -> Unit)? = null,
     onEditClicked: (() -> Unit)? = null,
@@ -39,7 +39,7 @@ fun DropdownSettingsMenu(
         textAlign = TextAlign.Center,
         fontFamily = dosisFontFamily
     )
-    val favoriteText = if(isFavorite) "Unpin"
+    val favoriteText = if(isFavorite == true) "Unpin"
     else "Pin"
 
     Box {
