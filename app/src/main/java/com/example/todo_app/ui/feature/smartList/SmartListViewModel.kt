@@ -33,7 +33,7 @@ class SmartListViewModel(
         toDos
     ) { settings, list ->
         list.filter { toDo ->
-            includeOnStatus(toDo.status, settings)
+            filter(toDo, settings)
         }
     }
 
@@ -85,11 +85,11 @@ class SmartListViewModel(
         return checkListsState
     }
 
-    private fun includeOnStatus(status: ToDoStatus, smartSettings: SmartSettings): Boolean {
-        return if (status == ToDoStatus.DONE && smartSettings.includeDone) true
-        else if (status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone) true
-        else if (status == ToDoStatus.CANCELED && smartSettings.includeCancelled) true
-        else if (status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress) true
+    private fun filter(toDo: ToDo, smartSettings: SmartSettings): Boolean {
+        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
+        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
+        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
+        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == null || smartSettings.listId == toDo.listId)) true
         else false
     }
 }
