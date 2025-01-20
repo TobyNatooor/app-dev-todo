@@ -383,7 +383,7 @@ fun SettingsDialog(
                             )
                         }
                     }
-                    Text(
+                    /*Text(
                         text = "Added before given date",
                         fontSize = 18.sp,
                         color = primary4,
@@ -394,19 +394,19 @@ fun SettingsDialog(
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
-                    )
+                    )*/
                     Text(
                         text = "Deadline before given date",
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
                     )
-                    Text(
+                    /*Text(
                         text = "Duration less than given time",
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
-                    )
+                    )*/
                     Text(
                         text = "From list",
                         fontSize = 18.sp,
