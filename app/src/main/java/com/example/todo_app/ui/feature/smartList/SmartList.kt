@@ -72,6 +72,7 @@ fun SmartList(
 ) {
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
+    val settings = viewmodel.smartSettings.collectAsState()
 
     SettingsDialog(
         viewModel = viewmodel,
