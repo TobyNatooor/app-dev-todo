@@ -73,6 +73,16 @@ class SmartListViewModel(
         }
     }*/
 
+    fun getCheckLists(): List<CheckList> {
+        var checkLists: List<CheckList> = emptyList()
+        viewModelScope.launch {
+            db.checkListDao().getAll().collect { list ->
+                checkLists = list
+            }
+        }
+        return checkLists
+    }
+
     private fun includeOnStatus(status: ToDoStatus, smartSettings: SmartSettings): Boolean {
         return if (status == ToDoStatus.DONE && smartSettings.includeDone) true
         else if (status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone) true

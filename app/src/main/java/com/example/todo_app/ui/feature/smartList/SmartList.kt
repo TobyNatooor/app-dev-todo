@@ -1,6 +1,8 @@
 package com.example.todo_app.ui.feature.smartList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
@@ -59,6 +61,7 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.model.SmartSettings
+import com.example.todo_app.ui.feature.common.CustomDropdownMenu
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.border
 import androidx.compose.runtime.State
@@ -261,6 +264,7 @@ fun SettingsDialog(
     onConfirm: () -> Unit
 ) {
     if (showSettings) {
+        val dropdownSelections = (viewModel.getCheckLists().map { DropdownOptionItem(it.id, it.title.toString()) }).plus(DropdownOptionItem(null, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
         val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
         val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
@@ -421,3 +425,89 @@ fun SettingsDialog(
         )
     }
 }
+
+@Composable
+private fun DropdownMenuOption(
+    viewModel: SmartListViewModel,
+    settings: State<SmartSettings>,
+    selectedId: Int?,
+    height: Dp,
+    options: List<DropdownOptionItem>,
+    onOptionSelected: (DropdownOptionItem) -> Unit,
+    contentAlign: Alignment = Alignment.Center
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
+        options.find { it.id == selectedId }
+    ) }
+    val shape = RoundedCornerShape(12.dp)
+    val textAlign = when (contentAlign) {
+        Alignment.Center -> TextAlign.Center
+        Alignment.TopStart -> TextAlign.Left
+        else -> TextAlign.Center
+    }
+    val modifier = Modifier.fillMaxWidth()
+
+    Column(verticalArrangement = Arrangement.spacedBy((-1).dp)) {
+        Box(
+            modifier = modifier
+                .height(height)
+                .background(color = primary0, shape = shape)
+                .clickable { expanded = !expanded },
+            contentAlignment = contentAlign
+        ) {
+            Text(
+                text = selectedOption?.title ?: "All lists",
+                fontSize = 18.sp,
+                fontFamily = dosisFontFamily,
+                color = primary4,
+                textAlign = textAlign,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
+
+        CustomDropdownMenu(
+            modifier = modifier
+                .background(color = primary0, shape = shape)
+                .padding(vertical = 4.dp),
+            divider = {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = primary4,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            },
+            contentAlign = contentAlign,
+            expanded = expanded,
+            items = options,
+            onDismiss = { expanded = false },
+            onItemSelected = {
+                selectedOption = it
+                viewModel.setSettings(settings.value.copy(listId = it.id))
+            },
+            itemContent = { item, index ->
+                Box(
+                    modifier = modifier
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ),
+                    contentAlignment = contentAlign
+                ) {
+                    Text(
+                        text = item.title,
+                        fontSize = 16.sp,
+                        fontFamily = dosisFontFamily,
+                        color = primary4,
+                        textAlign = textAlign
+                    )
+                }
+            }
+        )
+    }
+}
+
+data class DropdownOptionItem(
+    val id: Int?,
+    val title: String
+)
