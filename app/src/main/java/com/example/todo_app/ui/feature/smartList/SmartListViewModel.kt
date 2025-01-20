@@ -9,12 +9,14 @@ import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.SmartSettingsSingleton
+import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
@@ -24,13 +26,15 @@ class SmartListViewModel(
 ) : BaseViewModel(db) {
 
     val smartSettings = SmartSettingsSingleton.settings
-    val toDos: Flow<List<ToDo>> = db.toDoDao().getAll()
+    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAll()
 
-    val filteredList = combine(
+    private val filteredList = combine(
         smartSettings,
         toDos
     ) { settings, list ->
-        toDos
+        list.filter { toDo ->
+            includeOnStatus(toDo.status, settings)
+        }
     }
 
 
@@ -39,7 +43,7 @@ class SmartListViewModel(
 
     init {
         viewModelScope.launch {
-            toDos.collect { list ->
+            filteredList.collect { list ->
                 _mutableToDosState.value = ToDosUIState.Data(list)
             }
         }
@@ -60,9 +64,7 @@ class SmartListViewModel(
 //    }
 
     fun setSettings(settings: SmartSettings){
-        viewModelScope.launch {
-            //db.smartSettingsDao().update(settings)
-        }
+        SmartSettingsSingleton.updateSettings(settings)
     }
 
     /*override fun deleteToDo(toDo: ToDo) {
@@ -70,6 +72,14 @@ class SmartListViewModel(
             db.toDoDao().delete(toDo)
         }
     }*/
+
+    private fun includeOnStatus(status: ToDoStatus, smartSettings: SmartSettings): Boolean {
+        return if (status == ToDoStatus.DONE && smartSettings.includeDone) true
+        else if (status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone) true
+        else if (status == ToDoStatus.CANCELED && smartSettings.includeCancelled) true
+        else if (status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress) true
+        else false
+    }
 }
 
 sealed class ToDosUIState {
