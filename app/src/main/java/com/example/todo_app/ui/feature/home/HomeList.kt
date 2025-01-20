@@ -129,7 +129,7 @@ fun HomeList(
                                 })
                             }
                         }
-                        FavoriteCheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
+                        FavoriteCheckListGrid(cards = cards, cardSpacing = horizontalPadding)
                     }
                 }
             }
@@ -230,13 +230,12 @@ private fun CheckListGrid(
 
 @Composable
 private fun FavoriteCheckListGrid(
-    viewModel: HomeViewModel,
     cards: List<ChecklistCardItem>,
     cardSpacing: Dp
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
         Box(modifier = Modifier) {
-            Icon(Icons.Rounded.Star, contentDescription = "Settings", tint = yellow2)
+            Icon(Icons.Rounded.Star, contentDescription = "Favorite", tint = yellow2)
         }
         cards.chunked(2).forEach { rowItems ->
             Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {

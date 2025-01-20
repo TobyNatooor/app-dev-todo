@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.*
 
@@ -86,6 +87,7 @@ fun ToDoList(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    FavoriteButton(isFavorite) { viewmodel.favoriteClicked() }
                     DropdownSettingsMenu(
                         isFavorite = isFavorite.value,
                         onRenameClicked = { isNaming = true },
