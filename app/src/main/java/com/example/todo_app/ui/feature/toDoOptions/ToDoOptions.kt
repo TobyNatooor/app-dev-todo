@@ -344,13 +344,13 @@ fun ToDoOptions(
                            onClick = {
                                showDeleteDialog = true
                            },
-                           colors = ButtonColors(Color.Red, Color.White, Color.Red, Color.Red)
+                           colors = ButtonColors(red2, red0, red0, red0)
                        ) { Text("Delete") }
                        Button(
                            onClick = {
                                navController.popBackStack()
                            },
-                           colors = ButtonColors(Color.Blue, Color.White, Color.Red, Color.Red)
+                           colors = ButtonColors(primary3, primary0, red0, red0)
                        ) { Text("Done") }
                    }
                }
