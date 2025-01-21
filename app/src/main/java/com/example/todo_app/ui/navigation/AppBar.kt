@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Arrangement
 import androidx.room.Query
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.feature.common.SearchButton
@@ -39,37 +40,45 @@ fun AppBar(
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()
             .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        actions.forEach { action ->
-            when (action) {
-                is AppBarAction.Back -> {
-                    Icon(
-                        Icons.Filled.ChevronLeft,
-                        contentDescription = "Back",
-                        tint = neutral1,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .clickable {
-                                onBackClicked?.invoke()
-                            }
-                    )
-                }
-
-                is AppBarAction.Sort -> {
-                    Spacer(modifier = Modifier.weight(1f))
-                    SortButton(
-                        onSortClicked = onSortClicked,
-                        sortOptions
-                    )
-                }
-
-                is AppBarAction.Search -> { 
-                    Spacer(modifier = Modifier.weight(1f))
-                    SearchButton(
-                        onSearchClicked = onSearchClicked,
-                        getQuery = {query(getQuery)}
-                    )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            actions.filterIsInstance<AppBarAction.Back>().forEach { action ->
+                Icon(
+                    Icons.Filled.ChevronLeft,
+                    contentDescription = "Back",
+                    tint = neutral1,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .clickable {
+                            onBackClicked?.invoke()
+                        }
+                )
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            actions.filter { it !is AppBarAction.Back }.forEach { action ->
+                when (action) {
+                    is AppBarAction.Sort -> {
+                        SortButton(
+                            onSortClicked = onSortClicked,
+                            sortOptions
+                        )
+                    }
+                    is AppBarAction.Search -> {
+                        SearchButton(
+                            onSearchClicked = onSearchClicked,
+                            getQuery = { query(getQuery) }
+                        )
+                    }
+                    is AppBarAction.Back -> {
+                        // Do nothing
+                    }
                 }
             }
         }
