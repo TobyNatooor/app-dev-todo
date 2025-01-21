@@ -224,10 +224,10 @@ private fun CheckListGrid(
                 rowItems.forEach { card ->
                     Column(modifier = Modifier.weight(1f)) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val currentChar = if(card.title == "smart list") '\u0000'
+                            val currentChar = if(card is GridCard.SmartListGridCard || card is GridCard.CheckListType.NewCheckListGridCard) '\u0000'
                             else card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
 
-                            val isNext = if(card.title == "smart list") false
+                            val isNext = if(card is GridCard.SmartListGridCard || card is GridCard.CheckListType.NewCheckListGridCard) false
                             else viewModel.isNextChar(currentChar, previousChar)
 
                             AlphabeticalHeader(
@@ -293,7 +293,7 @@ private fun AlphabeticalHeader(
         )
     } else {
         // Space instead of text
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(21.dp))
     }
     Spacer(modifier = Modifier.height(5.dp))
 }
