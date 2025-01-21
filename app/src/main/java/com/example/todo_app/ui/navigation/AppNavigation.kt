@@ -17,6 +17,8 @@ import com.example.todo_app.ui.feature.home.HomeViewModelFactory
 import com.example.todo_app.ui.feature.smartList.SmartListScreen
 import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
+import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
+import com.example.todo_app.ui.feature.toDoList.ToDoListViewModelFactory
 import com.google.android.libraries.places.api.model.Place
 
 @Composable
@@ -61,9 +63,13 @@ fun AppNavigation(
         ) { backStackEntry ->
             val title = backStackEntry.arguments?.getString("title") ?: "Error"
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
-
+            val viewmodel: ToDoListViewModel = viewModel(
+                key = "ToDoListViewModel_$listId",
+                factory = ToDoListViewModelFactory(listId, db, navController)
+            )
             ToDoListScreen(
                 title = title,
+                viewmodel = viewmodel,
                 listId = listId,
                 appBar = @Composable {
                     AppBar(
@@ -72,6 +78,7 @@ fun AppNavigation(
                             AppBarAction.Sort,
                             AppBarAction.Search
                         ),
+                        onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT, SortOption.STATUS)
                         )

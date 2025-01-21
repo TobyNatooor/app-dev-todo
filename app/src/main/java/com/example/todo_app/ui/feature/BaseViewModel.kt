@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 abstract class BaseViewModel(
     protected val db: AppDatabase
@@ -18,7 +19,7 @@ abstract class BaseViewModel(
 
     fun updateToDoItem(updatedToDo: ToDo) {
         viewModelScope.launch {
-            db.toDoDao().update(updatedToDo)
+            db.toDoDao().update(updatedToDo.copy(lastModified = LocalDateTime.now()))
         }
     }
 
