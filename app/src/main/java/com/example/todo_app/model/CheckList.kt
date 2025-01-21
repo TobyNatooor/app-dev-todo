@@ -1,5 +1,6 @@
 package com.example.todo_app.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
@@ -7,6 +8,7 @@ import java.time.LocalDateTime
 @Entity(tableName = "CheckList")
 data class CheckList(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     val id: Int = 0,
     val title: String,
     val description: String,
