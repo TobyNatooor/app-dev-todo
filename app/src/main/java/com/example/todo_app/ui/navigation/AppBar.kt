@@ -9,66 +9,64 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.Alignment
+import androidx.room.Query
+import com.example.todo_app.model.SortOption
+//import com.example.todo_app.ui.feature.common.SearchButton
+import com.example.todo_app.ui.feature.common.SortButton
 import com.example.todo_app.ui.theme.*
 
 @Composable
 fun AppBar(
-        navController: NavController,
-        backButton: Boolean,
-        sortButton: Boolean,
-        searchButton: Boolean
+    actions: List<AppBarAction>,
+    onBackClicked: (() -> Unit)? = null,
+    onSortClicked: ((SortOption) -> Unit)? = null,
+    onSearchClicked: ((String) -> Unit)? = null
 ) {
     return Row(
         modifier = Modifier
-            .height(32.dp)
+            .height(56.dp)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (backButton) {
-            Icon(
-                Icons.Filled.ChevronLeft,
-                contentDescription = "Back",
-                tint = neutral1,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .clickable {
-                        navController.popBackStack()
-                    }
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        if (sortButton) {
-            Icon(
-                Icons.AutoMirrored.Filled.Sort,
-                contentDescription = "Sort",
-                tint = neutral1,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .clickable {}
-            )
-        }
-        if (searchButton) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = "Search",
-                tint = neutral1,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(start = 8.dp) // Space between the sort and search icons
-                    .aspectRatio(1f)
-                    .clickable {}
-            )
+        actions.forEach { action ->
+            when (action) {
+                is AppBarAction.Back -> {
+                    Icon(
+                        Icons.Filled.ChevronLeft,
+                        contentDescription = "Back",
+                        tint = neutral1,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .clickable {
+                                onBackClicked?.invoke()
+                            }
+                    )
+                }
+
+                is AppBarAction.Sort -> {
+                    Spacer(modifier = Modifier.weight(1f))
+                    SortButton(
+                        onSortClicked = onSortClicked
+                    )
+                }
+
+                is AppBarAction.Search -> { null }
+                    /*SearchButton(
+                        onSearchClicked = onSearchClicked
+                    )
+                }*/
+            }
         }
     }
 }

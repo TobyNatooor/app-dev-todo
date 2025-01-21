@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +21,11 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -65,16 +68,27 @@ import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
+import com.example.todo_app.ui.theme.neutral0
+import com.example.todo_app.ui.theme.neutral1
+import com.example.todo_app.ui.theme.neutral2
+import com.example.todo_app.ui.theme.neutral4
+import com.example.todo_app.ui.theme.primary0
+import com.example.todo_app.ui.theme.primary2
+import com.example.todo_app.ui.theme.yellow2
 import com.example.todo_app.ui.theme.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeList(
+    favorites: List<CheckList>,
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    columnState: LazyListState
+    columnState: LazyListState,
+    appBar: @Composable () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val newListState = viewModel.newListState.collectAsState().value
+    val searchQuery by viewModel.filteringQuery.collectAsState()
     val horizontalPadding = 24.dp
 
     Box(
@@ -87,7 +101,7 @@ fun HomeList(
             }
     ) {
         // Lists
-        LazyColumn (
+        LazyColumn(
             state = columnState,
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,8 +119,30 @@ fun HomeList(
                         .padding(top = 120.dp, bottom = 100.dp)
                 )
             }
+            if(favorites.isNotEmpty()){
+//                item {
+//                    Box(modifier = Modifier) {
+//                        Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
+//                    }
+//                }
+                item {
+                    Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                        val cards = buildList {
+                            favorites.forEach { checklist ->
+                                add(GridCard.CheckListType
+                                    .CheckListGridCard(viewModel, checklist, searchQuery)
+                                )
+                            }
+                        }
+                        FavoriteCheckListGrid(cards = cards, cardSpacing = horizontalPadding)
+                    }
+                }
+            }
+            stickyHeader {
+                appBar()
+            }
 
-            item {
+            /*item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -119,12 +155,12 @@ fun HomeList(
                     val childrenHeight = 42.dp
                     val horizontalDistribution = 8f / 15f
 
-                SearchTextField(
-                    viewModel,
-                    modifier = Modifier
-                        .weight(horizontalDistribution)
-                        .height(childrenHeight)
-                )
+                    SearchTextField(
+                        viewModel,
+                        modifier = Modifier
+                            .weight(horizontalDistribution)
+                            .height(childrenHeight)
+                    )
 
                     SortButton(
                         viewModel,
@@ -133,7 +169,7 @@ fun HomeList(
                             .height(childrenHeight)
                     )
                 }
-            }
+            }*/
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
@@ -148,20 +184,30 @@ fun HomeList(
                         val listsWithoutNewList: MutableList<CheckList> = lists.toMutableList()
 
                         val cards: List<GridCard> = buildList {
-                            if (newListState is NewListState.Data) {
-                                add(GridCard.CheckListType.NewCheckListGridCard(viewModel, newListState.list))
+                            if (viewModel.getQuery().isEmpty()) {
+                                add(GridCard
+                                    .SmartListGridCardType(viewModel)
+                                )
                             }
 
-                            if (viewModel.getQuery().isEmpty()) {
-                                add(GridCard.SmartListGridCardType(viewModel))
+                            if (newListState is NewListState.Data) {
+                                add(GridCard.CheckListType
+                                    .NewCheckListGridCard(viewModel, newListState.list)
+                                )
                             }
 
                             listsWithoutNewList.forEach { checklist ->
-                                add(GridCard.CheckListType.CheckListGridCard(viewModel, checklist, viewModel.getTodosByListId(checklist.id)))
+                                add(GridCard.CheckListType
+                                    .CheckListGridCard(viewModel, checklist, searchQuery)
+                                )
                             }
                         }
 
-                        CheckListGrid(viewModel = viewModel, cards = cards, cardSpacing = horizontalPadding)
+                        CheckListGrid(
+                            viewModel = viewModel,
+                            cards = cards,
+                            cardSpacing = horizontalPadding
+                        )
                     }
                 }
             }
@@ -184,12 +230,16 @@ private fun CheckListGrid(
                 rowItems.forEach { card ->
                     Column(modifier = Modifier.weight(1f)) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val currentChar = card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+                            val currentChar = if(card.title == "smart list") '\u0000'
+                            else card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
+
+                            val isNext = if(card.title == "smart list") false
+                            else viewModel.isNextChar(currentChar, previousChar)
 
                             AlphabeticalHeader(
                                 prevChar = previousChar,
                                 currChar = currentChar,
-                                isNext = viewModel.isNextChar(currentChar, previousChar)
+                                isNext = isNext
                             ) { viewModel.getSymbol(currentChar) }
 
                             if (previousChar != currentChar) {
@@ -207,7 +257,34 @@ private fun CheckListGrid(
 }
 
 @Composable
-private fun AlphabeticalHeader(prevChar: Char, currChar: Char, isNext: Boolean, getSymbol: (Char) -> String){
+private fun FavoriteCheckListGrid(
+    cards: List<GridCard>,
+    cardSpacing: Dp
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
+        Box(modifier = Modifier) {
+            Icon(Icons.Rounded.Star, contentDescription = "Favorite", tint = yellow2)
+        }
+        cards.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                rowItems.forEach { card ->
+                    Column(modifier = Modifier.weight(1f)) {
+                        card.item()
+                    }
+                }
+                if (rowItems.size == 1) Box(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlphabeticalHeader(
+    prevChar: Char,
+    currChar: Char,
+    isNext: Boolean,
+    getSymbol: (Char) -> String
+) {
     if (isNext) {
         //println("Creating header with $currChar")
         Text(
@@ -371,6 +448,8 @@ fun SortButton(
     }
 }
 
+// TODO: Add "searchQuery: String" to CheckListGridCard.
+
 abstract class GridCard(open val viewModel: HomeViewModel) {
     private val textStyle = TextStyle(
         fontSize = 24.sp,
@@ -394,8 +473,10 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
         data class CheckListGridCard(
             override val viewModel: HomeViewModel,
             override val list: CheckList,
-            val todos: List<ToDo>
-        ) : CheckListType(viewModel, list)
+            val searchQuery: String
+        ) : CheckListType(viewModel, list) {
+            val todos: List<ToDo> = viewModel.getTodosByListId(list.id)
+        }
     }
 
     data class SmartListGridCardType(
@@ -492,7 +573,7 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
                                 val search = viewModel.getQuery()
                                 Text(
                                     if (search.isNotEmpty()) {
-                                        getTodoTitleWithHighlight(todo.title, search)
+                                        getTodoTitleWithHighlight(todo.title, searchQuery)
                                     } else {
                                         AnnotatedString(todo.title)
                                     },
@@ -509,16 +590,15 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
                     is CheckListType.CheckListGridCard -> {
                         if (!isNaming) {
                             DropdownSettingsMenu(
+                                isFavorite = list.favorite,
                                 actions = listOf(
                                     DropdownSettingsMenuItem.Rename,
-                                    DropdownSettingsMenuItem.Delete
+                                    DropdownSettingsMenuItem.Delete,
+                                    DropdownSettingsMenuItem.Favorite
                                 ),
                                 onRenameClicked = { isNaming = true },
                                 onDeleteClicked = { showDeleteDialog = true },
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(width = 38.dp, height = 44.dp)
-                                    .offset(x = 8.dp, y = (-2).dp)
+                                onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
                             )
                         }
                     }
@@ -543,56 +623,38 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
 }
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
+    val highlightStyle = SpanStyle(
+        color = primary0,
+        background = primary2,
+        fontFamily = dosisFontFamily
+    )
+    val normalStyle = SpanStyle(
+        color = primary0,
+        fontFamily = dosisFontFamily
+    )
+
+    if (search.isEmpty()) {
+        return AnnotatedString(todoTitle, normalStyle)
+    }
+
+    var i = 0
+    var j = 0
     return buildAnnotatedString {
-        var searchStringIndex = 0
-        var searching = false
-        todoTitle.forEachIndexed { index, char ->
-            if (char.lowercaseChar() == search[searchStringIndex].lowercaseChar()) {
-                searching = true
-                searchStringIndex++
-                if (searchStringIndex == search.length) {
-                    searching = false
-                    val start = index - (searchStringIndex - 1)
-                    val end = index + searchStringIndex - (searchStringIndex - 1)
-                    withStyle(
-                        style = SpanStyle(
-                            color = primary0,
-                            background = primary2,
-                            fontFamily = dosisFontFamily
-                        )
-                    ) {
-                        append(
-                            todoTitle.substring(start, end)
-                        )
-                    }
-                    searchStringIndex = 0
+        while (i < todoTitle.length) {
+            if (search[j].lowercaseChar() == todoTitle[i].lowercaseChar()) {
+                j++
+                if (j == search.length) {
+                    withStyle(style = highlightStyle) { append(todoTitle.substring(i-j+1, i+1)) }
+                    j = 0
                 }
-            } else if (searching) {
-                searching = false
-                val start = index - searchStringIndex
-                val end = index + searchStringIndex - (searchStringIndex - 1)
-                withStyle(
-                        style = SpanStyle(
-                            color = primary0,
-                            background = primary2,
-                            fontFamily = dosisFontFamily
-                        )
-                    ) {
-                        append(
-                            todoTitle.substring(start, end)
-                        )
-                    }
-                searchStringIndex = 0
             } else {
-                withStyle(
-                    style = SpanStyle(
-                        color = neutral0,
-                        fontFamily = dosisFontFamily
-                    )
-                ) {
-                    append(char)
+                while (j > 0) {
+                    withStyle(style = normalStyle) { append(todoTitle[i - j]) }
+                    j--
                 }
+                withStyle(style = normalStyle) { append(todoTitle[i]) }
             }
+            i++
         }
     }
 }

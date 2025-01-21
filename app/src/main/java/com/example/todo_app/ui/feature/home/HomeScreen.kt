@@ -25,7 +25,8 @@ import com.example.todo_app.ui.feature.common.LoadingScreen
 fun HomeScreen(
     modifier: Modifier = Modifier,
     db: AppDatabase,
-    navController: NavController
+    navController: NavController,
+    appBar: @Composable () -> Unit
 ) {
     val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
@@ -55,7 +56,7 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             Box(modifier = modifier) {
-                HomeContent(homeUIState, viewModel, columnState)
+                HomeContent(homeUIState, viewModel, columnState, appBar)
             }
         }
     }
@@ -66,19 +67,24 @@ private fun HomeContent(
     homeUIState: HomeUIState,
     viewModel: HomeViewModel,
     columnState: LazyListState,
+    appBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (homeUIState) {
         is HomeUIState.Empty -> HomeList(
+            favorites = ArrayList(),
             lists = ArrayList(),
             viewModel = viewModel,
-            columnState = columnState
+            columnState = columnState,
+            appBar = appBar
         )
 
         is HomeUIState.Data -> HomeList(
+            favorites = homeUIState.favorites,
             lists = homeUIState.lists,
             viewModel = viewModel,
-            columnState = columnState
+            columnState = columnState,
+            appBar = appBar
         )
 
         else -> LoadingScreen(modifier)

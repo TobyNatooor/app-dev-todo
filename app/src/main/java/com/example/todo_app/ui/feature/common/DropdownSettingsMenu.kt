@@ -23,6 +23,8 @@ import com.example.todo_app.ui.theme.*
 
 @Composable
 fun DropdownSettingsMenu(
+    isFavorite: Boolean? = false,
+    onFavoriteClicked: (() -> Unit)? = null,
     onShareClicked: (() -> Unit)? = null,
     onEditClicked: (() -> Unit)? = null,
     onRenameClicked: (() -> Unit)? = null,
@@ -38,6 +40,8 @@ fun DropdownSettingsMenu(
         textAlign = TextAlign.Center,
         fontFamily = dosisFontFamily
     )
+    val favoriteText = if(isFavorite == true) "Unpin"
+    else "Pin"
 
     Box(modifier = modifier) {
         IconButton(onClick = { expanded = !expanded }) {
@@ -102,6 +106,23 @@ fun DropdownSettingsMenu(
                             onClick = {
                                 expanded = false
                                 onRenameClicked?.invoke()
+                            }
+                        )
+                    }
+                    
+                    is DropdownSettingsMenuItem.Favorite -> {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    favoriteText,
+                                    style = menuTextStyle,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                onFavoriteClicked?.invoke()
                             }
                         )
                     }

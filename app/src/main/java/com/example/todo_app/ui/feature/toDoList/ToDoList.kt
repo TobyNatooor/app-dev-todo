@@ -6,15 +6,32 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.google.maps.android.compose.GoogleMap
+import java.time.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -46,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
+import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
@@ -67,6 +85,7 @@ fun ToDoList(
     var isNaming by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val addingToDo = viewmodel.addingNewToDo.collectAsState()
+    val isFavorite = viewmodel.isFavorite.collectAsState()
 
     Box(
         modifier = modifier
@@ -76,7 +95,7 @@ fun ToDoList(
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                .padding(horizontal = 32.dp)
+                //.padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -85,13 +104,17 @@ fun ToDoList(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    FavoriteButton(isFavorite) { viewmodel.favoriteClicked() }
                     DropdownSettingsMenu(
+                        isFavorite = isFavorite.value,
                         actions = listOf(
                             DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete
+                            DropdownSettingsMenuItem.Delete,
+                            DropdownSettingsMenuItem.Favorite
                         ),
                         onRenameClicked = { isNaming = true },
-                        onDeleteClicked = { showDeleteDialog = true }
+                        onDeleteClicked = { showDeleteDialog = true },
+                        onFavoriteClicked = { viewmodel.favoriteClicked() },
                     )
                 }
             }
@@ -100,7 +123,7 @@ fun ToDoList(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 75.dp)
+                        .padding(top = 0.dp, bottom = 75.dp, start = 24.dp, end = 24.dp)
                 ) {
                     if (isNaming) {
                         NameList(
@@ -171,43 +194,167 @@ fun ToDoList(
 
 @Composable
 private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
+    val cameraPositionState = rememberCameraPositionState {
+        position = fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+    }
+    var markerPosition = remember { LatLng(0.0, 0.0) }
+    val markerState = remember { MarkerState(position = markerPosition) }
+    var isExapnded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .background(
                 color = neutral2,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ToDoCheckBox(toDo, viewModel, 26.dp)
-            Spacer(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-            Text(
-                text = toDo.title,
-                fontSize = 18.sp,
-                color = neutral0,
-                fontFamily = dosisFontFamily
-            )
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-            DropdownSettingsMenu(
-                actions = listOf(
-                    DropdownSettingsMenuItem.Rename,
-                    DropdownSettingsMenuItem.Delete,
-                    DropdownSettingsMenuItem.Edit
-                ),
-                onRenameClicked = { /* TODO */},
-                onDeleteClicked = { viewModel.deleteToDo(toDo) },
-                onEditClicked = { viewModel.clickToDoOptions(toDo.id) }
-            )
+        Column () {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ToDoCheckBox(toDo, viewModel, 26.dp)
+                Spacer(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                )
+                Text(
+                    text = toDo.title,
+                    fontSize = 18.sp,
+                    color = neutral0,
+                    fontFamily = dosisFontFamily,
+                    modifier = Modifier
+                        .clickable {
+                            isExapnded = !isExapnded
+                        }
+                )
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+                DropdownSettingsMenu(
+                    actions = listOf(
+                        DropdownSettingsMenuItem.Rename,
+                        DropdownSettingsMenuItem.Delete,
+                        DropdownSettingsMenuItem.Edit
+                    ),
+                    onRenameClicked = { /* TODO */},
+                    onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                    onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
+                )
+            }
+            if (isExapnded) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ){
+                    //map
+                    if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
+                        GoogleMap(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            cameraPositionState = cameraPositionState
+                        ) {
+                            // Add a marker
+                            markerPosition = LatLng(toDo.latitude, toDo.longitude)
+                            markerState.position = markerPosition
+                            cameraPositionState.position = fromLatLngZoom(markerPosition, 10f)
+                            Marker(
+                                title = toDo.location,
+                                state = markerState
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        ) {
+                            Text(
+                                "Specify location to view map",
+                                textAlign = TextAlign.Center,
+                                fontFamily = dosisFontFamily,
+                                color = neutral4,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .wrapContentHeight()
+                            )
+                        }
+                    }
+                    //deadline
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "Deadline",
+                            color = neutral0,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = formatDeadline(toDo.deadline),
+                                color = neutral3,
+                                fontSize = 16.sp,
+                                fontFamily = dosisFontFamily
+                            )
+                        }
+                    }
+                    //description
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "Description",
+                            color = neutral0,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(120.dp)
+                                .height(50.dp)
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = if (toDo.description.length > 30) {
+                                    toDo.description.take(27) + "..."
+                                } else {
+                                    toDo.description
+                                },
+                                color = neutral3,
+                                fontSize = 16.sp,
+                                fontFamily = dosisFontFamily
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
+}
+
+fun formatDeadline(deadline: LocalDateTime?): String {
+    if(deadline == null) return "00/00/00"
+    return deadline.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
 }
 
 @Composable
@@ -280,7 +427,7 @@ private fun ToDoTextField(
     }
 }
 
-@Composable
+/*@Composable
 fun ToDoCheckBox(
     toDo: ToDo,
     viewModel: ToDoListViewModel,
@@ -314,7 +461,7 @@ fun ToDoCheckBox(
             )
         }
     }
-}
+}*/
 
 @Composable
 fun ToDoOptionsButton(

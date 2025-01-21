@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import android.util.Log
 import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,11 +23,13 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 
+    private val favoriteLists: Flow<List<CheckList>> = db.checkListDao().getAllFavorites()
+
     private val _filterQuery = MutableStateFlow("")
     val filteringQuery = _filterQuery.asStateFlow()
 
     private val filteredLists: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
-        if (query.isBlank()) db.checkListDao().getAll()
+        if (query.isBlank()) db.checkListDao().getAllNonFavorite()
         else db.checkListDao().findWithTodosTitle(query)
     }
 
@@ -55,11 +58,11 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
     init {
         viewModelScope.launch {
-            combine(sortedLists, todos) { lists, todos ->
+            combine(favoriteLists, sortedLists, todos) { favorites, lists, todos ->
                 if (lists.isEmpty()) {
                     HomeUIState.Empty
                 } else {
-                    HomeUIState.Data(lists, todos)
+                    HomeUIState.Data(favorites, lists, todos)
                 }
             }.collect { homeUIState ->
                 _mutableHomeState.value = homeUIState
@@ -82,32 +85,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
     fun searchForTodos(query: String) {
         _filterQuery.value = query
-//        this.viewModelScope.launch {
-//            val todos: Flow<List<ToDo>> = if (query.isEmpty()) {
-//                flowOf(ArrayList())
-//            } else {
-//                db.toDoDao().findWithTitle(query)
-//            }
-//
-//            val lists: Flow<List<CheckList>> = if (query.isEmpty()) {
-//                db.checkListDao().getAll()
-//            } else {
-//                db.checkListDao().findWithTodosTitle(query)
-//            }
-//
-//            combine(lists, todos) { list, todo ->
-//                if (list.isEmpty()) {
-//                    //HomeUIState.Empty
-//                    HomeUIState.Data(ArrayList(), ArrayList())
-//                } else {
-//                    HomeUIState.Data(list, todo)
-//                }
-//            }.collect { homeUIState ->
-//                Log.d("TODOS", "ui state: $homeUIState")
-//                _mutableHomeState.value = homeUIState
-//            }
-//
-//        }
     }
 
     fun initializeNewList() {
@@ -180,7 +157,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 sealed class HomeUIState {
     data object Empty : HomeUIState()
     data object Loading : HomeUIState()
-    data class Data(val lists: List<CheckList>, val todos: List<ToDo>) : HomeUIState()
+    data class Data(val favorites: List<CheckList>, val lists: List<CheckList>, val todos: List<ToDo>) : HomeUIState()
 }
 
 sealed class NewListState {

@@ -2,15 +2,18 @@ package com.example.todo_app.ui.navigation
 
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todo_app.ui.feature.home.HomeScreen
+import com.example.todo_app.ui.feature.home.HomeViewModel
+import com.example.todo_app.ui.feature.home.HomeViewModelFactory
+import com.example.todo_app.ui.feature.smartList.SmartListScreen
 import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
-import com.example.todo_app.ui.feature.smartList.SmartListScreen
 import com.google.android.libraries.places.api.model.Place
 
 @Composable
@@ -22,9 +25,22 @@ fun AppNavigation(
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
+            val viewModel: HomeViewModel = viewModel(
+                factory = HomeViewModelFactory(db, navController)
+            )
             HomeScreen(
                 db = db,
                 navController = navController,
+                appBar = @Composable {
+                    AppBar(
+                        actions = listOf(
+                            AppBarAction.Sort,
+                            AppBarAction.Search
+                        ),
+                        onSortClicked = { option -> viewModel.sortLists(option) },
+                        onSearchClicked = { query -> viewModel.searchForTodos(query) }
+                    )
+                }
             )
         }
         composable(
@@ -40,7 +56,17 @@ fun AppNavigation(
             ToDoListScreen(
                 title = title,
                 listId = listId,
-                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) },
+                appBar = @Composable {
+                    AppBar(
+                        actions = listOf(
+                            AppBarAction.Back,
+                            AppBarAction.Sort,
+                            AppBarAction.Search
+                        ),
+                        onBackClicked = { navController.popBackStack() },
+
+                        )
+                },
                 db = db,
                 navController = navController
             )
@@ -55,7 +81,12 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                appBar = @Composable { AppBar(navController, backButton = true, sortButton = false, searchButton = false) },
+                appBar = @Composable {
+                    AppBar(
+                        actions = listOf(AppBarAction.Back),
+                        onBackClicked = { navController.popBackStack() }
+                    )
+                },
                 getLocation = getLocation,
                 db = db
             )
@@ -64,7 +95,12 @@ fun AppNavigation(
             SmartListScreen(
                 db = db,
                 navController = navController,
-                appBar = @Composable { AppBar(navController, backButton = true, sortButton = true, searchButton = true) }   
+                appBar = @Composable {
+                    AppBar(
+                        actions = listOf(AppBarAction.Back),
+                        onBackClicked = { navController.popBackStack() }
+                    )
+                }
             )
         }
     }

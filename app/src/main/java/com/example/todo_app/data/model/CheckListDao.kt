@@ -25,6 +25,12 @@ interface CheckListDao {
     @Query("SELECT * FROM CheckList")
     fun getAll(): Flow<List<CheckList>>
 
+    @Query("SELECT * FROM CheckList WHERE favorite = 1")
+    fun getAllFavorites(): Flow<List<CheckList>>
+
+    @Query("SELECT * FROM CheckList WHERE favorite = 0")
+    fun getAllNonFavorite(): Flow<List<CheckList>>
+
     @Query("SELECT * FROM CheckList ORDER BY Checklist.created DESC")
     fun getAllSortedByCreated(): Flow<List<CheckList>>
 
@@ -35,7 +41,7 @@ interface CheckListDao {
     fun getAllSortedByName(): Flow<List<CheckList>>
 
     @Query("SELECT * FROM CheckList WHERE CheckList.id = :vId")
-    fun getWithId(vId: Int): Flow<CheckList>
+    suspend fun getWithId(vId: Int): CheckList
 
     @Query("SELECT * FROM CheckList WHERE description LIKE '%' || :vSearchWord || '%'")
     fun findWithDescription(vSearchWord: String): Flow<List<CheckList>>
@@ -46,6 +52,12 @@ interface CheckListDao {
     // Update name of list with id
     @Query("UPDATE CheckList SET title = :vNewTitle WHERE id = :vId")
     suspend fun updateTitle(vId: Int, vNewTitle: String)
+
+    @Query("UPDATE CheckList SET favorite = :vFavorite WHERE id = :vId")
+    suspend fun updateFavorite(vId: Int, vFavorite: Boolean)
+
+    @Query("SELECT favorite FROM CheckList WHERE id = :vId")
+    fun isFavorite(vId: Int): Flow<Boolean>
 
     @Query("DELETE FROM CheckList WHERE id = :vId")
     suspend fun deleteWithId(vId: Int)

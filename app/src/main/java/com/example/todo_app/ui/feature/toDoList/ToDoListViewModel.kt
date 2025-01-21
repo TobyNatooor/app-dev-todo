@@ -1,12 +1,12 @@
 package com.example.todo_app.ui.feature.toDoList
 
 import com.example.todo_app.data.AppDatabase
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,21 +17,24 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(
     private val listId: Int,
-    private val db: AppDatabase,
+    db: AppDatabase,
     private val nav: NavController
-) : ViewModel() {
+) : BaseViewModel(db) {
 
     private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
 
-    private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
+    val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState
 
     private val _addingNewToDo = MutableStateFlow(false)
     val addingNewToDo = _addingNewToDo.asStateFlow()
 
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite = _isFavorite.asStateFlow()
 
 
     init {
+        observeFavoriteStatus()
         viewModelScope.launch {
             toDos.collect { list ->
                 _mutableToDosState.value = ToDosUIState.Data(list.sortedBy { it.status })
@@ -45,36 +48,51 @@ class ToDoListViewModel(
             description = "Add Description",
             listId = listId,
         )
-        this.viewModelScope.launch {
+        viewModelScope.launch {
             db.toDoDao().insert(newToDo)
             _addingNewToDo.value = false
         }
     }
 
-    fun updateToDoItem(updatedToDo: ToDo) {
-        this.viewModelScope.launch {
+    /*override fun updateToDoItem(updatedToDo: ToDo) {
+        viewModelScope.launch {
             db.toDoDao().update(updatedToDo)
         }
-    }
+    }*/
 
     fun clickToDoOptions(toDoId: Int) {
         nav.navigate("toDoOptions/${toDoId}")
     }
 
-    fun deleteToDo(toDo: ToDo) {
-        this.viewModelScope.launch {
+    /*override fun deleteToDo(toDo: ToDo) {
+        viewModelScope.launch {
             db.toDoDao().delete(toDo)
         }
-    }
+    }*/
 
     fun updateList(listId: Int, newTitle: String) {
-        this.viewModelScope.launch {
+        viewModelScope.launch {
             db.checkListDao().updateTitle(listId, newTitle)
         }
     }
 
-    fun deleteList(listId: Int) {
+    fun favoriteClicked(){
         this.viewModelScope.launch {
+            db.checkListDao().updateFavorite(listId, !isFavorite.value)
+        }
+    }
+
+    private fun observeFavoriteStatus() {
+        viewModelScope.launch {
+            db.checkListDao().isFavorite(listId)
+                .collect { favorite ->
+                    _isFavorite.value = favorite
+                }
+        }
+    }
+
+    fun deleteList(listId: Int) {
+        viewModelScope.launch {
             db.checkListDao().deleteWithId(listId)
             nav.navigate("home")
         }
