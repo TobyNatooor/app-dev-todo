@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -429,12 +430,17 @@ fun SettingsDialog(
                 }
             },
             title = {
-                Text(text = "Settings")
+                Text(text = "Include ToDos")
             },
             text = {
-                Column (modifier = Modifier.padding(10.dp, 10.dp)) {
+                Column (modifier = Modifier.padding(5.dp, 5.dp)) {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = primary4,
+                        modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)
+                    )
                     Text(
-                        text = "Staus",
+                        text = "Status",
                         fontSize = 18.sp,
                         color = primary4,
                         fontFamily = dosisFontFamily
@@ -531,47 +537,52 @@ fun SettingsDialog(
                             )
                         }
                     }
-                    /*Text(
-                        text = "Added before given date",
-                        fontSize = 18.sp,
+                    HorizontalDivider(
+                        thickness = 1.dp,
                         color = primary4,
-                        fontFamily = dosisFontFamily
+                        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).padding(bottom = 16.dp)
                     )
-                    Text(
-                        text = "Added after given date",
-                        fontSize = 18.sp,
-                        color = primary4,
-                        fontFamily = dosisFontFamily
-                    )*/
-                    Text(
-                        text = "Deadline within given days",
-                        fontSize = 18.sp,
-                        color = primary4,
-                        fontFamily = dosisFontFamily
-                    )
-                    BasicTextField(
-                        value = deadlineWithin,
-                        onValueChange = { newValue ->
-                            if (newValue.all { it.isDigit() }) {
-                                deadlineWithin = newValue
-                                viewModel.setSettings(settings.value.copy(deadlineWithinDays = newValue.toIntOrNull() ?: 0))
-                            }
-                        },
-                        textStyle = TextStyle(
-                            color = primary4,
-                            fontSize = 18.sp,
-                            fontFamily = dosisFontFamily
-                        ),
+                    Row(
                         modifier = Modifier
-                            .background(color = primary0, shape = RoundedCornerShape(5.dp))
-                            .padding(8.dp)
-                    )
-                    /*Text(
-                        text = "Duration less than given time",
-                        fontSize = 18.sp,
+                    ) {
+                        Text(
+                            text = "Deadlines less than ",
+                            fontSize = 18.sp,
+                            color = primary4,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        BasicTextField(
+                            value = deadlineWithin,
+                            onValueChange = { newValue ->
+                                if (newValue.all { it.isDigit() } && newValue.length <= 2) {
+                                    deadlineWithin = newValue
+                                    viewModel.setSettings(settings.value.copy(deadlineWithinDays = newValue.toIntOrNull() ?: 0))
+                                }
+                            },
+                            textStyle = TextStyle(
+                                color = primary4,
+                                fontSize = 18.sp,
+                                fontFamily = dosisFontFamily
+                            ),
+                            modifier = Modifier
+                                .background(color = primary1, shape = RoundedCornerShape(5.dp))
+                                .padding(8.dp)
+                                .width(20.dp)
+                        )
+                        Text(
+                            text = " days away",
+                            fontSize = 18.sp,
+                            color = primary4,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                    HorizontalDivider(
+                        thickness = 1.dp,
                         color = primary4,
-                        fontFamily = dosisFontFamily
-                    )*/
+                        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp).padding(bottom = 8.dp)
+                    )
                     DropdownMenuOption(
                         settings = settings,
                         viewModel = viewModel,
@@ -615,7 +626,7 @@ private fun DropdownMenuOption(
             contentAlignment = contentAlign
         ) {
             Text(
-                text = selectedOption?.title ?: "All lists",
+                text = "From: "+(selectedOption?.title ?: "All lists"),
                 fontSize = 18.sp,
                 fontFamily = dosisFontFamily,
                 color = primary4,
