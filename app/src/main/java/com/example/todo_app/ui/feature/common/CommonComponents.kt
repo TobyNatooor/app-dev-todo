@@ -58,18 +58,23 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.ui.feature.BaseViewModel
@@ -108,15 +113,17 @@ fun AddButton(onClick: () -> Unit) {
 fun NameList(
     title: String?,
     textStyle: TextStyle?,
-    modifier: Modifier?,
+    modifier: Modifier = Modifier,
+    selectAllText: Boolean = false,
     onTitleChange: (String) -> Unit,
     onRenameComplete: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val blankTitle = "Unnamed list"
+
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
-    val focusManager = LocalFocusManager.current
     var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
@@ -126,11 +133,16 @@ fun NameList(
         )
     }
 
-    Box {
+    Box(modifier) {
         LaunchedEffect(Unit) {
             isEnabled = true
             isFocused = false
             focusRequester.requestFocus()
+            if (selectAllText) {
+                textFieldValue = textFieldValue.copy(
+                    selection = TextRange(0, textFieldValue.text.length)
+                )
+            }
         }
 
         DisposableEffect(Unit) {
@@ -164,7 +176,7 @@ fun NameList(
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
                 .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
+                // Handle onTitleChange callback when unfocused
                 .onFocusChanged {
                     isFocused = !isFocused
                     if (!isFocused) {
@@ -175,16 +187,22 @@ fun NameList(
                         isEnabled = false
                         onRenameComplete()
                     }
+                }
+                .onKeyEvent {
+                    onTitleChange(textFieldValue.text)
+                    true
                 },
-            enabled = isEnabled,
+            enabled = isEnabled
         )
 
         if (textFieldValue.text.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = neutral1,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
+                style = (textStyle ?: TextStyle(
+                    fontSize = 20.sp,
+                    color = neutral0,
+                    fontFamily = dosisFontFamily
+                )).copy(color = neutral1)
             )
         }
     }
@@ -288,7 +306,7 @@ fun ToDoCheckBox(
         Box(
             modifier = modifier
                 .align(Alignment.Center)
-                .padding(8.dp)
+                .padding(horizontal = 8.dp, vertical = 12.dp)
                 .size(size)
                 .background(
                     color = color,
@@ -491,6 +509,81 @@ fun SortButton(
                         .background(Color.Transparent)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchTextField(
+    viewModel: HomeViewModel,
+    modifier: Modifier = Modifier
+) {
+    val focusState = remember { mutableStateOf(false) }
+    val searchQuery = viewModel.filteringQuery.collectAsState()
+    val userInput = remember { mutableStateOf(searchQuery.value) }
+
+    val onFocusChange: (Boolean) -> Unit = { isFocused ->
+        focusState.value = isFocused
+    }
+
+    Box(modifier = modifier) {
+        // Search TextField
+        BasicTextField(
+            value = userInput.value,
+            onValueChange = { newTitle ->
+                userInput.value = newTitle
+                viewModel.searchForTodos(userInput.value)
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .onFocusChanged { state -> onFocusChange(state.isFocused) },
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                color = neutral0,
+                fontFamily = dosisFontFamily,
+                lineHeight = TextUnit.Unspecified,
+                letterSpacing = TextUnit.Unspecified
+            ),
+            cursorBrush = SolidColor(neutral0),
+            decorationBox = @Composable { innerTextField ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search Icon",
+                        tint = neutral1
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    ) {
+                        innerTextField()
+                    }
+                }
+            }
+        )
+
+        // Indicator line
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+        ) {
+            HorizontalDivider(
+                thickness = 2.dp,
+                color = if (focusState.value) {
+                    neutral1
+                } else {
+                    Color.Transparent
+                },
+                modifier = Modifier
+                    .padding(
+                        start = 4.dp,
+                        end = if (focusState.value) 4.dp else 64.dp,
+                        bottom = 6.dp
+                    )
+            )
         }
     }
 }

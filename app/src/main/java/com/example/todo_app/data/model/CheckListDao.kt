@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CheckListDao {
     @Insert
-    suspend fun insert(list: CheckList)
+    suspend fun insert(list: CheckList): Long
 
     //@Insert
     //suspend fun insert(list: List<CheckList>)

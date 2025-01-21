@@ -1,22 +1,20 @@
 package com.example.todo_app.ui.feature.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
@@ -26,18 +24,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,8 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -67,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteList
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
@@ -75,11 +66,10 @@ import com.example.todo_app.ui.theme.dosisFontFamily
 import com.example.todo_app.ui.theme.neutral0
 import com.example.todo_app.ui.theme.neutral1
 import com.example.todo_app.ui.theme.neutral2
-import com.example.todo_app.ui.theme.neutral4
 import com.example.todo_app.ui.theme.primary0
+import com.example.todo_app.ui.theme.primary1
 import com.example.todo_app.ui.theme.primary2
 import com.example.todo_app.ui.theme.yellow2
-import com.example.todo_app.ui.theme.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -91,9 +81,9 @@ fun HomeList(
     appBar: @Composable () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val newListState = viewModel.newListState.collectAsState().value
     val searchQuery by viewModel.filteringQuery.collectAsState()
     val horizontalPadding = 24.dp
-    val addingNewList = viewModel.addingNewList.collectAsState()
 
     Box(
         modifier = Modifier
@@ -133,9 +123,9 @@ fun HomeList(
                     Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                         val cards = buildList {
                             favorites.forEach { checklist ->
-                                add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, searchQuery, viewModel)
-                                })
+                                add(GridCard.CheckListType
+                                    .CheckListGridCard(viewModel, checklist, searchQuery)
+                                )
                             }
                         }
                         FavoriteCheckListGrid(cards = cards, cardSpacing = horizontalPadding)
@@ -145,8 +135,8 @@ fun HomeList(
             stickyHeader {
                 appBar()
             }
-            /*
-            item {
+
+            /*item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -173,12 +163,11 @@ fun HomeList(
                             .height(childrenHeight)
                     )
                 }
-            }
-            */
+            }*/
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                    if (lists.isEmpty() && !addingNewList.value) {
+                    if (lists.isEmpty()) {
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
@@ -186,19 +175,25 @@ fun HomeList(
                             fontFamily = dosisFontFamily
                         )
                     } else {
-                        val cards = buildList {
-                            add(ChecklistCardItem(
-                                "smart list"
-                            ) {
-                                SmartList(viewModel)
-                            })
-                            if (addingNewList.value) add(ChecklistCardItem("") {
-                                NewListCard(viewModel)
-                            })
-                            lists.forEach { checklist ->
-                                add(ChecklistCardItem(checklist.title) {
-                                    ListCard(checklist, searchQuery, viewModel)
-                                })
+                        val listsWithoutNewList: MutableList<CheckList> = lists.toMutableList()
+
+                        val cards: List<GridCard> = buildList {
+                            if (viewModel.getQuery().isEmpty()) {
+                                add(GridCard
+                                    .SmartListGridCard(viewModel)
+                                )
+                            }
+
+                            if (newListState is NewListState.Data) {
+                                add(GridCard.CheckListType
+                                    .NewCheckListGridCard(viewModel, newListState.list)
+                                )
+                            }
+
+                            listsWithoutNewList.forEach { checklist ->
+                                add(GridCard.CheckListType
+                                    .CheckListGridCard(viewModel, checklist, searchQuery)
+                                )
                             }
                         }
 
@@ -217,7 +212,7 @@ fun HomeList(
 @Composable
 private fun CheckListGrid(
     viewModel: HomeViewModel,
-    cards: List<ChecklistCardItem>,
+    cards: List<GridCard>,
     cardSpacing: Dp
 ) {
     val sortedOption = viewModel.sortedOption.collectAsState()
@@ -257,7 +252,7 @@ private fun CheckListGrid(
 
 @Composable
 private fun FavoriteCheckListGrid(
-    cards: List<ChecklistCardItem>,
+    cards: List<GridCard>,
     cardSpacing: Dp
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
@@ -285,7 +280,7 @@ private fun AlphabeticalHeader(
     getSymbol: (Char) -> String
 ) {
     if (isNext) {
-        println("Creating header with $currChar")
+        //println("Creating header with $currChar")
         Text(
             getSymbol(currChar),
             style = TextStyle(fontSize = 13.sp, fontFamily = dosisFontFamily),
@@ -303,258 +298,169 @@ private fun AlphabeticalHeader(
     Spacer(modifier = Modifier.height(5.dp))
 }
 
-@Composable
-private fun SearchTextField(
-    viewModel: HomeViewModel,
-    modifier: Modifier = Modifier
-) {
-    val focusState = remember { mutableStateOf(false) }
-    val searchQuery = viewModel.filteringQuery.collectAsState()
-    val userInput = remember { mutableStateOf(searchQuery.value) }
+abstract class GridCard(open val viewModel: HomeViewModel) {
+    abstract var title: String
 
-    val onFocusChange: (Boolean) -> Unit = { isFocused ->
-        focusState.value = isFocused
-    }
+    private val textStyle = TextStyle(
+        fontSize = 24.sp,
+        fontFamily = dosisFontFamily,
+        color = neutral0,
+        textAlign = TextAlign.Center
+    )
 
-    Box(modifier = modifier) {
-        // Search TextField
-        BasicTextField(
-            value = userInput.value,
-            onValueChange = { newTitle ->
-                userInput.value = newTitle
-                viewModel.searchForTodos(userInput.value)
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .onFocusChanged { state -> onFocusChange(state.isFocused) },
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                color = neutral0,
-                fontFamily = dosisFontFamily,
-                lineHeight = TextUnit.Unspecified,
-                letterSpacing = TextUnit.Unspecified
-            ),
-            cursorBrush = SolidColor(neutral0),
-            decorationBox = @Composable { innerTextField ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search Icon",
-                        tint = neutral1
+    val item: @Composable () -> Unit = {
+        val focusManager = LocalFocusManager.current
+
+        var modifier: Modifier = Modifier
+        var isNaming by remember { mutableStateOf(false) }
+        var showDeleteDialog by remember { mutableStateOf(false) }
+
+        when (this) {
+            is CheckListType.CheckListGridCard -> {
+                if (todos.isEmpty()) {
+                    modifier = Modifier.aspectRatio(1f)
+                }
+                if (showDeleteDialog) {
+                    DeleteList(
+                        listId = list.id,
+                        title = list.title,
+                        onDelete = { viewModel.deleteList(list.id) },
+                        onDismiss = { showDeleteDialog = false }
                     )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    ) {
-                        innerTextField()
-                    }
                 }
             }
-        )
-
-        // Indicator line
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-        ) {
-            HorizontalDivider(
-                thickness = 2.dp,
-                color = if (focusState.value) {
-                    neutral1
-                } else {
-                    Color.Transparent
-                },
-                modifier = Modifier
-                    .padding(
-                        start = 4.dp,
-                        end = if (focusState.value) 4.dp else 64.dp,
-                        bottom = 6.dp
-                    )
-            )
+            is CheckListType.NewCheckListGridCard -> isNaming = true
+            is SmartListGridCard -> modifier = Modifier.aspectRatio(1f)
         }
-    }
-}
 
-@Composable
-fun SortButton(
-    viewModel: HomeViewModel,
-    modifier: Modifier = Modifier
-) {
-    val sortOptions = listOf(SortOption.NAME, SortOption.RECENT, SortOption.CREATED)
-
-    var expanded by remember { mutableStateOf(false) }
-    val selectedOption = viewModel.sortedOption.collectAsState()
-
-    Box(
-        modifier = modifier
-            .width(144.dp)
-            .width(IntrinsicSize.Max)
-    ) {
-        // Sort button
-        Button(
-            onClick = { expanded = !expanded },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = neutral1
-            ),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(top = 4.dp)
+        Card(
+            onClick = {
+                if (!isNaming) {
+                    when (this) {
+                        is SmartListGridCard -> viewModel.clickedSmartList()
+                        is CheckListType -> viewModel.clickList(list)
+                    }
+                    focusManager.clearFocus()
+                }
+            },
+            colors = CardDefaults.cardColors(containerColor = neutral2),
+            modifier = modifier
         ) {
-            Box {
-                Text(
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
-                    fontFamily = dosisFontFamily,
-                    text = "Sort: ${selectedOption.value}",
-                    overflow = TextOverflow.Visible,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                )
-                // DropdownMenu
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .background(neutral1)
-                ) {
-                    sortOptions.forEach { option ->
-                        DropdownMenuItem(
-                            onClick = {
-                                viewModel.sortLists(option)
-                                expanded = false
-                            },
-                            text = {
-                                Text(
-                                    text = option.toString(),
-                                    color = neutral4,
-                                    fontSize = 16.sp,
-                                    fontFamily = dosisFontFamily,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Box(modifier = Modifier.padding(12.dp)) {
+                        if (!isNaming) {
+                            Text(
+                                title,
+                                style = textStyle,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = neutral0
+                            )
+                        } else if (this@GridCard is CheckListType) {
+                            NameList(
+                                title = title,
+                                textStyle = textStyle,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f),
+                                selectAllText = true,
+                                onTitleChange = { newTitle ->
+                                    title = newTitle
+                                    if (this@GridCard is CheckListType.CheckListGridCard) {
+                                        viewModel.updateList(list.copy(title = newTitle))
+                                    }
+                                },
+                                onRenameComplete = {
+                                    isNaming = false
+                                    if (this@GridCard is CheckListType.NewCheckListGridCard) {
+                                        viewModel.addNewList(title)
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    if (this@GridCard is CheckListType.CheckListGridCard) {
+                        todos.filter { it.title.isNotEmpty() }.forEach { todo ->
+                            val search = viewModel.getQuery()
+                            Text(
+                                if (search.isNotEmpty()) {
+                                    getTodoTitleWithHighlight(todo.title, searchQuery)
+                                } else {
+                                    AnnotatedString(todo.title)
+                                },
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontFamily = dosisFontFamily
+                            )
+                        }
+                    }
+                }
+
+                when (this@GridCard) {
+                    is CheckListType.CheckListGridCard -> {
+                        if (!isNaming) {
+                            DropdownSettingsMenu(
+                                isFavorite = list.favorite,
+                                actions = listOf(
+                                    DropdownSettingsMenuItem.Rename,
+                                    DropdownSettingsMenuItem.Delete,
+                                    DropdownSettingsMenuItem.Favorite
+                                ),
+                                onRenameClicked = { isNaming = true },
+                                onDeleteClicked = { showDeleteDialog = true },
+                                onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite)) },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(width = 38.dp, height = 44.dp)
+                                    .offset(x = 8.dp, y = (-2).dp)
+                            )
+                        }
+                    }
+                    is SmartListGridCard -> {
+                        Icon(
+                            Icons.Filled.AutoAwesome,
+                            contentDescription = "Smart List Icon",
+                            tint = primary1,
                             modifier = Modifier
-                                .background(Color.Transparent)
+                                .padding(8.dp)
+                                .size(32.dp)
+                                .align(Alignment.TopEnd)
                         )
                     }
+                    is CheckListType.NewCheckListGridCard -> {}
                 }
             }
         }
     }
-}
 
-@Composable
-private fun ListCard(
-    list: CheckList,
-    searchQuery: String,
-    viewModel: HomeViewModel
-) {
-    val focusManager = LocalFocusManager.current
-    var isNaming by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    val todos = viewModel.getTodosByListId(list.id)
+    // Definition of GridCard types
+    abstract class CheckListType(
+        viewModel: HomeViewModel,
+        open val list: CheckList,
+        override var title: String = list.title
+    ) : GridCard(viewModel) {
 
-    if (showDeleteDialog) {
-        DeleteList(
-            listId = list.id,
-            title = list.title,
-            onDelete = { viewModel.deleteList(list.id) },
-            onDismiss = { showDeleteDialog = false }
-        )
-    }
+        data class NewCheckListGridCard(
+            override val viewModel: HomeViewModel,
+            override val list: CheckList
+        ) : CheckListType(viewModel, list)
 
-    return Card(
-        onClick = {
-            if (!isNaming) {
-                viewModel.clickList(list)
-            }
-            focusManager.clearFocus()
-        },
-        colors = CardDefaults.cardColors(
-            containerColor = neutral2,
-        ),
-        modifier = if (todos.isEmpty()) {
-            Modifier.aspectRatio(1f)
-        } else {
-            Modifier
-        }
-    ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isNaming) {
-                    NameList(
-                        title = list.title,
-                        textStyle = null,
-                        modifier = null,
-                        onTitleChange = { newTitle ->
-                            viewModel.updateList(list.copy(title = newTitle))
-                        },
-                        onRenameComplete = {
-                            isNaming = false // Reset naming state
-                        }
-                    )
-                } else {
-                    Text(
-                        list.title,
-                        style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier.weight(5f),
-                        color = neutral0
-                    )
-
-                    DropdownSettingsMenu(
-                        isFavorite = list.favorite,
-                        actions = listOf(
-                            DropdownSettingsMenuItem.Rename,
-                            DropdownSettingsMenuItem.Delete,
-                            DropdownSettingsMenuItem.Favorite
-                        ),
-                        onRenameClicked = { isNaming = true },
-                        onDeleteClicked = { showDeleteDialog = true },
-                        onFavoriteClicked = { viewModel.updateList(list.copy(favorite = !list.favorite))},
-                    )
-                }
-            }
-            for (todo in todos) {
-                if (todo.title.isNotEmpty()) {
-                    Text(
-                        getTodoTitleWithHighlight(todo.title, searchQuery),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = dosisFontFamily
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun NewListCard(
-    viewModel: HomeViewModel
-) {
-    val focusRequester = remember { FocusRequester() }
-    return Card(
-        colors = CardDefaults.cardColors(
-            containerColor = neutral2,
-        ),
-        modifier = Modifier.aspectRatio(1f)
-    ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                NewListTextField(focusRequester, viewModel)
-            }
+        data class CheckListGridCard(
+            override val viewModel: HomeViewModel,
+            override val list: CheckList,
+            val searchQuery: String
+        ) : CheckListType(viewModel, list) {
+            val todos: List<ToDo> = viewModel.getTodosByListId(list.id)
         }
     }
 
+    data class SmartListGridCard(
+        override val viewModel: HomeViewModel
+    ) : GridCard(viewModel) {
+        override var title = "Smart List"
+    }
 }
 
 private fun getTodoTitleWithHighlight(todoTitle: String, search: String): AnnotatedString {
@@ -595,80 +501,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
 }
 
 @Composable
-private fun NewListTextField(
-    focusRequester: FocusRequester,
-    viewModel: HomeViewModel
-) {
-    val blankTitle = "Unnamed list"
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
-    val focusManager = LocalFocusManager.current
-
-    Box {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-                //viewModel.addList(title)
-            }
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = neutral0,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewModel.addList(title)
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = neutral1,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
-            )
-        }
-    }
-}
-
-@Composable
 fun SmartList(
     viewModel: HomeViewModel
 ) {
@@ -703,8 +535,3 @@ fun SmartList(
         }
     }
 }
-
-data class ChecklistCardItem(
-    val title: String,
-    val item: @Composable () -> Unit
-)

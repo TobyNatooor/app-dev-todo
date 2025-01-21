@@ -23,25 +23,26 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 
-    private val favoriteList: Flow<List<CheckList>> = db.checkListDao().getAllFavorites()
+    private val favoriteLists: Flow<List<CheckList>> = db.checkListDao().getAllFavorites()
 
     private val _filterQuery = MutableStateFlow("")
     val filteringQuery = _filterQuery.asStateFlow()
 
-    private val filteredList: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
+    private val filteredLists: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
         if (query.isBlank()) db.checkListDao().getAllNonFavorite()
         else db.checkListDao().findWithTodosTitle(query)
     }
 
-    private val lists: Flow<List<CheckList>> = combine(
-        filteredList,
-        _sortingOption
-    ) { list, sort ->
+    private val sortedLists: Flow<List<CheckList>> = combine(
+        filteredLists,
+        _sortingOption,
+    ) { lists, sortOption ->
         delay(100)
-        when (sort) {
-            SortOption.CREATED -> list.sortedByDescending { it.created }
-            SortOption.NAME -> list.sortedBy { it.title.lowercase() }
-            SortOption.RECENT -> list.sortedByDescending { it.lastModified }
+
+        when (sortOption) {
+            SortOption.CREATED -> lists.sortedByDescending { it.created }
+            SortOption.NAME -> lists.sortedBy { it.title.lowercase() }
+            SortOption.RECENT -> lists.sortedByDescending { it.lastModified }
         }
     }
     private val todos: Flow<List<ToDo>> =  filteringQuery.flatMapLatest { query ->
@@ -52,16 +53,16 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
     val homeState: StateFlow<HomeUIState> = _mutableHomeState
 
-    private val _addingNewList = MutableStateFlow(false)
-    val addingNewList = _addingNewList.asStateFlow()
+    private val _mutableNewList = MutableStateFlow<NewListState>(NewListState.Empty)
+    val newListState: StateFlow<NewListState> = _mutableNewList
 
     init {
         viewModelScope.launch {
-            combine(favoriteList, lists, todos) { favorites, list, todo ->
-                if (list.isEmpty()) {
+            combine(favoriteLists, sortedLists, todos) { favorites, lists, todos ->
+                if (lists.isEmpty()) {
                     HomeUIState.Empty
                 } else {
-                    HomeUIState.Data(favorites, list, todo)
+                    HomeUIState.Data(favorites, lists, todos)
                 }
             }.collect { homeUIState ->
                 _mutableHomeState.value = homeUIState
@@ -74,7 +75,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
 
     fun getTodosByListId(listId: Int): List<ToDo> {
-
         val todos: List<ToDo> = when (val hs = homeState.value) {
             is HomeUIState.Data -> hs.todos.filter { todo -> todo.listId == listId }
             HomeUIState.Empty -> ArrayList()
@@ -87,14 +87,23 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         _filterQuery.value = query
     }
 
-    fun addList(title: String) {
+    fun initializeNewList() {
         this.viewModelScope.launch {
-            val newList = CheckList(
-                title = title,
-                description = "Add Description",
-            )
-            db.checkListDao().insert(newList)
-            _addingNewList.value = false
+            _mutableNewList.value = NewListState.Data(CheckList(
+                title = "New list",
+                description = ""
+            ))
+        }
+    }
+
+    fun addNewList(title: String) {
+        viewModelScope.launch {
+            val currentNewListState = _mutableNewList.value
+            _mutableNewList.value = NewListState.Empty
+
+            if (currentNewListState is NewListState.Data) {
+                db.checkListDao().insert(currentNewListState.list.copy(title = title))
+            }
         }
     }
 
@@ -139,9 +148,6 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
         }
     }
 
-    fun addClicked() {
-        _addingNewList.value = true
-    }
     fun clickedSmartList() {
         nav.navigate("smartList")
     }
@@ -151,4 +157,9 @@ sealed class HomeUIState {
     data object Empty : HomeUIState()
     data object Loading : HomeUIState()
     data class Data(val favorites: List<CheckList>, val lists: List<CheckList>, val todos: List<ToDo>) : HomeUIState()
+}
+
+sealed class NewListState {
+    data object Empty : NewListState()
+    data class Data(val list: CheckList) : NewListState()
 }
