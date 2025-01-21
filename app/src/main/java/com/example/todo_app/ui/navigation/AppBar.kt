@@ -29,7 +29,8 @@ fun AppBar(
     actions: List<AppBarAction>,
     onBackClicked: (() -> Unit)? = null,
     onSortClicked: ((SortOption) -> Unit)? = null,
-    onSearchClicked: ((String) -> Unit)? = null
+    onSearchClicked: ((String) -> Unit)? = null,
+    sortOptions: List<SortOption>
 ) {
     return Row(
         modifier = Modifier
@@ -57,7 +58,8 @@ fun AppBar(
                 is AppBarAction.Sort -> {
                     Spacer(modifier = Modifier.weight(1f))
                     SortButton(
-                        onSortClicked = onSortClicked
+                        onSortClicked = onSortClicked,
+                        sortOptions
                     )
                 }
 

@@ -448,10 +448,9 @@ fun ChooseTodoStatus(
 
 @Composable
 fun SortButton(
-    onSortClicked: ((SortOption) -> Unit)? = null
+    onSortClicked: ((SortOption) -> Unit)? = null,
+    sortOptions: List<SortOption>
 ) {
-    val sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
-
     var expanded by remember { mutableStateOf(false) }
 
     Button(

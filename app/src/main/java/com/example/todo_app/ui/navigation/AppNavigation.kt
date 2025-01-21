@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.home.HomeViewModel
 import com.example.todo_app.ui.feature.home.HomeViewModelFactory
@@ -45,7 +46,8 @@ fun AppNavigation(
                             AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
-                        onSearchClicked = { query -> viewModel.searchForTodos(query) }
+                        onSearchClicked = { query -> viewModel.searchForTodos(query) },
+                        sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
                     )
                 }
             )
@@ -71,7 +73,7 @@ fun AppNavigation(
                             AppBarAction.Search
                         ),
                         onBackClicked = { navController.popBackStack() },
-
+                        sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT, SortOption.STATUS)
                         )
                 },
                 db = db,
@@ -92,7 +94,8 @@ fun AppNavigation(
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(AppBarAction.Back),
-                        onBackClicked = { navController.popBackStack() }
+                        onBackClicked = { navController.popBackStack() },
+                        sortOptions = emptyList()
                     )
                 },
                 getLocation = getLocation,
@@ -106,7 +109,8 @@ fun AppNavigation(
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(AppBarAction.Back),
-                        onBackClicked = { navController.popBackStack() }
+                        onBackClicked = { navController.popBackStack() },
+                        sortOptions = emptyList()
                     )
                 }
             )

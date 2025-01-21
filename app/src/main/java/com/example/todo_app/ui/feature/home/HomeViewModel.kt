@@ -43,6 +43,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             SortOption.CREATED -> lists.sortedByDescending { it.created }
             SortOption.NAME -> lists.sortedBy { it.title.lowercase() }
             SortOption.RECENT -> lists.sortedByDescending { it.lastModified }
+            else -> lists
         }
     }
     private val todos: Flow<List<ToDo>> =  filteringQuery.flatMapLatest { query ->
