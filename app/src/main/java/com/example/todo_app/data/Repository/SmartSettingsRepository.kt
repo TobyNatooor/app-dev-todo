@@ -21,7 +21,6 @@ class UserRepository(private val dataStore: DataStore<Preferences>) {
         val IN_PROGRESS = booleanPreferencesKey("in_progress")
         val DONE = booleanPreferencesKey("done")
         val CANCELLED = booleanPreferencesKey("cancelled")
-        val DEADLINE_LESS_THAN = booleanPreferencesKey("deadline_less_than")
         val LESS_THAN_DAYS = intPreferencesKey("less_than_days")
         val LIST_ID = intPreferencesKey("list_id")
     }
@@ -37,9 +36,8 @@ class UserRepository(private val dataStore: DataStore<Preferences>) {
                     includeInProgress = preferences[IN_PROGRESS] ?: false,
                     includeDone = preferences[DONE] ?: false,
                     includeCancelled = preferences[CANCELLED] ?: false,
-                    includeDeadlineLessThan = preferences[DEADLINE_LESS_THAN] ?: false,
-                    DeadlineLessThanDays = preferences[LESS_THAN_DAYS] ?: 0,
-                    listId = preferences[LIST_ID] ?: -1
+                    deadlineWithinDays = preferences[LESS_THAN_DAYS] ?: 0,
+                    listId = preferences[LIST_ID] ?: 0
                 )
             }
         }
@@ -51,8 +49,7 @@ class UserRepository(private val dataStore: DataStore<Preferences>) {
             preferences[IN_PROGRESS] = settings.includeInProgress
             preferences[DONE] = settings.includeDone
             preferences[CANCELLED] = settings.includeCancelled
-            preferences[DEADLINE_LESS_THAN] = settings.includeDeadlineLessThan
-            preferences[LESS_THAN_DAYS] = settings.DeadlineLessThanDays
+            preferences[LESS_THAN_DAYS] = settings.deadlineWithinDays
             preferences[LIST_ID] = settings.listId
         }
     }
