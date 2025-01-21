@@ -524,6 +524,7 @@ fun SearchButton(
     Row{
         IconButton(onClick = { 
             if(!showSearchField.value) {
+                seachFieldFocus.value = true
                 showSearchField.value = true
                 onSearchClicked?.invoke(" ")
             }
@@ -543,12 +544,16 @@ fun SearchButton(
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    var text by remember { mutableStateOf(getQuery()) }
+                    var textField by remember { mutableStateOf(TextFieldValue( 
+                        text = getQuery().trimStart(),
+                        selection = TextRange(getQuery().trimStart().length)
+                        )
+                    ) }
                     BasicTextField(
-                        value = text,
+                        value = textField,
                         onValueChange = { newText ->
-                            text = newText
-                            onSearchClicked?.invoke(if (newText.isBlank()) " " else newText.trimStart())
+                            textField = newText
+                            onSearchClicked?.invoke(if (newText.text.isBlank()) " " else newText.text.trimStart())
                         },
                         textStyle = TextStyle(
                             fontSize = 16.sp,
@@ -561,7 +566,7 @@ fun SearchButton(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                onSearchClicked?.invoke(text)
+                                onSearchClicked?.invoke(textField.text.trimStart())
                                 seachFieldFocus.value = false
                                 focusManager.clearFocus()
                             }
