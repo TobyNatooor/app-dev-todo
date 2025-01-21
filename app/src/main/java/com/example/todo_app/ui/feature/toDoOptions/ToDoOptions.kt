@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
@@ -57,6 +58,7 @@ import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.navigation.NavHostController
 import com.example.todo_app.ui.feature.common.DeleteDialog
 import java.text.SimpleDateFormat
@@ -416,6 +418,9 @@ private fun TextFieldOption(
                 textState.value = newText
                 onTextChanged(newText)
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
             modifier = modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { state ->
