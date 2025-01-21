@@ -14,12 +14,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Update
@@ -42,6 +46,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.State
+import com.example.todo_app.ui.feature.home.HomeViewModel
 import androidx.compose.ui.unit.Dp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
@@ -52,8 +58,17 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.ui.feature.BaseViewModel
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -205,11 +220,28 @@ fun DeleteList(
     )
 }
 
+@Composable
+fun FavoriteButton(
+    isFavorite: State<Boolean>,
+    onFavClicked: () -> Unit,
+){
+
+    val icon = if (isFavorite.value) Icons.Rounded.Star
+    else Icons.Rounded.StarBorder
+
+    val color = if (isFavorite.value) yellow2
+    else neutral0
+
+    IconButton(onClick = { onFavClicked() }) {
+        Icon(icon, contentDescription = "Favorite", tint = color)
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ToDoCheckBox(
     toDo: ToDo,
-    viewModel: ToDoListViewModel,
+    viewModel: BaseViewModel,
     size: Dp = 28.dp,
     modifier: Modifier = Modifier
 ) {
@@ -273,7 +305,7 @@ fun ToDoCheckBox(
 
 @Composable
 fun ChooseTodoStatus(
-    viewModel: ToDoListViewModel,
+    viewModel: BaseViewModel,
     toDo: ToDo,
     showDialog: MutableState<Boolean>,
     size: Dp
@@ -380,4 +412,72 @@ fun ChooseTodoStatus(
         },
         confirmButton = {}
     )
+}
+
+@Composable
+fun SortButton(
+    onSortClicked: ((SortOption) -> Unit)? = null
+) {
+    val sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = neutral4
+        ),
+        onClick = { expanded = true }
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.Sort,
+            contentDescription = "Sort",
+            tint = neutral1,
+            modifier = Modifier.size(24.dp)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(neutral1)
+        ) {
+            Text(
+                text = "Sort by",
+                color = neutral4,
+                fontSize = 16.sp,
+                fontFamily = dosisFontFamily,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+            HorizontalDivider(
+                color = neutral4,
+                thickness = 1.dp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            sortOptions.forEach { option ->
+                DropdownMenuItem(
+                    onClick = {
+                        onSortClicked?.invoke(option)
+                        expanded = false
+                    },
+                    text = {
+                        Text(
+                            text = option.toString(),
+                            color = neutral4,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                )
+            }
+        }
+    }
 }

@@ -14,6 +14,7 @@ import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import androidx.compose.foundation.background
+import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.ui.theme.*
 
 @Composable
@@ -24,7 +25,7 @@ fun SmartListScreen(
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModelFactory(db)
+        factory = SmartListViewModel.createFactory(db, navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
 

@@ -22,10 +22,8 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
-
     private var locationActivityCallback: ((Place?) -> Unit)? = null
 
     private val findingLocationActivity =
@@ -54,12 +52,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Initialize the Places API with the API key
         Places.initialize(applicationContext, MAPS_API_KEY)
 
         // UNCOMMENT WHEN TESTING
-        applicationContext.deleteDatabase("ToDoDB")
+        //applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
         val db = Room.databaseBuilder(
