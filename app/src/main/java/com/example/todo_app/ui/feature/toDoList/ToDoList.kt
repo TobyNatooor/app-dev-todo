@@ -256,6 +256,31 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                         }
                     }
                     //description
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "Description",
+                            color = neutral0,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = toDo.description,
+                                color = neutral3,
+                                fontSize = 16.sp,
+                                fontFamily = dosisFontFamily
+                            )
+                        }
+                    }
                 }
             }
         }
