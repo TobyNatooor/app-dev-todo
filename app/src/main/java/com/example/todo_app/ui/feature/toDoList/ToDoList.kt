@@ -13,28 +13,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentHeight
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.google.maps.android.compose.GoogleMap
 import java.time.format.DateTimeFormatter
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,12 +47,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
@@ -93,9 +86,7 @@ fun ToDoList(
     ) {
         LazyColumn(
             state = scrollState,
-            verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                //.padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -118,6 +109,7 @@ fun ToDoList(
                     )
                 }
             }
+
             item {
                 // Title
                 Box(
@@ -156,27 +148,36 @@ fun ToDoList(
                     }
                 }
             }
+
             stickyHeader {
                 appBar()
             }
-            if (addingToDo.value) {
-                item { NewToDoItem(viewmodel, listId) }
-            }
-            // To-do elements
 
-            if (toDos.isEmpty()) {
-                item {
-                    Text(
-                        color = neutral1,
-                        text = "No to-do items in this list",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = dosisFontFamily
-                    )
-                }
-            } else {
-                itemsIndexed(toDos) { index, item ->
-                    ToDoItem(viewmodel, toDo = item, index = index)
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                ) {
+                    if (addingToDo.value) {
+                        NewToDoItem(viewmodel, listId)
+                    }
+
+                    // To-do elements
+                    if (toDos.isEmpty()) {
+                        Text(
+                            color = neutral1,
+                            text = "No to-do items in this list",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = dosisFontFamily
+                        )
+                    } else {
+                        toDos.forEachIndexed { index, toDo ->
+                            ToDoItem(viewmodel, toDo = toDo, index = index)
+                        }
+                    }
                 }
             }
         }
@@ -199,17 +200,21 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     }
     var markerPosition = remember { LatLng(0.0, 0.0) }
     val markerState = remember { MarkerState(position = markerPosition) }
-    var isExapnded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
             .background(
                 color = neutral2,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Column () {
+        Column(
+            modifier = Modifier
+                .clickable {
+                    isExpanded = !isExpanded
+                }
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -222,11 +227,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     text = toDo.title,
                     fontSize = 18.sp,
                     color = neutral0,
-                    fontFamily = dosisFontFamily,
-                    modifier = Modifier
-                        .clickable {
-                            isExapnded = !isExapnded
-                        }
+                    fontFamily = dosisFontFamily
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
@@ -240,16 +241,19 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     onRenameClicked = { /* TODO */},
                     onDeleteClicked = { viewModel.deleteToDo(toDo) },
                     onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
+                    modifier = Modifier
+                        .offset(x = 8.dp)
                 )
             }
-            if (isExapnded) {
+
+            if (isExpanded) {
                 Row (
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                ){
+                ) {
                     //map
                     if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
                         GoogleMap(
@@ -288,6 +292,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                             )
                         }
                     }
+
                     //deadline
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
@@ -314,6 +319,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                             )
                         }
                     }
+
                     //description
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
@@ -369,7 +375,6 @@ private fun ToDoTextField(
 
     Box(
         modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth()
     ) {
         LaunchedEffect(Unit) {
@@ -392,7 +397,7 @@ private fun ToDoTextField(
             singleLine = true,
             textStyle = TextStyle(
                 color = neutral0,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontFamily = dosisFontFamily
             ),
             modifier = Modifier
@@ -501,10 +506,10 @@ private fun NewToDoItem(viewModel: ToDoListViewModel, listId: Int) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(8.dp)
-                        .size(28.dp)
+                        .padding(horizontal = 8.dp, vertical = 12.dp)
+                        .size(26.dp)
                         .background(
-                            color = Color.White,
+                            color = neutral1,
                             shape = RoundedCornerShape(5.dp)
                         )
                 )
