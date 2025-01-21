@@ -501,80 +501,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
 }
 
 @Composable
-private fun NewListTextField(
-    focusRequester: FocusRequester,
-    viewModel: HomeViewModel
-) {
-    val blankTitle = "Unnamed list"
-    var isEnabled by remember { mutableStateOf(true) }
-    var isFocused by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
-    val focusManager = LocalFocusManager.current
-
-    Box {
-        LaunchedEffect(Unit) {
-            isEnabled = true
-            isFocused = false
-            focusRequester.requestFocus()
-        }
-        DisposableEffect(Unit) {
-            onDispose {
-                if (title.isBlank()) {
-                    title = blankTitle
-                }
-                //viewModel.addList(title)
-            }
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { newTitle ->
-                title = newTitle
-            },
-            singleLine = true,
-            textStyle = TextStyle(
-                color = neutral0,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
-                .onFocusChanged {
-                    isFocused = !isFocused
-                    if (!isFocused) {
-                        if (title.isBlank()) {
-                            title = blankTitle
-                        }
-                        viewModel.addList(title)
-                        isEnabled = false
-                    }
-                },
-            enabled = isEnabled,
-        )
-
-        // Hint text when title is blank
-        if (title.isBlank()) {
-            Text(
-                text = "Enter new title",
-                color = neutral1,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
-            )
-        }
-    }
-}
-
-@Composable
 fun SmartList(
     viewModel: HomeViewModel
 ) {
@@ -609,8 +535,3 @@ fun SmartList(
         }
     }
 }
-
-data class ChecklistCardItem(
-    val title: String,
-    val item: @Composable () -> Unit
-)
