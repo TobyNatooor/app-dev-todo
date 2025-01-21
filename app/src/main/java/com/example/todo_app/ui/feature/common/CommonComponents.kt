@@ -58,13 +58,17 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
@@ -112,6 +116,7 @@ fun NameList(
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
     val blankTitle = "Unnamed list"
+    val focusManager = LocalFocusManager.current
     var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
@@ -147,6 +152,14 @@ fun NameList(
                 fontFamily = dosisFontFamily
             ),
             cursorBrush = SolidColor(neutral0),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
