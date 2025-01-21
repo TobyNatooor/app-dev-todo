@@ -90,10 +90,10 @@ class SmartListViewModel(
 
     private fun filter(toDo: ToDo, smartSettings: SmartSettings): Boolean {
         val timeNow = LocalDateTime.now()
-        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
-        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
-        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
-        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == -1 || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == -1 || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == -1 || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == -1 || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
         else false
     }
 
