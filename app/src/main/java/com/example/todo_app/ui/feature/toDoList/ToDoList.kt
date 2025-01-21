@@ -78,7 +78,7 @@ fun ToDoList(
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                .padding(horizontal = 32.dp)
+                //.padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -106,7 +106,7 @@ fun ToDoList(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 75.dp)
+                        .padding(top = 0.dp, bottom = 75.dp, start = 24.dp, end = 24.dp)
                 ) {
                     if (isNaming) {
                         NameList(
@@ -180,6 +180,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .background(
                 color = neutral2,
                 shape = RoundedCornerShape(4.dp)

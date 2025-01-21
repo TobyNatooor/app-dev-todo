@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -78,12 +79,14 @@ import com.example.todo_app.ui.theme.primary2
 import com.example.todo_app.ui.theme.yellow2
 import com.example.todo_app.ui.theme.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeList(
     favorites: List<CheckList>,
     lists: List<CheckList>,
     viewModel: HomeViewModel,
-    columnState: LazyListState
+    columnState: LazyListState,
+    appBar: @Composable () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val searchQuery by viewModel.filteringQuery.collectAsState()
@@ -137,6 +140,10 @@ fun HomeList(
                     }
                 }
             }
+            stickyHeader {
+                appBar()
+            }
+            /*
             item {
                 Row(
                     modifier = Modifier
@@ -165,6 +172,7 @@ fun HomeList(
                     )
                 }
             }
+            */
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
