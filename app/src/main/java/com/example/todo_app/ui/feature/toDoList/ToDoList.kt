@@ -209,8 +209,8 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     if (showDeleteDialog) {
         DeleteDialog(
             id = toDo.id,
-            title = "Delete to-do item?",
-            text = "Are you sure you want to delete this to-do item?",
+            title = "Delete todo \"${toDo.title}\"?",
+            text = "Are you sure you want to delete this todo?",
             onDelete = { viewModel.deleteToDo(toDo) },
             onDismiss = { showDeleteDialog = false },
         )
