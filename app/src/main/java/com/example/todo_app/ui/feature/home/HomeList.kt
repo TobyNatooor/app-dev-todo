@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.ui.feature.common.DeleteList
+import com.example.todo_app.ui.feature.common.DeleteDialog
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
 import com.example.todo_app.ui.feature.common.NameList
@@ -321,11 +321,12 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
                     modifier = Modifier.aspectRatio(1f)
                 }
                 if (showDeleteDialog) {
-                    DeleteList(
-                        listId = list.id,
-                        title = list.title,
+                    DeleteDialog(
+                        id = list.id,
+                        title = "Delete list \"$title\"?",
+                        text = "Are you sure you want to delete this list?",
                         onDelete = { viewModel.deleteList(list.id) },
-                        onDismiss = { showDeleteDialog = false }
+                        onDismiss = { showDeleteDialog = false },
                     )
                 }
             }

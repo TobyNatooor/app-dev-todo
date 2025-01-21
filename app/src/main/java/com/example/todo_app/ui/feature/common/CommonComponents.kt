@@ -209,9 +209,10 @@ fun NameList(
 }
 
 @Composable
-fun DeleteList(
-    listId: Int,
+fun DeleteDialog(
+    id: Int,
     title: String,
+    text: String,
     onDelete: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -220,8 +221,8 @@ fun DeleteList(
         titleContentColor = primary4,
         textContentColor = primary3,
         onDismissRequest = onDismiss,
-        title = { Text("Delete list \"$title\"?", fontFamily = dosisFontFamily) },
-        text = { Text("Are you sure you want to delete this list?", fontFamily = dosisFontFamily) },
+        title = { Text(title, fontFamily = dosisFontFamily) },
+        text = { Text(text, fontFamily = dosisFontFamily) },
         confirmButton = {
             Button(
                 colors = ButtonDefaults.buttonColors(
@@ -229,7 +230,7 @@ fun DeleteList(
                     contentColor = primary0
                 ),
                 onClick = {
-                    onDelete(listId)
+                    onDelete(id)
                     onDismiss()
                 }
             ) {
