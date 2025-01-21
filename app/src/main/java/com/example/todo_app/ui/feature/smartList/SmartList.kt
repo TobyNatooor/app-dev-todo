@@ -616,6 +616,10 @@ private fun DropdownMenuOption(
 ) {
     var selectedId = settings.value.listId
     var expanded by remember { mutableStateOf(false) }
+    if (options.none { it.id == settings.value.listId }) {
+        viewModel.setSettings(settings.value.copy(listId = -1))
+        selectedId = -1
+    }
     var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
         options.find { it.id == selectedId }
     ) }
@@ -636,7 +640,7 @@ private fun DropdownMenuOption(
             contentAlignment = contentAlign
         ) {
             Text(
-                text = "From: "+(selectedOption?.title ?: "All lists"),
+                text = "From: "+(selectedOption?.title ?: "No lists"),
                 fontSize = 18.sp,
                 fontFamily = dosisFontFamily,
                 color = primary4,
