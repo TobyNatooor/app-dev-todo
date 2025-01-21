@@ -253,22 +253,24 @@ fun ToDoOptions(
                                 onFocusChanged = { isFocused ->
                                     if (isFocused) {
                                         getLocation { place ->
-                                            val name = place?.displayName
-                                            val latitude = place?.location?.latitude ?: 0.0
-                                            val longitude = place?.location?.longitude ?: 0.0
-                                            markerPosition = LatLng(latitude, longitude)
-                                            markerState.position = markerPosition
-                                            cameraPositionState.position =
-                                                fromLatLngZoom(markerPosition, 10f)
-                                            viewmodel.updateToDo(
-                                                toDo.copy(
-                                                    location = name,
-                                                    latitude = latitude,
-                                                    longitude = longitude,
+                                            if (place != null) {
+                                                val name = place.displayName
+                                                val latitude = place.location?.latitude ?: 0.0
+                                                val longitude = place.location?.longitude ?: 0.0
+                                                markerPosition = LatLng(latitude, longitude)
+                                                markerState.position = markerPosition
+                                                cameraPositionState.position =
+                                                    fromLatLngZoom(markerPosition, 10f)
+                                                viewmodel.updateToDo(
+                                                    toDo.copy(
+                                                        location = name,
+                                                        latitude = latitude,
+                                                        longitude = longitude,
+                                                    )
                                                 )
-                                            )
-                                            if (name != null) {
-                                                text.value = name
+                                                if (name != null) {
+                                                    text.value = name
+                                                }
                                             }
                                         }
                                     }
