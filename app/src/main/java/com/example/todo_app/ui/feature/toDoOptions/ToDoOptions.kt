@@ -105,7 +105,7 @@ fun ToDoOptions(
                 .padding(top = 100.dp, bottom = 100.dp)
         )
         Box(
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             appBar()
         }
