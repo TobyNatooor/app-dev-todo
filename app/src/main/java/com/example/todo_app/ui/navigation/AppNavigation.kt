@@ -77,7 +77,7 @@ fun AppNavigation(
                         actions = listOf(
                             AppBarAction.Back,
                             AppBarAction.Sort,
-                            AppBarAction.Search
+                            //AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },
