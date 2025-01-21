@@ -406,7 +406,7 @@ fun SettingsDialog(
         var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
         val checkLists by viewModel.getCheckLists().collectAsState()
         val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
-        dropdownSelections.add(DropdownOptionItem(null, "All lists"))
+        dropdownSelections.add(DropdownOptionItem(-1, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
         val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
         val inProgressOutlineColor = if (settings.value.includeInProgress) primary4 else primary0
@@ -678,6 +678,7 @@ private fun DropdownMenuOption(
 }
 
 data class DropdownOptionItem(
-    val id: Int?,
+    // TODO: Hej Max - 'val id' er ændret fra 'Int?' til 'Int', og standard værdi er '-1'
+    val id: Int,
     val title: String
 )
