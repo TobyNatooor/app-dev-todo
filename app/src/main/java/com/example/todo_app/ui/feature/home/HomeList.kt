@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -496,3 +499,118 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
         }
     }
 }
+
+@Composable
+private fun NewListTextField(
+    focusRequester: FocusRequester,
+    viewModel: HomeViewModel
+) {
+    val blankTitle = "Unnamed list"
+    var isEnabled by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+
+    Box {
+        LaunchedEffect(Unit) {
+            isEnabled = true
+            isFocused = false
+            focusRequester.requestFocus()
+        }
+        DisposableEffect(Unit) {
+            onDispose {
+                if (title.isBlank()) {
+                    title = blankTitle
+                }
+                //viewModel.addList(title)
+            }
+        }
+        BasicTextField(
+            value = title,
+            onValueChange = { newTitle ->
+                title = newTitle
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                color = neutral0,
+                fontSize = 20.sp,
+                fontFamily = dosisFontFamily
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp)
+                .focusRequester(focusRequester)
+                // Handle title update to Room SQL when unfocused
+                .onFocusChanged {
+                    isFocused = !isFocused
+                    if (!isFocused) {
+                        if (title.isBlank()) {
+                            title = blankTitle
+                        }
+                        viewModel.addList(title)
+                        isEnabled = false
+                    }
+                },
+            enabled = isEnabled,
+        )
+
+        // Hint text when title is blank
+        if (title.isBlank()) {
+            Text(
+                text = "Enter new title",
+                color = neutral1,
+                fontSize = 20.sp,
+                fontFamily = dosisFontFamily
+            )
+        }
+    }
+}
+
+@Composable
+fun SmartList(
+    viewModel: HomeViewModel
+) {
+    return Card(
+        onClick = {
+            viewModel.clickedSmartList()
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = neutral2,
+        ),
+        modifier = Modifier.aspectRatio(1f)
+    ) {
+        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Smart List",
+                    style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.weight(5f),
+                    color = neutral0
+                )
+                Icon(
+                    Icons.Filled.AutoAwesome,
+                    contentDescription = "Smart List Icon",
+                    tint = primary1,
+                    modifier = Modifier.size(32.dp)
+                )
+
+            }
+        }
+    }
+}
+
+data class ChecklistCardItem(
+    val title: String,
+    val item: @Composable () -> Unit
+)

@@ -29,6 +29,8 @@ import com.google.maps.android.compose.GoogleMap
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Icon
@@ -50,6 +52,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -372,6 +375,7 @@ private fun ToDoTextField(
     var isEnabled by remember { mutableStateOf(true) }
     var title by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = Modifier
@@ -399,6 +403,14 @@ private fun ToDoTextField(
                 color = neutral0,
                 fontSize = 18.sp,
                 fontFamily = dosisFontFamily
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ),
             modifier = Modifier
                 .fillMaxWidth()

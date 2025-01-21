@@ -34,7 +34,7 @@ class UserRepository(private val dataStore: DataStore<Preferences>) {
                     includeDone = preferences[DONE] ?: false,
                     includeCancelled = preferences[CANCELLED] ?: false,
                     deadlineWithinDays = preferences[LESS_THAN_DAYS] ?: 0,
-                    listId = preferences[LIST_ID] ?: 0
+                    listId = preferences[LIST_ID] ?: -1
                 )
             }
         }
