@@ -88,6 +88,7 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
+                navController = navController,
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(AppBarAction.Back),

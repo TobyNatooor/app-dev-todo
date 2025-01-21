@@ -1,8 +1,5 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
-import android.content.Context
-import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -15,9 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
@@ -33,7 +30,8 @@ fun ToDoOptionsScreen(
     toDoId: Int,
     appBar: @Composable () -> Unit,
     getLocation: ((Place?) -> Unit?) -> Unit,
-    db: AppDatabase
+    db: AppDatabase,
+    navController: NavHostController
 ) {
     val viewModel: ToDoOptionsViewModel = viewModel(
         key = "ToDoOptionsViewModel_$toDoId",
@@ -59,7 +57,14 @@ fun ToDoOptionsScreen(
             Column(modifier = Modifier.padding(innerPadding)) {
                 //appBar()
                 Box(modifier = modifier) {
-                    ToDoContent(toDoUIState, viewModel, appBar, cameraPositionState, getLocation)
+                    ToDoContent(
+                        toDoUIState,
+                        viewModel,
+                        appBar,
+                        cameraPositionState,
+                        getLocation,
+                        navController
+                    )
                 }
             }
         }
@@ -73,6 +78,7 @@ private fun ToDoContent(
     appBar: @Composable () -> Unit,
     cameraPositionState: CameraPositionState,
     getLocation: ((Place?) -> Unit?) -> Unit,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     when (toDoUIState) {
@@ -86,6 +92,7 @@ private fun ToDoContent(
             viewmodel = viewModel,
             cameraPositionState = cameraPositionState,
             getLocation = getLocation,
+            navController = navController,
             modifier = modifier,
             appBar = appBar
         )

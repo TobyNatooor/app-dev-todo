@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
@@ -53,6 +56,9 @@ import com.example.todo_app.ui.theme.*
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
+import com.example.todo_app.ui.feature.common.DeleteDialog
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -69,11 +75,13 @@ fun ToDoOptions(
     cameraPositionState: CameraPositionState,
     getLocation: ((Place?) -> Unit?) -> Unit,
     modifier: Modifier = Modifier,
-    appBar: @Composable () -> Unit
+    appBar: @Composable () -> Unit,
+    navController: NavHostController
 ) {
     var markerPosition = remember { LatLng(0.0, 0.0) }
     val markerState = remember { MarkerState(position = markerPosition) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     var deadline by remember {
         mutableStateOf(if (toDo.deadline == null) "" else formatDeadline(toDo.deadline))
     }
@@ -310,6 +318,42 @@ fun ToDoOptions(
                         }
                     }
                 }
+
+               item {
+                   Row(
+                       horizontalArrangement = Arrangement.SpaceAround,
+                       modifier = Modifier
+                           .fillMaxWidth()
+                           .padding(bottom = 20.dp)
+                   ) {
+                       if (showDeleteDialog)
+                           DeleteDialog(
+                               id = toDo.id,
+                               title = "Delete todo \"${toDo.title}\"?",
+                               text = "Are you sure you want to delete this list?",
+                               onDelete = {
+                                   showDeleteDialog = true
+                                   viewmodel.deleteToDo(toDo)
+                                   navController.popBackStack()
+                               },
+                               onDismiss = {
+                                   showDeleteDialog = true
+                               }
+                           )
+                       Button(
+                           onClick = {
+                               showDeleteDialog = true
+                           },
+                           colors = ButtonColors(Color.Red, Color.White, Color.Red, Color.Red)
+                       ) { Text("Delete") }
+                       Button(
+                           onClick = {
+                               navController.popBackStack()
+                           },
+                           colors = ButtonColors(Color.Blue, Color.White, Color.Red, Color.Red)
+                       ) { Text("Done") }
+                   }
+               }
             }
         }
     }
