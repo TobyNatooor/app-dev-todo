@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class ToDoOptionsViewModel(
     private val toDoId: Int,
@@ -41,7 +42,7 @@ class ToDoOptionsViewModel(
             } else {
                 updatedToDo
             }
-            db.toDoDao().update(toDoToUpdate)
+            db.toDoDao().update(toDoToUpdate.copy(lastModified = LocalDateTime.now()))
             loadToDo()
         }
     }
