@@ -9,13 +9,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.google.maps.android.compose.GoogleMap
 import java.time.format.DateTimeFormatter
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -182,6 +192,11 @@ fun ToDoList(
 
 @Composable
 private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
+    val cameraPositionState = rememberCameraPositionState {
+        position = fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+    }
+    var markerPosition = remember { LatLng(0.0, 0.0) }
+    val markerState = remember { MarkerState(position = markerPosition) }
     var isExapnded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -229,6 +244,46 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     //map
+                    if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
+                        GoogleMap(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(12.dp)),
+                            cameraPositionState = cameraPositionState
+                        ) {
+                            // Add a marker
+                            markerPosition = LatLng(toDo.latitude, toDo.longitude)
+                            markerState.position = markerPosition
+                            cameraPositionState.position = fromLatLngZoom(markerPosition, 10f)
+                            Marker(
+                                title = toDo.location,
+                                state = markerState
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .background(
+                                    color = primary0,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        ) {
+                            Text(
+                                "Specify location to view map",
+                                textAlign = TextAlign.Center,
+                                fontFamily = dosisFontFamily,
+                                color = primary4,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .wrapContentHeight()
+                            )
+                        }
+                    
+                    }
                     //deadline
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
