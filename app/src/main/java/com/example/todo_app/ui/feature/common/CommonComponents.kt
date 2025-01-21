@@ -538,11 +538,13 @@ fun SearchButton(
         if(showSearchField.value) {
             val focusRequester = remember { FocusRequester() }
             val focusManager = LocalFocusManager.current
-            Column {
+            Column(
+                
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .padding(top = 16.dp)
                 ) {
                     var textField by remember { mutableStateOf(TextFieldValue( 
                         text = getQuery().trimStart(),
@@ -586,7 +588,10 @@ fun SearchButton(
                         focusManager.clearFocus()
                         showSearchField.value = false
                         onSearchClicked?.invoke("")
-                    }) {
+                    },
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                        ) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = "Close",
