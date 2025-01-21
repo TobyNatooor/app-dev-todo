@@ -2,6 +2,7 @@ package com.example.todo_app.ui.navigation
 
 import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,12 +15,14 @@ import com.example.todo_app.ui.feature.home.HomeViewModelFactory
 import com.example.todo_app.ui.feature.smartList.SmartListScreen
 import com.example.todo_app.ui.feature.toDoOptions.ToDoOptionsScreen
 import com.example.todo_app.ui.feature.toDoList.ToDoListScreen
+import com.example.todo_app.ui.theme.*
 import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
     db: AppDatabase,
     getLocation: ((Place?) -> Unit?) -> Unit,
+    buttonColor: Color = neutral1
 ) {
     val navController = rememberNavController()
 
@@ -38,7 +41,8 @@ fun AppNavigation(
                             AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
-                        onSearchClicked = { query -> viewModel.searchForTodos(query) }
+                        onSearchClicked = { query -> viewModel.searchForTodos(query) },
+                        buttonColor = buttonColor
                     )
                 }
             )
@@ -64,7 +68,7 @@ fun AppNavigation(
                             AppBarAction.Search
                         ),
                         onBackClicked = { navController.popBackStack() },
-
+                        buttonColor = buttonColor
                         )
                 },
                 db = db,
@@ -84,7 +88,8 @@ fun AppNavigation(
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(AppBarAction.Back),
-                        onBackClicked = { navController.popBackStack() }
+                        onBackClicked = { navController.popBackStack() },
+                        buttonColor = buttonColor
                     )
                 },
                 getLocation = getLocation,
@@ -98,7 +103,8 @@ fun AppNavigation(
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(AppBarAction.Back),
-                        onBackClicked = { navController.popBackStack() }
+                        onBackClicked = { navController.popBackStack() },
+                        buttonColor = buttonColor
                     )
                 }
             )

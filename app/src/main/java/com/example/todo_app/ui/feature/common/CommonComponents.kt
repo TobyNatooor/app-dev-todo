@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.AlertDialog
@@ -47,18 +46,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.State
-import com.example.todo_app.ui.feature.home.HomeViewModel
 import androidx.compose.ui.unit.Dp
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -416,7 +412,8 @@ fun ChooseTodoStatus(
 
 @Composable
 fun SortButton(
-    onSortClicked: ((SortOption) -> Unit)? = null
+    onSortClicked: ((SortOption) -> Unit)? = null,
+    buttonColor: Color
 ) {
     val sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
 
@@ -432,7 +429,7 @@ fun SortButton(
         Icon(
             Icons.AutoMirrored.Filled.Sort,
             contentDescription = "Sort",
-            tint = neutral1,
+            tint = buttonColor,
             modifier = Modifier.size(24.dp)
         )
         DropdownMenu(
@@ -481,3 +478,21 @@ fun SortButton(
         }
     }
 }
+
+@Composable
+fun BackButton(
+    onBackClicked: (() -> Unit)? = null,
+    buttonColor: Color
+) {
+    Icon(
+        Icons.Filled.ChevronLeft,
+        contentDescription = "Back",
+        tint = buttonColor,
+        modifier = Modifier
+            .fillMaxHeight()
+            .clickable {
+                onBackClicked?.invoke()
+            }
+    )
+}
+
