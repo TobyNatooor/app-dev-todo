@@ -337,7 +337,7 @@ fun ToDoOptions(
                                    navController.popBackStack()
                                },
                                onDismiss = {
-                                   showDeleteDialog = true
+                                   showDeleteDialog = false
                                }
                            )
                        Button(
