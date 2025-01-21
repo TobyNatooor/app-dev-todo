@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import java.time.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -177,6 +182,7 @@ fun ToDoList(
 
 @Composable
 private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
+    var isExapnded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,35 +191,80 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ToDoCheckBox(toDo, viewModel, 26.dp)
-            Spacer(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-            Text(
-                text = toDo.title,
-                fontSize = 18.sp,
-                color = neutral0,
-                fontFamily = dosisFontFamily
-            )
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-            DropdownSettingsMenu(
-                actions = listOf(
-                    DropdownSettingsMenuItem.Rename,
-                    DropdownSettingsMenuItem.Delete,
-                    DropdownSettingsMenuItem.Edit
-                ),
-                onRenameClicked = { /* TODO */},
-                onDeleteClicked = { viewModel.deleteToDo(toDo) },
-                onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
-            )
+        Column () {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ToDoCheckBox(toDo, viewModel, 26.dp)
+                Spacer(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                )
+                Text(
+                    text = toDo.title,
+                    fontSize = 18.sp,
+                    color = neutral0,
+                    fontFamily = dosisFontFamily,
+                    modifier = Modifier
+                        .clickable {
+                            isExapnded = !isExapnded
+                        }
+                )
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+                DropdownSettingsMenu(
+                    actions = listOf(
+                        DropdownSettingsMenuItem.Rename,
+                        DropdownSettingsMenuItem.Delete,
+                        DropdownSettingsMenuItem.Edit
+                    ),
+                    onRenameClicked = { /* TODO */},
+                    onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                    onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
+                )
+            }
+            if (isExapnded) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    //map
+                    //deadline
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "Deadline",
+                            color = neutral0,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = neutral1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = formatDeadline(toDo.deadline),
+                                color = neutral3,
+                                fontSize = 16.sp,
+                                fontFamily = dosisFontFamily
+                            )
+                        }
+                    }
+                    //description
+                }
+            }
         }
     }
+}
+
+fun formatDeadline(deadline: LocalDateTime?): String {
+    if(deadline == null) return "00/00/00"
+    return deadline.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
 }
 
 @Composable
