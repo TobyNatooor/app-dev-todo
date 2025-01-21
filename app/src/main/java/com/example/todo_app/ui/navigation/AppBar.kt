@@ -20,7 +20,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.Alignment
 import androidx.room.Query
 import com.example.todo_app.model.SortOption
-//import com.example.todo_app.ui.feature.common.SearchButton
+import com.example.todo_app.ui.feature.common.SearchButton
 import com.example.todo_app.ui.feature.common.SortButton
 import com.example.todo_app.ui.theme.*
 
@@ -30,6 +30,7 @@ fun AppBar(
     onBackClicked: (() -> Unit)? = null,
     onSortClicked: ((SortOption) -> Unit)? = null,
     onSearchClicked: ((String) -> Unit)? = null,
+    getQuery: (() -> String)? = null,
     sortOptions: List<SortOption>
 ) {
     return Row(
@@ -63,12 +64,27 @@ fun AppBar(
                     )
                 }
 
-                is AppBarAction.Search -> { null }
-                    /*SearchButton(
-                        onSearchClicked = onSearchClicked
+                is AppBarAction.Search -> { 
+                    Spacer(modifier = Modifier.weight(1f))
+                    SearchButton(
+                        onSearchClicked = onSearchClicked,
+                        getQuery = {query(getQuery)}
                     )
-                }*/
+                }
             }
         }
     }
+}
+
+private fun query(
+    getQuery: (() -> String)? = null,
+    ): String {
+    if(getQuery != null) {
+        return getQuery()
+    }else {
+        return "How did you mess this up?"
+    }
+}
+private fun youDoneFuckedUp(): String {
+    return "How did you mess this up?"
 }

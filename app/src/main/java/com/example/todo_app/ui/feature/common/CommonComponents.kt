@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.common
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -514,76 +515,91 @@ fun SortButton(
 }
 
 @Composable
-private fun SearchTextField(
-    viewModel: HomeViewModel,
-    modifier: Modifier = Modifier
+fun SearchButton(
+    onSearchClicked: ((String) -> Unit)? = null,
+    getQuery: () -> String
 ) {
-    val focusState = remember { mutableStateOf(false) }
-    val searchQuery = viewModel.filteringQuery.collectAsState()
-    val userInput = remember { mutableStateOf(searchQuery.value) }
-
-    val onFocusChange: (Boolean) -> Unit = { isFocused ->
-        focusState.value = isFocused
-    }
-
-    Box(modifier = modifier) {
-        // Search TextField
-        BasicTextField(
-            value = userInput.value,
-            onValueChange = { newTitle ->
-                userInput.value = newTitle
-                viewModel.searchForTodos(userInput.value)
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .onFocusChanged { state -> onFocusChange(state.isFocused) },
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                color = neutral0,
-                fontFamily = dosisFontFamily,
-                lineHeight = TextUnit.Unspecified,
-                letterSpacing = TextUnit.Unspecified
-            ),
-            cursorBrush = SolidColor(neutral0),
-            decorationBox = @Composable { innerTextField ->
+    val showSearchField = remember { mutableStateOf(getQuery() != "") }
+    val seachFieldFocus = remember { mutableStateOf(getQuery() != "") }
+    Row{
+        IconButton(onClick = { 
+            if(!showSearchField.value) {
+                showSearchField.value = true
+                onSearchClicked?.invoke(" ")
+            }
+         }) {
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = "Search",
+                tint = neutral1
+            )
+        }
+        if(showSearchField.value) {
+            val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
+            Column {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search Icon",
-                        tint = neutral1
-                    )
-                    Box(
+                    var text by remember { mutableStateOf(getQuery()) }
+                    BasicTextField(
+                        value = text,
+                        onValueChange = { newText ->
+                            text = newText
+                            onSearchClicked?.invoke(if (newText.isBlank()) " " else newText.trimStart())
+                        },
+                        textStyle = TextStyle(
+                            fontSize = 16.sp,
+                            color = neutral1,
+                            fontFamily = dosisFontFamily
+                        ),
+                        cursorBrush = SolidColor(neutral1),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                onSearchClicked?.invoke(text)
+                                seachFieldFocus.value = false
+                                focusManager.clearFocus()
+                            }
+                        ),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 8.dp)
-                    ) {
-                        innerTextField()
+                            .focusRequester(focusRequester)
+                            .onFocusChanged { focusState ->
+                                if(showSearchField.value && !focusState.isFocused && seachFieldFocus.value) {
+                                    focusRequester.requestFocus()
+                                }else if(focusState.isFocused && !seachFieldFocus.value) {
+                                    seachFieldFocus.value = true
+                                }
+                            }
+                    )
+                    IconButton(onClick = {
+                        focusManager.clearFocus()
+                        showSearchField.value = false
+                        onSearchClicked?.invoke("")
+                    }) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Close",
+                            tint = neutral1
+                        )
                     }
                 }
+                HorizontalDivider(
+                    thickness = 2.dp,
+                    color = neutral1,
+                    modifier = Modifier
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp,
+                            bottom = 6.dp
+                        )
+                )
             }
-        )
-
-        // Indicator line
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-        ) {
-            HorizontalDivider(
-                thickness = 2.dp,
-                color = if (focusState.value) {
-                    neutral1
-                } else {
-                    Color.Transparent
-                },
-                modifier = Modifier
-                    .padding(
-                        start = 4.dp,
-                        end = if (focusState.value) 4.dp else 64.dp,
-                        bottom = 6.dp
-                    )
-            )
         }
     }
 }

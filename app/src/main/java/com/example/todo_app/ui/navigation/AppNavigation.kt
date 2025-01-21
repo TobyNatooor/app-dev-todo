@@ -49,6 +49,7 @@ fun AppNavigation(
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
                         onSearchClicked = { query -> viewModel.searchForTodos(query) },
+                        getQuery = { viewModel.getQuery() },
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
                     )
                 }
