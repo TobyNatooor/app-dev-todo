@@ -28,7 +28,8 @@ fun DropdownSettingsMenu(
     onRenameClicked: (() -> Unit)? = null,
     onMergeClicked: (() -> Unit)? = null,
     onDeleteClicked: (() -> Unit)? = null,
-    actions: List<DropdownSettingsMenuItem>
+    actions: List<DropdownSettingsMenuItem>,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     val menuTextStyle = TextStyle(
@@ -38,7 +39,7 @@ fun DropdownSettingsMenu(
         fontFamily = dosisFontFamily
     )
 
-    Box {
+    Box(modifier = modifier) {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Rounded.MoreVert,

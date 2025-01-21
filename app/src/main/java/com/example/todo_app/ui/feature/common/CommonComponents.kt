@@ -53,6 +53,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.input.key.onKeyEvent
 import com.example.todo_app.model.ToDoStatus
 
 @Composable
@@ -89,14 +90,16 @@ fun AddButton(onClick: () -> Unit) {
 fun NameList(
     title: String?,
     textStyle: TextStyle?,
-    modifier: Modifier?,
+    modifier: Modifier = Modifier,
+    selectAllText: Boolean = false,
     onTitleChange: (String) -> Unit,
     onRenameComplete: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    val blankTitle = "Unnamed list"
+
     var isEnabled by remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
-    val blankTitle = "Unnamed list"
     var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
@@ -106,11 +109,16 @@ fun NameList(
         )
     }
 
-    Box {
+    Box(modifier) {
         LaunchedEffect(Unit) {
             isEnabled = true
             isFocused = false
             focusRequester.requestFocus()
+            if (selectAllText) {
+                textFieldValue = textFieldValue.copy(
+                    selection = TextRange(0, textFieldValue.text.length)
+                )
+            }
         }
 
         DisposableEffect(Unit) {
@@ -136,7 +144,7 @@ fun NameList(
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp)
                 .focusRequester(focusRequester)
-                // Handle title update to Room SQL when unfocused
+                // Handle onTitleChange callback when unfocused
                 .onFocusChanged {
                     isFocused = !isFocused
                     if (!isFocused) {
@@ -147,16 +155,22 @@ fun NameList(
                         isEnabled = false
                         onRenameComplete()
                     }
+                }
+                .onKeyEvent {
+                    onTitleChange(textFieldValue.text)
+                    true
                 },
-            enabled = isEnabled,
+            enabled = isEnabled
         )
 
         if (textFieldValue.text.isBlank()) {
             Text(
                 text = "Enter new title",
-                color = neutral1,
-                fontSize = 20.sp,
-                fontFamily = dosisFontFamily
+                style = (textStyle ?: TextStyle(
+                    fontSize = 20.sp,
+                    color = neutral0,
+                    fontFamily = dosisFontFamily
+                )).copy(color = neutral1)
             )
         }
     }
