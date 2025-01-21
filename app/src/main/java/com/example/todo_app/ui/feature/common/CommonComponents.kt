@@ -58,7 +58,15 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.ui.feature.BaseViewModel
 
@@ -404,4 +412,72 @@ fun ChooseTodoStatus(
         },
         confirmButton = {}
     )
+}
+
+@Composable
+fun SortButton(
+    onSortClicked: ((SortOption) -> Unit)? = null
+) {
+    val sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = neutral4
+        ),
+        onClick = { expanded = true }
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.Sort,
+            contentDescription = "Sort",
+            tint = neutral1,
+            modifier = Modifier.size(24.dp)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(neutral1)
+        ) {
+            Text(
+                text = "Sort by",
+                color = neutral4,
+                fontSize = 16.sp,
+                fontFamily = dosisFontFamily,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+            HorizontalDivider(
+                color = neutral4,
+                thickness = 1.dp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            sortOptions.forEach { option ->
+                DropdownMenuItem(
+                    onClick = {
+                        onSortClicked?.invoke(option)
+                        expanded = false
+                    },
+                    text = {
+                        Text(
+                            text = option.toString(),
+                            color = neutral4,
+                            fontSize = 16.sp,
+                            fontFamily = dosisFontFamily,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                )
+            }
+        }
+    }
 }
