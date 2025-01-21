@@ -97,15 +97,14 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
 
     fun addNewList(title: String) {
-        this.viewModelScope.launch {
-            _mutableNewList.collect { newListState ->
-                if (newListState is NewListState.Data) {
-                    db.checkListDao().insert(newListState.list)
-                }
+        viewModelScope.launch {
+            val currentNewListState = _mutableNewList.value
+            _mutableNewList.value = NewListState.Empty
+
+            if (currentNewListState is NewListState.Data) {
+                db.checkListDao().insert(currentNewListState.list.copy(title = title))
             }
         }
-
-        _mutableNewList.value = NewListState.Empty
     }
 
     fun sortLists(sortBy: SortOption) {
