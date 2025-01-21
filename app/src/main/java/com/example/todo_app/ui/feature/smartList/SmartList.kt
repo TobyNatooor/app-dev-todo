@@ -412,9 +412,12 @@ fun SettingsDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    val checkLists by viewModel.getCheckLists().collectAsState()
+    if (checkLists.none { it.id == settings.value.listId }) {
+        viewModel.setSettings(settings.value.copy(listId = -1))
+    }
     if (showSettings) {
         var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
-        val checkLists by viewModel.getCheckLists().collectAsState()
         val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
         dropdownSelections.add(DropdownOptionItem(-1, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
@@ -616,10 +619,6 @@ private fun DropdownMenuOption(
 ) {
     var selectedId = settings.value.listId
     var expanded by remember { mutableStateOf(false) }
-    if (options.none { it.id == settings.value.listId }) {
-        viewModel.setSettings(settings.value.copy(listId = -1))
-        selectedId = -1
-    }
     var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
         options.find { it.id == selectedId }
     ) }
