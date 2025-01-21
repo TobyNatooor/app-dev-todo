@@ -248,11 +248,9 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
                 DropdownSettingsMenu(
                     actions = listOf(
-                        DropdownSettingsMenuItem.Rename,
                         DropdownSettingsMenuItem.Delete,
                         DropdownSettingsMenuItem.Edit
                     ),
-                    onRenameClicked = { /* TODO */},
                     onDeleteClicked = { showDeleteDialog = true },
                     onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
                     modifier = Modifier
