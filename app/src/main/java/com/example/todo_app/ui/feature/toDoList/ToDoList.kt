@@ -271,7 +271,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                             modifier = Modifier
                                 .size(120.dp)
                                 .background(
-                                    color = primary0,
+                                    color = neutral1,
                                     shape = RoundedCornerShape(12.dp)
                                 )
                         ) {
@@ -279,7 +279,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                 "Specify location to view map",
                                 textAlign = TextAlign.Center,
                                 fontFamily = dosisFontFamily,
-                                color = primary4,
+                                color = neutral4,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .align(Alignment.Center)
