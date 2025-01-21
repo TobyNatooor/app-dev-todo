@@ -1,33 +1,46 @@
 package com.example.todo_app.ui.feature.smartList
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
+import com.example.todo_app.MyApplication
 import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.model.CheckList
+import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
-import com.example.todo_app.model.SmartSettingsSingleton
 import com.example.todo_app.model.ToDoStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.Duration
 
 class SmartListViewModel(
     db: AppDatabase,
+    private val userRepository: UserRepository,
     private val nav: NavController
 ) : BaseViewModel(db) {
 
-    val smartSettings = SmartSettingsSingleton.settings
+    companion object {
+        fun createFactory(db: AppDatabase, navController: NavController): ViewModelProvider.Factory {
+            return viewModelFactory {
+                initializer {
+                    val application = (this[APPLICATION_KEY] as MyApplication)
+                    SmartListViewModel(db, application.userRepository, navController)
+                }
+            }
+        }
+    }
+
+    val smartSettings = userRepository.smartSettings
+
     private val toDos: Flow<List<ToDo>> = db.toDoDao().getAll()
 
     private val filteredList = combine(
@@ -40,7 +53,7 @@ class SmartListViewModel(
     }
 
 
-    val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
+    private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
     private val _checkListsState = MutableStateFlow<List<CheckList>>(emptyList())
@@ -59,29 +72,16 @@ class SmartListViewModel(
         }
     }
 
-    /*override fun updateToDoItem(updatedToDo: ToDo) {
-        viewModelScope.launch {
-            db.toDoDao().update(updatedToDo)
-        }
-    }*/
-
     fun clickToDoOptions(toDoId: Int) {
         nav.navigate("toDoOptions/${toDoId}")
     }
 
-//    fun getSettings(): SmartSettings{
-//        return smartSettings.value
-//    }
 
     fun setSettings(settings: SmartSettings){
-        SmartSettingsSingleton.updateSettings(settings)
-    }
-
-    /*override fun deleteToDo(toDo: ToDo) {
-        viewModelScope.launch {
-            db.toDoDao().delete(toDo)
+        this.viewModelScope.launch {
+            userRepository.updateSettings(settings)
         }
-    }*/
+    }
 
     fun getCheckLists(): StateFlow<List<CheckList>> {
         return checkListsState
