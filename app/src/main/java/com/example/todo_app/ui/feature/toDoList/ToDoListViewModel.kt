@@ -91,10 +91,6 @@ class ToDoListViewModel(
         }
     }
 
-    fun clearFocus(){
-
-    }
-
     fun deleteList(listId: Int) {
         viewModelScope.launch {
             db.checkListDao().deleteWithId(listId)
