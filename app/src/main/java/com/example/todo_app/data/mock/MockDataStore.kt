@@ -5,6 +5,41 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 
 class MockDataStore {
+    private val listData = listOf(
+        CheckList(
+            title = "Grocery Shopping",
+            description = "Make sure to buy fruits, vegetables, and snacks for the week."
+        ),
+        CheckList(
+            title = "Home Cleaning",
+            description = "Clean the kitchen, living room, and bathroom."
+        ),
+        CheckList(
+            title = "Workout Routine",
+            description = "Complete 30 minutes of cardio followed by strength training."
+        ),
+        CheckList(
+            title = "Work Meeting",
+            description = "Prepare for the client meeting by reviewing the presentation."
+        ),
+        CheckList(
+            title = "Study Session",
+            description = "Study for the upcoming exam and complete practice problems."
+        ),
+        CheckList(
+            title = "Laundry",
+            description = "Wash, dry, and fold clothes."
+        ),
+        CheckList(
+            title = "Book Appointment",
+            description = "Schedule a dentist visit for a checkup."
+        ),
+        CheckList(
+            title = "Dinner Preparation",
+            description = "Cook a healthy dinner with chicken, rice, and vegetables."
+        )
+    )
+
     private val todoData = listOf(
         ToDo(title = "Buy Apples", description = "Pick up apples from the grocery store.", listId = 1),
         ToDo(title = "Buy Bananas", description = "Get bananas for the week.", listId = 1),
@@ -41,47 +76,13 @@ class MockDataStore {
         ToDo(title = "Steam Vegetables", description = "Steam some broccoli and carrots as a side.", listId = 8)
     )
 
-    private val listData = listOf(
-        CheckList(
-            title = "Grocery Shopping",
-            description = "Make sure to buy fruits, vegetables, and snacks for the week."
-        ),
-        CheckList(
-            title = "Home Cleaning",
-            description = "Clean the kitchen, living room, and bathroom."
-        ),
-        CheckList(
-            title = "Workout Routine",
-            description = "Complete 30 minutes of cardio followed by strength training."
-        ),
-        CheckList(
-            title = "Work Meeting",
-            description = "Prepare for the client meeting by reviewing the presentation."
-        ),
-        CheckList(
-            title = "Study Session",
-            description = "Study for the upcoming exam and complete practice problems."
-        ),
-        CheckList(
-            title = "Laundry",
-            description = "Wash, dry, and fold clothes."
-        ),
-        CheckList(
-            title = "Book Appointment",
-            description = "Schedule a dentist visit for a checkup."
-        ),
-        CheckList(
-            title = "Dinner Preparation",
-            description = "Cook a healthy dinner with chicken, rice, and vegetables."
-        )
-    )
-
     suspend fun insertMockData(db: AppDatabase) {
-        for (toDo in todoData) {
-            db.toDoDao().insert(toDo)
-        }
         for (list in listData) {
             db.checkListDao().insert(list)
+        }
+
+        for (toDo in todoData) {
+            db.toDoDao().insert(toDo)
         }
         //db.checkListDao().insert(listData)
         //db.toDoDao().insert(todoData)
