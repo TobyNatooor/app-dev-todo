@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.Duration
 
 class SmartListViewModel(
     db: AppDatabase,
@@ -46,7 +48,7 @@ class SmartListViewModel(
         toDos
     ) { settings, list ->
         list.filter { toDo ->
-            includeOnStatus(toDo.status, settings)
+            filter(toDo, settings)
         }
     }
 
@@ -54,10 +56,18 @@ class SmartListViewModel(
     private val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
+    private val _checkListsState = MutableStateFlow<List<CheckList>>(emptyList())
+    val checkListsState: StateFlow<List<CheckList>> = _checkListsState.asStateFlow()
+
     init {
         viewModelScope.launch {
             filteredList.collect { list ->
                 _mutableToDosState.value = ToDosUIState.Data(list)
+            }
+        }
+        viewModelScope.launch {
+            db.checkListDao().getAll().collect { list ->
+                _checkListsState.value = list
             }
         }
     }
@@ -73,12 +83,21 @@ class SmartListViewModel(
         }
     }
 
-    private fun includeOnStatus(status: ToDoStatus, smartSettings: SmartSettings): Boolean {
-        return if (status == ToDoStatus.DONE && smartSettings.includeDone) true
-        else if (status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone) true
-        else if (status == ToDoStatus.CANCELED && smartSettings.includeCancelled) true
-        else if (status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress) true
+    fun getCheckLists(): StateFlow<List<CheckList>> {
+        return checkListsState
+    }
+
+    private fun filter(toDo: ToDo, smartSettings: SmartSettings): Boolean {
+        val timeNow = LocalDateTime.now()
+        return if (toDo.status == ToDoStatus.DONE && smartSettings.includeDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.NOT_DONE && smartSettings.includeNotDone && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.CANCELED && smartSettings.includeCancelled && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
+        else if (toDo.status == ToDoStatus.IN_PROGRESS && smartSettings.includeInProgress && (smartSettings.listId == null || smartSettings.listId == toDo.listId) && (smartSettings.deadlineWithinDays == 0 || (toDo.deadline != null && getDifferenceInHours(timeNow, toDo.deadline) <= smartSettings.deadlineWithinDays * 24))) true
         else false
+    }
+
+    private fun getDifferenceInHours(start: LocalDateTime, end: LocalDateTime?): Int {
+        return Duration.between(start, end).toHours().toInt()
     }
 }
 
