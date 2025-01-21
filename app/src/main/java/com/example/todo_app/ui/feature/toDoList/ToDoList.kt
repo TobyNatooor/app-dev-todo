@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -241,15 +243,17 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
             }
             if (isExapnded) {
                 Row (
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 ){
                     //map
                     if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
                         GoogleMap(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
+                                .size(120.dp)
                                 .clip(RoundedCornerShape(12.dp)),
                             cameraPositionState = cameraPositionState
                         ) {
@@ -265,7 +269,7 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                     } else {
                         Box(
                             modifier = Modifier
-                                .aspectRatio(1f)
+                                .size(120.dp)
                                 .background(
                                     color = primary0,
                                     shape = RoundedCornerShape(12.dp)
@@ -282,7 +286,6 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                     .wrapContentHeight()
                             )
                         }
-                    
                     }
                     //deadline
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -322,6 +325,8 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                         )
                         Box(
                             modifier = Modifier
+                                .width(120.dp)
+                                .height(50.dp)
                                 .background(
                                     color = neutral1,
                                     shape = RoundedCornerShape(4.dp)
@@ -329,7 +334,11 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                 .padding(horizontal = 8.dp)
                         ) {
                             Text(
-                                text = toDo.description,
+                                text = if (toDo.description.length > 30) {
+                                    toDo.description.take(27) + "..."
+                                } else {
+                                    toDo.description
+                                },
                                 color = neutral3,
                                 fontSize = 16.sp,
                                 fontFamily = dosisFontFamily
