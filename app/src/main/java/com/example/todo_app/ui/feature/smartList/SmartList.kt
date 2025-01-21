@@ -73,6 +73,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MarkerState
@@ -553,6 +556,10 @@ fun SettingsDialog(
                         )
                         BasicTextField(
                             value = deadlineWithin,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
                             onValueChange = { newValue ->
                                 if (newValue.all { it.isDigit() } && newValue.length <= 2) {
                                     deadlineWithin = newValue
