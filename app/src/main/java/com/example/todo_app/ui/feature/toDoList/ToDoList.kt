@@ -168,7 +168,7 @@ fun ToDoList(
                     }
 
                     // To-do elements
-                    if (toDos.isEmpty()) {
+                    if (toDos.isEmpty() && !addingToDo.value) {
                         Text(
                             color = neutral1,
                             text = "No to-do items in this list",
