@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
+import com.example.todo_app.ui.feature.common.DeleteDialog
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.model.SmartSettings
@@ -182,6 +183,16 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
     var markerPosition = remember { LatLng(0.0, 0.0) }
     val markerState = remember { MarkerState(position = markerPosition) }
     var isExapnded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog) {
+        DeleteDialog(
+            id = toDo.id,
+            title = "Delete todo \"${toDo.title}\"?",
+            text = "Are you sure you want to delete this todo?",
+            onDelete = { viewModel.deleteToDo(toDo) },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,12 +225,10 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
                 )
                 DropdownSettingsMenu(
                     actions = listOf(
-                        DropdownSettingsMenuItem.Rename,
                         DropdownSettingsMenuItem.Delete,
                         DropdownSettingsMenuItem.Edit
                     ),
-                    onRenameClicked = { /* TODO */},
-                    onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                    onDeleteClicked = { showDeleteDialog = true },
                     onEditClicked = { viewModel.clickToDoOptions(toDo.id) 
                     }
                 )
@@ -404,9 +413,12 @@ fun SettingsDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    val checkLists by viewModel.getCheckLists().collectAsState()
+    if (checkLists.none { it.id == settings.value.listId }) {
+        viewModel.setSettings(settings.value.copy(listId = -1))
+    }
     if (showSettings) {
         var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
-        val checkLists by viewModel.getCheckLists().collectAsState()
         val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
         dropdownSelections.add(DropdownOptionItem(-1, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
@@ -632,7 +644,7 @@ private fun DropdownMenuOption(
             contentAlignment = contentAlign
         ) {
             Text(
-                text = "From: "+(selectedOption?.title ?: "All lists"),
+                text = "From: "+(selectedOption?.title ?: "No lists"),
                 fontSize = 18.sp,
                 fontFamily = dosisFontFamily,
                 color = primary4,
