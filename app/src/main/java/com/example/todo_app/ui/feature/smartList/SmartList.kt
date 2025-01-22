@@ -164,7 +164,8 @@ fun SmartList(
                         text = "No to-do items in your smart list, try changing the settings",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = dosisFontFamily
+                        fontFamily = dosisFontFamily,
+                        modifier = Modifier.padding(horizontal = 24.dp)
                     )
                 }
             } else {
