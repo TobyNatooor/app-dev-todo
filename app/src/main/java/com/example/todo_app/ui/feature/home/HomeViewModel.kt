@@ -52,10 +52,10 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
 
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
-    val homeState: StateFlow<HomeUIState> = _mutableHomeState
+    val homeState: StateFlow<HomeUIState> = _mutableHomeState.asStateFlow()
 
     private val _mutableNewList = MutableStateFlow<NewListState>(NewListState.Empty)
-    val newListState: StateFlow<NewListState> = _mutableNewList
+    val newListState: StateFlow<NewListState> = _mutableNewList.asStateFlow()
 
     init {
         viewModelScope.launch {
