@@ -197,6 +197,7 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .background(
                 color = primary3,
                 shape = RoundedCornerShape(4.dp)
