@@ -3,6 +3,7 @@ package com.example.todo_app.ui.feature.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo_app.ui.theme.*
 
@@ -48,7 +50,8 @@ fun DropdownSettingsMenu(
             Icon(
                 Icons.Rounded.MoreVert,
                 contentDescription = "Settings",
-                tint = neutral0
+                tint = neutral0,
+                modifier = Modifier.size(32.dp)
             )
         }
         DropdownMenu(

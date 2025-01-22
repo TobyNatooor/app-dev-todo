@@ -53,6 +53,7 @@ fun AppBar(
                     tint = neutral1,
                     modifier = Modifier
                         .fillMaxHeight()
+                        .size(32.dp)
                         .clickable {
                             onBackClicked?.invoke()
                         }

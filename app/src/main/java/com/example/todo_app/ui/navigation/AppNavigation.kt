@@ -44,8 +44,9 @@ fun AppNavigation(
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(
+                            AppBarAction.Search,
                             AppBarAction.Sort,
-                            AppBarAction.Search
+
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
                         onSearchClicked = { query -> viewModel.searchForTodos(query) },

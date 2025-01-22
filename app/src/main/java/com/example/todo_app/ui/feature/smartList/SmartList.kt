@@ -113,7 +113,7 @@ fun SmartList(
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                .padding(horizontal = 32.dp)
+                //.padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -140,7 +140,7 @@ fun SmartList(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 75.dp)
+                        .padding(top = 68.dp, bottom = 100.dp)
                 ) {
                     Text(
                         color = primary1,
@@ -197,12 +197,13 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .background(
                 color = primary3,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Column () {    
+        Column() {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -230,18 +231,19 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
                         DropdownSettingsMenuItem.Edit
                     ),
                     onDeleteClicked = { showDeleteDialog = true },
-                    onEditClicked = { viewModel.clickToDoOptions(toDo.id) 
+                    onEditClicked = {
+                        viewModel.clickToDoOptions(toDo.id)
                     }
                 )
             }
             if (isExapnded) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                ){
+                ) {
                     //map
                     if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
                         GoogleMap(
@@ -345,7 +347,7 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
 }
 
 fun formatDeadline(deadline: LocalDateTime?): String {
-    if(deadline == null) return "00/00/00"
+    if (deadline == null) return "00/00/00"
     return deadline.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
 }
 
@@ -420,7 +422,8 @@ fun SettingsDialog(
     }
     if (showSettings) {
         var deadlineWithin by remember { mutableStateOf(settings.value.deadlineWithinDays.toString()) }
-        val dropdownSelections = checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
+        val dropdownSelections =
+            checkLists.map { it -> DropdownOptionItem(it.id, it.title.toString()) }.toMutableList()
         dropdownSelections.add(DropdownOptionItem(-1, "All lists"))
         val notDoneOutlineColor = if (settings.value.includeNotDone) primary4 else primary0
         val doneOutlineColor = if (settings.value.includeDone) primary4 else primary0
@@ -433,13 +436,13 @@ fun SettingsDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primary3,
-                    contentColor = primary0
-                ),
-                onClick = {
-                    onConfirm()
-                }
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primary3,
+                        contentColor = primary0
+                    ),
+                    onClick = {
+                        onConfirm()
+                    }
                 ) {
                     Text("Done", fontFamily = dosisFontFamily)
                 }
@@ -448,14 +451,16 @@ fun SettingsDialog(
                 Text(text = "Include ToDos")
             },
             text = {
-                Column (modifier = Modifier.padding(5.dp, 5.dp)) {
-            
+                Column(modifier = Modifier.padding(5.dp, 5.dp)) {
+
                     val focusRequester = remember { FocusRequester() }
                     val focusManager = LocalFocusManager.current
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = primary4,
-                        modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 8.dp)
                     )
                     Text(
                         text = "Status",
@@ -558,7 +563,10 @@ fun SettingsDialog(
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = primary4,
-                        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).padding(bottom = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp)
+                            .padding(bottom = 16.dp)
                     )
                     Row(
                         modifier = Modifier
@@ -578,7 +586,11 @@ fun SettingsDialog(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    viewModel.setSettings(settings.value.copy(deadlineWithinDays = deadlineWithin.toIntOrNull() ?: 0))
+                                    viewModel.setSettings(
+                                        settings.value.copy(
+                                            deadlineWithinDays = deadlineWithin.toIntOrNull() ?: 0
+                                        )
+                                    )
                                     focusManager.clearFocus()
                                 }
                             ),
@@ -609,7 +621,10 @@ fun SettingsDialog(
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = primary4,
-                        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp).padding(bottom = 8.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp)
+                            .padding(bottom = 8.dp)
                     )
                     DropdownMenuOption(
                         settings = settings,
@@ -634,9 +649,11 @@ private fun DropdownMenuOption(
 ) {
     var selectedId = settings.value.listId
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption: DropdownOptionItem? by remember { mutableStateOf(
-        options.find { it.id == selectedId }
-    ) }
+    var selectedOption: DropdownOptionItem? by remember {
+        mutableStateOf(
+            options.find { it.id == selectedId }
+        )
+    }
     val shape = RoundedCornerShape(12.dp)
     val textAlign = when (contentAlign) {
         Alignment.Center -> TextAlign.Center
@@ -654,7 +671,7 @@ private fun DropdownMenuOption(
             contentAlignment = contentAlign
         ) {
             Text(
-                text = "From: "+(selectedOption?.title ?: "No lists"),
+                text = "From: " + (selectedOption?.title ?: "No lists"),
                 fontSize = 18.sp,
                 fontFamily = dosisFontFamily,
                 color = primary4,
