@@ -266,7 +266,7 @@ fun FavoriteButton(
     else neutral0
 
     IconButton(onClick = { onFavClicked() }) {
-        Icon(icon, contentDescription = "Favorite", tint = color)
+        Icon(icon, contentDescription = "Favorite", tint = color, modifier = Modifier.size(32.dp))
     }
 }
 
@@ -465,7 +465,7 @@ fun SortButton(
             Icons.AutoMirrored.Filled.Sort,
             contentDescription = "Sort",
             tint = neutral1,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(32.dp)
         )
         DropdownMenu(
             expanded = expanded,
@@ -532,15 +532,14 @@ fun SearchButton(
             Icon(
                 Icons.Filled.Search,
                 contentDescription = "Search",
-                tint = neutral1
+                tint = neutral1,
+                modifier = Modifier.size(32.dp)
             )
         }
         if(showSearchField.value) {
             val focusRequester = remember { FocusRequester() }
             val focusManager = LocalFocusManager.current
-            Column(
-                
-            ) {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
