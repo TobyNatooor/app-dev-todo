@@ -83,6 +83,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
+import androidx.compose.foundation.text.KeyboardActions
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -448,6 +449,9 @@ fun SettingsDialog(
             },
             text = {
                 Column (modifier = Modifier.padding(5.dp, 5.dp)) {
+            
+                    val focusRequester = remember { FocusRequester() }
+                    val focusManager = LocalFocusManager.current
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = primary4,
@@ -572,10 +576,15 @@ fun SettingsDialog(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Done
                             ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    viewModel.setSettings(settings.value.copy(deadlineWithinDays = deadlineWithin.toIntOrNull() ?: 0))
+                                    focusManager.clearFocus()
+                                }
+                            ),
                             onValueChange = { newValue ->
                                 if (newValue.all { it.isDigit() } && newValue.length <= 2) {
                                     deadlineWithin = newValue
-                                    viewModel.setSettings(settings.value.copy(deadlineWithinDays = newValue.toIntOrNull() ?: 0))
                                 }
                             },
                             textStyle = TextStyle(
@@ -587,6 +596,7 @@ fun SettingsDialog(
                                 .background(color = primary1, shape = RoundedCornerShape(5.dp))
                                 .padding(8.dp)
                                 .width(20.dp)
+                                .focusRequester(focusRequester)
                         )
                         Text(
                             text = " days away",
