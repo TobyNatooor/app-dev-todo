@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
         Places.initialize(applicationContext, MAPS_API_KEY)
 
         // UNCOMMENT WHEN TESTING
-        applicationContext.deleteDatabase("ToDoDB")
+        // applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
         val db = Room.databaseBuilder(
@@ -68,10 +68,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
             // Should not be in release
-            if (db.toDoDao().numberOfToDos() == 0) {
-                MockDataStore().insertMockData(db)
-                Log.d("TESTING", "onCreate: ${db.toDoDao().numberOfToDos()}")
-            }
+//            if (db.toDoDao().numberOfToDos() == 0) {
+//                MockDataStore().insertMockData(db)
+//                Log.d("TESTING", "onCreate: ${db.toDoDao().numberOfToDos()}")
+//            }
             withContext(Dispatchers.Main) {
                 setContent {
                     TodoappTheme {

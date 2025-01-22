@@ -16,6 +16,10 @@ import com.example.todo_app.ui.theme.TodoappTheme
 import androidx.compose.foundation.background
 import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.ui.theme.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalFocusManager
 
 @Composable
 fun SmartListScreen(
@@ -28,11 +32,18 @@ fun SmartListScreen(
         factory = SmartListViewModel.createFactory(db, navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
+    val focusManager = LocalFocusManager.current
 
     TodoappTheme {
         Scaffold( 
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    focusManager.clearFocus()
+                }
                 .background(primary4)
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {

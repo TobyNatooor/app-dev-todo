@@ -205,6 +205,16 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
     var markerPosition = remember { LatLng(0.0, 0.0) }
     val markerState = remember { MarkerState(position = markerPosition) }
     var isExpanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog) {
+        DeleteDialog(
+            id = toDo.id,
+            title = "Delete todo \"${toDo.title}\"?",
+            text = "Are you sure you want to delete this todo?",
+            onDelete = { viewModel.deleteToDo(toDo) },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,12 +248,10 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                 )
                 DropdownSettingsMenu(
                     actions = listOf(
-                        DropdownSettingsMenuItem.Rename,
                         DropdownSettingsMenuItem.Delete,
                         DropdownSettingsMenuItem.Edit
                     ),
-                    onRenameClicked = { /* TODO */},
-                    onDeleteClicked = { viewModel.deleteToDo(toDo) },
+                    onDeleteClicked = { showDeleteDialog = true },
                     onEditClicked = { viewModel.clickToDoOptions(toDo.id) },
                     modifier = Modifier
                         .offset(x = 8.dp)

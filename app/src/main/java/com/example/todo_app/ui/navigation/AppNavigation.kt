@@ -49,6 +49,7 @@ fun AppNavigation(
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
                         onSearchClicked = { query -> viewModel.searchForTodos(query) },
+                        getQuery = { viewModel.getQuery() },
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
                     )
                 }
@@ -76,7 +77,7 @@ fun AppNavigation(
                         actions = listOf(
                             AppBarAction.Back,
                             AppBarAction.Sort,
-                            AppBarAction.Search
+                            //AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },
