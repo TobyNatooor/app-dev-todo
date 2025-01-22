@@ -81,7 +81,7 @@ fun HomeList(
     appBar: @Composable () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val newListState = viewModel.newListState.collectAsState().value
+    val newListState = viewModel.newListState.collectAsState()
     val searchQuery by viewModel.filteringQuery.collectAsState()
     val horizontalPadding = 24.dp
 
@@ -167,7 +167,7 @@ fun HomeList(
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                    if (lists.isEmpty()) {
+                    if (lists.isEmpty() && newListState.value !is NewListState.Data) {
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
@@ -184,9 +184,9 @@ fun HomeList(
                                 )
                             }
 
-                            if (newListState is NewListState.Data) {
+                            if (newListState.value is NewListState.Data) {
                                 add(GridCard.CheckListType
-                                    .NewCheckListGridCard(viewModel, newListState.list)
+                                    .NewCheckListGridCard(viewModel, (newListState.value as NewListState.Data).list)
                                 )
                             }
 
