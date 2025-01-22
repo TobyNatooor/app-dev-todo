@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
@@ -392,6 +394,8 @@ private fun TextFieldOption(
     textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
+    
+    val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val focusState = remember { mutableStateOf(false) }
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
@@ -422,6 +426,11 @@ private fun TextFieldOption(
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ),
             modifier = modifier
                 .focusRequester(focusRequester)
