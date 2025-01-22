@@ -114,11 +114,7 @@ fun HomeList(
                 )
             }
             if(favorites.isNotEmpty()){
-//                item {
-//                    Box(modifier = Modifier) {
-//                        Icon(Icons.Rounded.MoreVert, contentDescription = "Settings", tint = neutral0)
-//                    }
-//                }
+
                 item {
                     Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                         val cards = buildList {
@@ -135,35 +131,6 @@ fun HomeList(
             stickyHeader {
                 appBar()
             }
-
-            /*item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = horizontalPadding / 2,
-                            end = horizontalPadding / 4,
-                        ),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    val childrenHeight = 42.dp
-                    val horizontalDistribution = 8f / 15f
-
-                    SearchTextField(
-                        viewModel,
-                        modifier = Modifier
-                            .weight(horizontalDistribution)
-                            .height(childrenHeight)
-                    )
-
-                    SortButton(
-                        viewModel,
-                        modifier = Modifier
-                            .weight(1f - horizontalDistribution)
-                            .height(childrenHeight)
-                    )
-                }
-            }*/
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
@@ -257,7 +224,7 @@ private fun FavoriteCheckListGrid(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(cardSpacing)) {
         Box(modifier = Modifier) {
-            Icon(Icons.Rounded.Star, contentDescription = "Favorite", tint = yellow2)
+            Icon(Icons.Rounded.Star, contentDescription = "Favorite", tint = yellow2, modifier = Modifier.size(32.dp))
         }
         cards.chunked(2).forEach { rowItems ->
             Row(horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
@@ -497,42 +464,6 @@ private fun getTodoTitleWithHighlight(todoTitle: String, search: String): Annota
                 withStyle(style = normalStyle) { append(todoTitle[i]) }
             }
             i++
-        }
-    }
-}
-
-@Composable
-fun SmartList(
-    viewModel: HomeViewModel
-) {
-    return Card(
-        onClick = {
-            viewModel.clickedSmartList()
-        },
-        colors = CardDefaults.cardColors(
-            containerColor = neutral2,
-        ),
-        modifier = Modifier.aspectRatio(1f)
-    ) {
-        Column(modifier = Modifier.padding(10.dp, 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Smart List",
-                    style = TextStyle(fontSize = 20.sp, fontFamily = dosisFontFamily),
-                    textAlign = TextAlign.Justify,
-                    modifier = Modifier.weight(5f),
-                    color = neutral0
-                )
-                Icon(
-                    Icons.Filled.AutoAwesome,
-                    contentDescription = "Smart List Icon",
-                    tint = primary1,
-                    modifier = Modifier.size(32.dp)
-                )
-
-            }
         }
     }
 }

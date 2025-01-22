@@ -118,7 +118,7 @@ fun ToDoList(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 75.dp, start = 24.dp, end = 24.dp)
+                        .padding(top = 68.dp, bottom = 100.dp)
                 ) {
                     if (isNaming) {
                         NameList(
