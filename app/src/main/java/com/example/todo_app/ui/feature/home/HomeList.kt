@@ -52,6 +52,7 @@ import com.example.todo_app.model.ToDo
 import com.example.todo_app.ui.feature.common.DeleteDialog
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
+import com.example.todo_app.ui.feature.common.GiphyDialog
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.theme.dosisFontFamily
 import com.example.todo_app.ui.theme.neutral0

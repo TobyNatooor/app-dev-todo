@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.ui.feature.BaseViewModel
@@ -21,7 +22,7 @@ class ToDoListViewModel(
 ) : BaseViewModel() {
     private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
-    private val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
+    override val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
 
     private val _sortingOption = MutableStateFlow(SortOption.STATUS)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()

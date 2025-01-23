@@ -61,6 +61,7 @@ import com.example.todo_app.ui.feature.common.DeleteDialog
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
+import com.example.todo_app.ui.feature.common.GiphyDialog
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
@@ -82,11 +83,15 @@ fun ToDoList(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val addingToDo = viewmodel.addingNewToDo.collectAsState()
     val isFavorite = viewmodel.isFavorite.collectAsState()
+    val shouldShowCongratsGif = viewmodel.shouldShowCongratsGifState.collectAsState()
 
     Box(
         modifier = modifier
             .fillMaxSize()
     ) {
+        if (shouldShowCongratsGif.value)
+            GiphyDialog()
+
         LazyColumn(
             state = scrollState,
             modifier = Modifier
