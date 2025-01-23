@@ -8,14 +8,12 @@ import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.repository.ToDoRepository
 
 class HomeViewModelFactory(
-    private val checklistRepository: ChecklistRepository,
-    private val toDoRepository: ToDoRepository,
     private val nav: NavController
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(checklistRepository, toDoRepository, nav) as T
+            return HomeViewModel(nav) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

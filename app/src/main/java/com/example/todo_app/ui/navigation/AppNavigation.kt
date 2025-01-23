@@ -39,12 +39,10 @@ fun AppNavigation(
     ) {
         composable("home") {
             val viewModel: HomeViewModel = viewModel(
-                factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
+                factory = HomeViewModelFactory(navController)
             )
             HomeScreen(
                 navController = navController,
-                checklistRepository = checklistRepository,
-                toDoRepository = toDoRepository,
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(

@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         AppDatabase.initializeDatabase(applicationContext)
         val db = AppDatabase.getDatabase()
 
-        val toDoRepo = ToDoRepoImpl(db.toDoDao())
+        val toDoRepo = ToDoRepoImpl.getInstance()
         val listRepo = CheckListRepositoryImpl.getInstance()
         Log.d("TESTING", "123")
         enableEdgeToEdge()

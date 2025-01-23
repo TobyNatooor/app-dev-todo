@@ -26,14 +26,12 @@ import com.example.todo_app.ui.feature.common.LoadingScreen
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    checklistRepository: ChecklistRepository,
-    toDoRepository: ToDoRepository,
     navController: NavController,
     appBar: @Composable () -> Unit
 ) {
     val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
+        factory = HomeViewModelFactory(navController)
     )
     val homeUIState = viewModel.homeState.collectAsState().value
     val focusManager = LocalFocusManager.current
