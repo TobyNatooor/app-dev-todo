@@ -223,7 +223,7 @@ fun ToDoOptions(
                                 )
                             }
                         )
-                        val text = remember { mutableStateOf(toDo.location ?: "") }
+                        val text = remember { mutableStateOf(toDo.location ?: "Enter todo address") }
                         Option(
                             optionTitle = "Location",
                             content = {
