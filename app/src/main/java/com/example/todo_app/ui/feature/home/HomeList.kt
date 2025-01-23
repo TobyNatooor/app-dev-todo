@@ -183,10 +183,10 @@ private fun CheckListGrid(
                 rowItems.forEach { card ->
                     Column(modifier = Modifier.weight(1f)) {
                         if (sortedOption.value == SortOption.NAME) {
-                            val currentChar = if(card is GridCard.SmartListGridCard || card is GridCard.CheckListType.NewCheckListGridCard) '\u0000'
+                            val currentChar = if(card !is GridCard.CheckListType.CheckListGridCard) '\u0000'
                             else card.title.firstOrNull()?.uppercaseChar() ?: '\u0000'
 
-                            val isNext = if(card is GridCard.SmartListGridCard || card is GridCard.CheckListType.NewCheckListGridCard) false
+                            val isNext = if(card !is GridCard.CheckListType.CheckListGridCard) false
                             else viewModel.isNextChar(currentChar, previousChar)
 
                             AlphabeticalHeader(
