@@ -7,15 +7,14 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.todo_app.MyApplication
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.repository.UserRepository
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,24 +25,24 @@ import java.time.LocalDateTime
 import java.time.Duration
 
 class SmartListViewModel(
-    toDoRepo: ToDoRepository,
-    listRepo: ChecklistRepository,
     private val userRepository: UserRepository,
     private val nav: NavController
-) : BaseViewModel(toDoRepo) {
+) : BaseViewModel() {
 
     companion object {
-        fun createFactory(toDoRepo: ToDoRepository, listRepo: ChecklistRepository, navController: NavController): ViewModelProvider.Factory {
+        fun createFactory(navController: NavController): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
                     val application = (this[APPLICATION_KEY] as MyApplication)
-                    SmartListViewModel(toDoRepo, listRepo, application.userRepository, navController)
+                    SmartListViewModel(application.userRepository, navController)
                 }
             }
         }
     }
 
     val smartSettings = userRepository.smartSettings
+
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
     private val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
 

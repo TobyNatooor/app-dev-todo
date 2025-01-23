@@ -15,9 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
@@ -32,13 +29,11 @@ fun ToDoOptionsScreen(
     toDoId: Int,
     appBar: @Composable () -> Unit,
     getLocation: ((Place?) -> Unit?) -> Unit,
-    checklistRepository: ChecklistRepository,
-    toDoRepository: ToDoRepository,
     navController: NavHostController
 ) {
     val viewModel: ToDoOptionsViewModel = viewModel(
         key = "ToDoOptionsViewModel_$toDoId",
-        factory = ToDoOptionsViewModelFactory(toDoId, toDoRepository, checklistRepository)
+        factory = ToDoOptionsViewModelFactory(toDoId)
     )
     val toDoUIState by viewModel.toDoState.collectAsState()
     val focusManager = LocalFocusManager.current

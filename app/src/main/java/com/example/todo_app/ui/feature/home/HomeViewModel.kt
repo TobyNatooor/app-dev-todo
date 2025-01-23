@@ -1,14 +1,14 @@
 package com.example.todo_app.ui.feature.home
 
-import android.util.Log
-import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class HomeViewModel(private val listRepo: ChecklistRepository, private val toDoRepo: ToDoRepository, private val nav: NavController) : ViewModel() {
+class HomeViewModel(private val nav: NavController) : ViewModel() {
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
+    private val toDoRepo: ToDoRepository = ToDoRepoImpl.getInstance()
+
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 

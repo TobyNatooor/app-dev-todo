@@ -1,6 +1,6 @@
 package com.example.todo_app.repository
 
-import com.example.todo_app.data.model.ToDoDao
+import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +14,9 @@ interface ToDoRepository {
     suspend fun delete(toDo: ToDo)
 }
 
-class ToDoRepoImpl(private val toDoDao: ToDoDao): ToDoRepository {
+class ToDoRepoImpl: ToDoRepository {
+    private val toDoDao = AppDatabase.getDatabase().toDoDao()
+
     override fun getWithId(id: Int): Flow<ToDo> {
         return toDoDao.getWithId(id)
     }
@@ -41,5 +43,15 @@ class ToDoRepoImpl(private val toDoDao: ToDoDao): ToDoRepository {
 
     override suspend fun delete(toDo: ToDo) {
         toDoDao.delete(toDo)
+    }
+
+    companion object {
+
+        @Volatile private var instance: ToDoRepoImpl? = null // Volatile modifier is necessary
+
+        fun getInstance() =
+            instance ?: synchronized(this) { // synchronized to avoid concurrency problem
+                instance ?: ToDoRepoImpl().also { instance = it }
+            }
     }
 }

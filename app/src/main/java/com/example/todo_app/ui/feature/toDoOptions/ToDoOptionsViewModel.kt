@@ -1,11 +1,10 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +14,9 @@ import java.time.LocalDateTime
 
 class ToDoOptionsViewModel(
     private val toDoId: Int,
-    toDoRepo: ToDoRepository,
-    private val listRepo: ChecklistRepository,
-) : BaseViewModel(toDoRepo) {
+) : BaseViewModel() {
+
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
     private val _toDoState = MutableStateFlow<ToDoUIState>(ToDoUIState.Loading)
     val toDoState: StateFlow<ToDoUIState> = _toDoState

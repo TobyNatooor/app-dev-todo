@@ -10,11 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.example.todo_app.BuildConfig.MAPS_API_KEY
 import com.example.todo_app.data.mock.MockDataStore
-import com.example.todo_app.repository.CheckListRepositoryImpl
-import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.ui.navigation.AppNavigation
 import com.example.todo_app.ui.theme.TodoappTheme
 import com.google.android.libraries.places.api.Places
@@ -61,13 +58,10 @@ class MainActivity : ComponentActivity() {
         // applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "ToDoDB"
-        ).build()
 
-        val toDoRepo = ToDoRepoImpl(db.toDoDao())
-        val listRepo = CheckListRepositoryImpl(db.checkListDao())
+        AppDatabase.initializeDatabase(applicationContext)
+        val db = AppDatabase.getDatabase()
+
         Log.d("TESTING", "123")
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
@@ -79,7 +73,7 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     TodoappTheme {
-                        AppNavigation(toDoRepo, listRepo, ::getLocation)
+                        AppNavigation(::getLocation)
                     }
                 }
             }

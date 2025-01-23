@@ -1,6 +1,6 @@
 package com.example.todo_app.repository
 
-import com.example.todo_app.data.model.CheckListDao
+import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.CheckList
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +18,9 @@ interface ChecklistRepository {
     suspend fun update(list: CheckList)
 }
 
-class CheckListRepositoryImpl(private val listDao: CheckListDao): ChecklistRepository {
+class CheckListRepositoryImpl: ChecklistRepository {
+    private val listDao = AppDatabase.getDatabase().checkListDao()
+
     override fun getAll(): Flow<List<CheckList>> {
         return listDao.getAll()
     }
@@ -61,5 +63,15 @@ class CheckListRepositoryImpl(private val listDao: CheckListDao): ChecklistRepos
 
     override suspend fun update(list: CheckList) {
         listDao.update(list)
+    }
+
+    companion object {
+
+        @Volatile private var instance: CheckListRepositoryImpl? = null // Volatile modifier is necessary
+
+        fun getInstance() =
+            instance ?: synchronized(this) { // synchronized to avoid concurrency problem
+                instance ?: CheckListRepositoryImpl().also { instance = it }
+            }
     }
 }

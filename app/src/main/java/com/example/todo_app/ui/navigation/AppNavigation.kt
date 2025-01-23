@@ -2,7 +2,6 @@ package com.example.todo_app.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -11,8 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.home.HomeViewModel
 import com.example.todo_app.ui.feature.home.HomeViewModelFactory
@@ -25,8 +22,6 @@ import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
-    toDoRepository: ToDoRepository,
-    checklistRepository: ChecklistRepository,
     getLocation: ((Place?) -> Unit?) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -39,12 +34,10 @@ fun AppNavigation(
     ) {
         composable("home") {
             val viewModel: HomeViewModel = viewModel(
-                factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
+                factory = HomeViewModelFactory(navController)
             )
             HomeScreen(
                 navController = navController,
-                checklistRepository = checklistRepository,
-                toDoRepository = toDoRepository,
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(
@@ -71,7 +64,7 @@ fun AppNavigation(
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
             val viewmodel: ToDoListViewModel = viewModel(
                 key = "ToDoListViewModel_$listId",
-                factory = ToDoListViewModelFactory(listId, toDoRepository, checklistRepository, navController)
+                factory = ToDoListViewModelFactory(listId, navController)
             )
             ToDoListScreen(
                 title = title,
@@ -82,7 +75,6 @@ fun AppNavigation(
                         actions = listOf(
                             AppBarAction.Back,
                             AppBarAction.Sort,
-                            //AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },
@@ -101,8 +93,6 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                toDoRepository = toDoRepository,
-                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(
@@ -116,8 +106,6 @@ fun AppNavigation(
         }
         composable("smartList") {
             SmartListScreen(
-                toDoRepository = toDoRepository,
-                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(
