@@ -65,7 +65,7 @@ class HomeViewModel(private val nav: NavController) : ViewModel() {
     init {
         viewModelScope.launch {
             combine(favoriteLists, sortedLists, todos) { favorites, lists, todos ->
-                if (lists.isEmpty()) {
+                if (lists.isEmpty() && favorites.isEmpty()) {
                     HomeUIState.Empty
                 } else {
                     HomeUIState.Data(favorites, lists, todos)

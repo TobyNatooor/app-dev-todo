@@ -126,7 +126,7 @@ fun HomeList(
 
             item {
                 Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                    if (lists.isEmpty() && newListState.value !is NewListState.Data) {
+                    if (lists.isEmpty() && newListState.value is NewListState.Empty && favorites.isEmpty()) {
                         Text(
                             text = "No checklists found",
                             fontSize = 20.sp,
