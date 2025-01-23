@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -87,7 +88,7 @@ fun ToDoOptions(
     var showDatePicker by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deadline by remember {
-        mutableStateOf(if (toDo.deadline == null) "" else formatDeadline(toDo.deadline))
+        mutableStateOf(if (toDo.deadline == null) "Select a date" else formatDeadline(toDo.deadline))
     }
 
     Box(
@@ -160,18 +161,22 @@ fun ToDoOptions(
                         Option(
                             optionTitle = "Deadline",
                             content = {
-                                TextFieldOption(
-                                    startText = deadline,
-                                    hintText = "Select a date",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onFocusChanged = { isFocused ->
-                                        if (isFocused) {
-                                            showDatePicker = true
-                                        }
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
+                                        showDatePicker = true
                                     },
-                                    onTextChanged = { }
-                                )
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = deadline,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
+                                    )
+                                }
                             }
                         )
                         if (showDatePicker) {
@@ -218,43 +223,46 @@ fun ToDoOptions(
                                 )
                             }
                         )
-                        val text = remember { mutableStateOf(toDo.location ?: "") }
+                        val text = remember { mutableStateOf(toDo.location ?: "Enter todo address") }
                         Option(
                             optionTitle = "Location",
                             content = {
-                                TextFieldOption(
-                                    text.value,
-                                    textState = text,
-                                    hintText = "Enter todo address",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onTextChanged = { text.value = it },
-                                    onFocusChanged = { isFocused ->
-                                        if (isFocused) {
-                                            getLocation { place ->
-                                                if (place != null) {
-                                                    val name = place.displayName
-                                                    val latitude = place.location?.latitude ?: 0.0
-                                                    val longitude = place.location?.longitude ?: 0.0
-                                                    markerPosition = LatLng(latitude, longitude)
-                                                    markerState.position = markerPosition
-                                                    cameraPositionState.position =
-                                                        fromLatLngZoom(markerPosition, 10f)
-                                                    viewmodel.updateToDo(
-                                                        toDo.copy(
-                                                            location = name,
-                                                            latitude = latitude,
-                                                            longitude = longitude,
-                                                        )
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
+                                        getLocation { place ->
+                                            if (place != null) {
+                                                val name = place.displayName
+                                                val latitude = place.location?.latitude ?: 0.0
+                                                val longitude = place.location?.longitude ?: 0.0
+                                                markerPosition = LatLng(latitude, longitude)
+                                                markerState.position = markerPosition
+                                                cameraPositionState.position =
+                                                    fromLatLngZoom(markerPosition, 10f)
+                                                viewmodel.updateToDo(
+                                                    toDo.copy(
+                                                        location = name,
+                                                        latitude = latitude,
+                                                        longitude = longitude,
                                                     )
-                                                    if (name != null) {
-                                                        text.value = name
-                                                    }
+                                                )
+                                                if (name != null) {
+                                                    text.value = name
                                                 }
                                             }
                                         }
-                                    }
+                                    },
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = text.value,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
                                 )
+                                }
                             }
                         )
                         if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
@@ -369,7 +377,6 @@ private fun TextFieldOption(
     textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
-
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val focusState = remember { mutableStateOf(false) }
