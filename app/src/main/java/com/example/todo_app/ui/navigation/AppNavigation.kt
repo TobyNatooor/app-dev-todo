@@ -2,7 +2,6 @@ package com.example.todo_app.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -11,8 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todo_app.model.SortOption
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.home.HomeViewModel
 import com.example.todo_app.ui.feature.home.HomeViewModelFactory
@@ -78,7 +75,6 @@ fun AppNavigation(
                         actions = listOf(
                             AppBarAction.Back,
                             AppBarAction.Sort,
-                            //AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },

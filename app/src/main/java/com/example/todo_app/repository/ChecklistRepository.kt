@@ -1,10 +1,6 @@
 package com.example.todo_app.repository
 
-import android.app.Application
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import com.example.todo_app.MyApplication
 import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.data.model.CheckListDao
 import com.example.todo_app.model.CheckList
 import kotlinx.coroutines.flow.Flow
 

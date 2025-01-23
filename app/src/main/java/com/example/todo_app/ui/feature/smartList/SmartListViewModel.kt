@@ -7,7 +7,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.todo_app.MyApplication
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.repository.UserRepository
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.BaseViewModel
@@ -15,9 +14,6 @@ import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.CheckListRepositoryImpl
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepoImpl
-import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

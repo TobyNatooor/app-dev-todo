@@ -3,8 +3,6 @@ package com.example.todo_app.ui.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Arrangement
-import androidx.room.Query
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.ui.feature.common.SearchButton
 import com.example.todo_app.ui.feature.common.SortButton

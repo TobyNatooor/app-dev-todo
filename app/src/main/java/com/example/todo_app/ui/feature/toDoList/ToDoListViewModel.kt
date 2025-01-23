@@ -1,18 +1,10 @@
 package com.example.todo_app.ui.feature.toDoList
 
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.todo_app.MyApplication
-import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.CheckListRepositoryImpl
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepoImpl
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,8 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 class ToDoListViewModel(

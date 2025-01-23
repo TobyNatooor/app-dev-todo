@@ -1,12 +1,9 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.repository.CheckListRepositoryImpl
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

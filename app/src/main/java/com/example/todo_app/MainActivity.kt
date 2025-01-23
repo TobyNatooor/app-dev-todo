@@ -10,11 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.example.todo_app.BuildConfig.MAPS_API_KEY
 import com.example.todo_app.data.mock.MockDataStore
-import com.example.todo_app.repository.CheckListRepositoryImpl
-import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.ui.navigation.AppNavigation
 import com.example.todo_app.ui.theme.TodoappTheme
 import com.google.android.libraries.places.api.Places

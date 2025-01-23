@@ -10,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import androidx.compose.foundation.background
@@ -19,8 +18,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 
 @Composable
 fun SmartListScreen(

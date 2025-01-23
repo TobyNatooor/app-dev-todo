@@ -2,9 +2,6 @@ package com.example.todo_app.ui.feature.toDoOptions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.repository.ChecklistRepository
-import com.example.todo_app.repository.ToDoRepository
 
 class ToDoOptionsViewModelFactory (
     private val toDoId: Int,

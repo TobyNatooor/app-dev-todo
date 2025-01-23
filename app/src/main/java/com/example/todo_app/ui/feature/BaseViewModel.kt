@@ -14,8 +14,6 @@ import java.time.LocalDateTime
 
 abstract class BaseViewModel: ViewModel() {
     protected val toDoRepo = ToDoRepoImpl.getInstance()
-    //protected val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
-    //val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
     fun updateToDoItem(updatedToDo: ToDo) {
         viewModelScope.launch {
