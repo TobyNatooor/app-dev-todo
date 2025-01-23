@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.common
 
+import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -15,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.AlertDialog
@@ -48,37 +48,64 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.State
-import com.example.todo_app.ui.feature.home.HomeViewModel
 import androidx.compose.ui.unit.Dp
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.ui.feature.toDoList.ToDoListViewModel
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import com.android.volley.toolbox.ImageLoader
+import com.example.todo_app.BuildConfig.GIPHY_API_KEY
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.GifRepositoryImpl
 import com.example.todo_app.ui.feature.BaseViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Path
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -117,7 +144,7 @@ fun NameList(
     modifier: Modifier = Modifier,
     selectAllText: Boolean = false,
     onTitleChange: (String) -> Unit,
-    onRenameComplete: () -> Unit
+    onRenameComplete: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -215,7 +242,7 @@ fun DeleteDialog(
     title: String,
     text: String,
     onDelete: (Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         containerColor = primary0,
@@ -257,7 +284,7 @@ fun DeleteDialog(
 fun FavoriteButton(
     isFavorite: State<Boolean>,
     onFavClicked: () -> Unit,
-){
+) {
 
     val icon = if (isFavorite.value) Icons.Rounded.Star
     else Icons.Rounded.StarBorder
@@ -276,7 +303,7 @@ fun ToDoCheckBox(
     toDo: ToDo,
     viewModel: BaseViewModel,
     size: Dp = 28.dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val color = when (toDo.status) {
         ToDoStatus.DONE -> green1
@@ -341,7 +368,7 @@ fun ChooseTodoStatus(
     viewModel: BaseViewModel,
     toDo: ToDo,
     showDialog: MutableState<Boolean>,
-    size: Dp
+    size: Dp,
 ) {
     AlertDialog(
         containerColor = primary2,
@@ -450,7 +477,7 @@ fun ChooseTodoStatus(
 @Composable
 fun SortButton(
     onSortClicked: ((SortOption) -> Unit)? = null,
-    sortOptions: List<SortOption>
+    sortOptions: List<SortOption>,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -517,26 +544,31 @@ fun SortButton(
 @Composable
 fun SearchButton(
     onSearchClicked: ((String) -> Unit)? = null,
-    getQuery: () -> String
+    getQuery: () -> String,
 ) {
     val showSearchField = remember { mutableStateOf(getQuery() != "") }
     val seachFieldFocus = remember { mutableStateOf(getQuery() != "") }
-    Row{
-        IconButton(onClick = { 
-            if(!showSearchField.value) {
+    Row(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+    ) {
+        IconButton(onClick = {
+            if (!showSearchField.value) {
                 seachFieldFocus.value = true
                 showSearchField.value = true
                 onSearchClicked?.invoke(" ")
             }
-         }) {
+        }) {
             Icon(
                 Icons.Filled.Search,
                 contentDescription = "Search",
                 tint = neutral1,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .size(32.dp)
             )
         }
-        if(showSearchField.value) {
+        if (showSearchField.value) {
             val focusRequester = remember { FocusRequester() }
             val focusManager = LocalFocusManager.current
             Column {
@@ -545,11 +577,14 @@ fun SearchButton(
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                 ) {
-                    var textField by remember { mutableStateOf(TextFieldValue( 
-                        text = getQuery().trimStart(),
-                        selection = TextRange(getQuery().trimStart().length)
+                    var textField by remember {
+                        mutableStateOf(
+                            TextFieldValue(
+                                text = getQuery().trimStart(),
+                                selection = TextRange(getQuery().trimStart().length)
+                            )
                         )
-                    ) }
+                    }
                     BasicTextField(
                         value = textField,
                         onValueChange = { newText ->
@@ -576,25 +611,27 @@ fun SearchButton(
                             .weight(1f)
                             .focusRequester(focusRequester)
                             .onFocusChanged { focusState ->
-                                if(showSearchField.value && !focusState.isFocused && seachFieldFocus.value) {
+                                if (showSearchField.value && !focusState.isFocused && seachFieldFocus.value) {
                                     focusRequester.requestFocus()
-                                }else if(focusState.isFocused && !seachFieldFocus.value) {
+                                } else if (focusState.isFocused && !seachFieldFocus.value) {
                                     seachFieldFocus.value = true
                                 }
                             }
                     )
-                    IconButton(onClick = {
-                        focusManager.clearFocus()
-                        showSearchField.value = false
-                        onSearchClicked?.invoke("")
-                    },
-                        modifier = Modifier
-                            .padding(bottom = 20.dp)
-                        ) {
+                    IconButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            showSearchField.value = false
+                            onSearchClicked?.invoke("")
+                        },
+                    ) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = "Close",
-                            tint = neutral1
+                            tint = neutral1,
+                            modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxHeight()
                         )
                     }
                 }
@@ -611,4 +648,107 @@ fun SearchButton(
             }
         }
     }
+}
+
+@Composable
+fun GiphyDialog() {
+    var gifUrl by remember { mutableStateOf<String?>(null) }
+    var gifStatus by remember { mutableStateOf<Int?>(null) }
+    var showDialog by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        GifRepositoryImpl().getRandomCongratulationGif { response ->
+            gifUrl = response.body()?.data?.images?.original?.url ?: ""
+            gifStatus = response.body()?.meta?.status
+        }
+    }
+
+    if (showDialog && gifStatus != null)
+        if (gifUrl != null && gifStatus == 200) {
+            Dialog(
+                onDismissRequest = {
+                    showDialog = false
+                },
+            ) {
+                Card(
+                    modifier = Modifier.aspectRatio(1f),
+                    colors = CardColors(primary4, primary4, primary4, primary4)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            "Congrats!\nYou've completed all your todos!",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                color = primary0,
+                                fontFamily = dosisFontFamily
+                            ),
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                        if (SDK_INT >= 28) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(gifUrl)
+                                    .decoderFactory(ImageDecoderDecoder.Factory())
+                                    .build(),
+                                contentDescription = "gif",
+                                alignment = Alignment.Center,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(color = neutral4)
+
+                            )
+                        } else {
+                            Text(
+                                "\uD83D\uDC4D",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.CenterStart)
+                                    .wrapContentHeight(),
+                                style = TextStyle(
+                                    fontSize = 160.sp,
+                                    color = neutral0,
+                                    fontFamily = dosisFontFamily
+                                ),
+                            )
+                        }
+                    }
+                    }
+                }
+            }
+        } else {
+            Dialog(
+                onDismissRequest = {
+                    showDialog = false
+                }
+            ) {
+                Card(
+                    modifier = Modifier.aspectRatio(1f)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Text(
+                            "Error",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = TextStyle(
+                                color = primary3,
+                                fontFamily = dosisFontFamily
+                            ),
+                        )
+                    }
+                }
+            }
+        }
 }

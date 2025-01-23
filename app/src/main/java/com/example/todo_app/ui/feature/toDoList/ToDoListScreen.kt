@@ -2,7 +2,6 @@ package com.example.todo_app.ui.feature.toDoList
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import com.example.todo_app.ui.feature.common.*
@@ -26,13 +23,7 @@ fun ToDoListScreen(
     viewmodel: ToDoListViewModel,
     listId: Int,
     appBar: @Composable () -> Unit,
-    db: AppDatabase,
-    navController: NavController
 ) {
-//    val viewmodel: ToDoListViewModel = viewModel(
-//        key = "ToDoListViewModel_$listId",
-//        factory = ToDoListViewModelFactory(listId, db, navController)
-//    )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current
 

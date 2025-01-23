@@ -1,5 +1,6 @@
 package com.example.todo_app.ui.feature.toDoOptions
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -59,7 +60,6 @@ import com.example.todo_app.ui.theme.*
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.navigation.NavHostController
 import com.example.todo_app.ui.feature.common.DeleteDialog
@@ -71,6 +71,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ToDoOptions(
     toDo: ToDo,
@@ -87,173 +88,148 @@ fun ToDoOptions(
     var showDatePicker by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deadline by remember {
-        mutableStateOf(if (toDo.deadline == null) "" else formatDeadline(toDo.deadline))
+        mutableStateOf(if (toDo.deadline == null) "Select a date" else formatDeadline(toDo.deadline))
     }
 
-    Column(
-        verticalArrangement = Arrangement.Top,
+    Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        // Title
-        Text(
-            color = neutral1,
-            fontFamily = dosisFontFamily,
-            text = "Edit Task",
-            textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 54.sp),
+        LazyColumn(
+            //verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp, bottom = 100.dp)
-        )
-        Box(
-            modifier = Modifier.padding(16.dp)
         ) {
-            appBar()
-        }
-        // Options
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = neutral2,
-            ),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .fillMaxSize()
-            ) {
-                // To-Do title
-                item {
-                    Option(
-                        optionTitle = "Task title",
-                        content = {
-                            TextFieldOption(
-                                startText = toDo.title.toString(),
-                                hintText = "Enter task title",
-                                height = 42.dp,
-                                contentAlign = Alignment.Center,
-                                onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
-                            )
-                        }
-                    )
-                }
-                // Move to list
-                item {
-                    Option(
-                        optionTitle = "Move to list",
-                        content = {
-                            DropdownMenuOption(
-                                hintText = checklists.find { it.id == toDo.listId }?.title
-                                    ?: "Select a list",
-                                height = 42.dp,
-                                contentAlign = Alignment.Center,
-                                sortOptions = checklists.filter { it.id != toDo.listId }
-                                    .map { DropdownOptionItem(it.id, it.title.toString()) },
-                                onOptionSelected = { selectedOption ->
-                                    val updatedToDo = toDo.copy(listId = selectedOption.id)
-                                    viewmodel.updateToDo(updatedToDo)
-                                }
-                            )
-                        }
-                    )
-                }
-                if (showDatePicker)
-                    item {
-                        DatePickerModal(
-                            onDateSelected = { selectedDate ->
-                                if (selectedDate != null) {
-                                    val date = Date(selectedDate)
-                                    val formattedDate = SimpleDateFormat(
-                                        "yyyy-MM-dd",
-                                        Locale.getDefault()
-                                    ).format(date)
-                                    val localDate = LocalDate.parse(formattedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                                    val localDateTime = LocalDateTime.of(localDate, LocalTime.of(0, 0, 0))
-                                    deadline = formatDeadline(localDateTime)
-                                    viewmodel.updateToDo(toDo.copy(deadline = localDateTime))
-                                }
-                                showDatePicker = false
-                            },
-                            onDismiss = { showDatePicker = false }
+            item {
+                Text(
+                    color = neutral1,
+                    fontFamily = dosisFontFamily,
+                    text = "Edit ${toDo.title}",
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(fontSize = 54.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, bottom = 100.dp)
+                )
+            }
+            stickyHeader {
+                appBar()
+            }
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = neutral2,
+                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        modifier = Modifier
+                            .padding(start = 32.dp, end = 32.dp, top = 20.dp)
+                            .fillMaxSize()
+                    ) {
+                        Option(
+                            optionTitle = "Todo title",
+                            content = {
+                                TextFieldOption(
+                                    startText = toDo.title.toString(),
+                                    hintText = "Enter todo title",
+                                    height = 42.dp,
+                                    contentAlign = Alignment.Center,
+                                    onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
+                                )
+                            }
                         )
-                    }
-                item {
-                    // Row(
-                    //     horizontalArrangement = Arrangement.spacedBy(32.dp)
-                    // ) {
-                        // Deadline
+                        Option(
+                            optionTitle = "Move to list",
+                            content = {
+                                DropdownMenuOption(
+                                    hintText = checklists.find { it.id == toDo.listId }?.title
+                                        ?: "Select a list",
+                                    height = 42.dp,
+                                    contentAlign = Alignment.Center,
+                                    sortOptions = checklists.filter { it.id != toDo.listId }
+                                        .map { DropdownOptionItem(it.id, it.title.toString()) },
+                                    onOptionSelected = { selectedOption ->
+                                        val updatedToDo = toDo.copy(listId = selectedOption.id)
+                                        viewmodel.updateToDo(updatedToDo)
+                                    }
+                                )
+                            }
+                        )
                         Option(
                             optionTitle = "Deadline",
                             content = {
-                                TextFieldOption(
-                                    startText = deadline,
-                                    hintText = "Select a date",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onFocusChanged = { isFocused ->
-                                        if (isFocused) {
-                                            showDatePicker = true
-                                        }
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
+                                        showDatePicker = true
                                     },
-                                    onTextChanged = { }
-                                )
-                            },
-                            modifier = Modifier.weight(0.5f)
-                        )
-                        // // Time estimate
-                        // Option(
-                        //     optionTitle = "Time estimate",
-                        //     content = {
-                        //         TextFieldOption(
-                        //             startText = "00:00",
-                        //             hintText = "00:00",
-                        //             height = 42.dp,
-                        //             contentAlign = Alignment.TopStart,
-                        //             onTextChanged = { }
-                        //         )
-                        //     },
-                        //     modifier = Modifier.weight(0.5f)
-                        // )
-                    // }
-                }
-                // To-Do description
-                item {
-                    Option(
-                        optionTitle = "Description",
-                        content = {
-                            TextFieldOption(
-                                startText = toDo.description,
-                                hintText = "Enter task description",
-                                height = 150.dp,
-                                contentAlign = Alignment.TopStart,
-                                onTextChanged = { description ->
-                                    viewmodel.updateToDo(
-                                        toDo.copy(
-                                            description = description
-                                        )
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = deadline,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
                                     )
                                 }
+                            }
+                        )
+                        if (showDatePicker) {
+                            DatePickerModal(
+                                onDateSelected = { selectedDate ->
+                                    if (selectedDate != null) {
+                                        val date = Date(selectedDate)
+                                        val formattedDate = SimpleDateFormat(
+                                            "yyyy-MM-dd",
+                                            Locale.getDefault()
+                                        ).format(date)
+                                        val localDate = LocalDate.parse(
+                                            formattedDate,
+                                            DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                        )
+                                        val localDateTime =
+                                            LocalDateTime.of(
+                                                localDate,
+                                                LocalTime.of(0, 0, 0)
+                                            )
+                                        deadline = formatDeadline(localDateTime)
+                                        viewmodel.updateToDo(toDo.copy(deadline = localDateTime))
+                                    }
+                                    showDatePicker = false
+                                },
+                                onDismiss = { showDatePicker = false }
                             )
                         }
-                    )
-                }
-                item {
-                    val text = remember { mutableStateOf(toDo.location ?: "") }
-                    Option(
-                        optionTitle = "Location",
-                        content = {
-                            TextFieldOption(
-                                text.value,
-                                textState = text,
-                                hintText = "Enter todo address",
-                                height = 42.dp,
-                                contentAlign = Alignment.TopStart,
-                                onTextChanged = { text.value = it },
-                                onFocusChanged = { isFocused ->
-                                    if (isFocused) {
+                        Option(
+                            optionTitle = "Description",
+                            content = {
+                                TextFieldOption(
+                                    startText = toDo.description,
+                                    hintText = "Enter todo description",
+                                    height = 150.dp,
+                                    contentAlign = Alignment.TopStart,
+                                    onTextChanged = { description ->
+                                        viewmodel.updateToDo(
+                                            toDo.copy(
+                                                description = description
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                        val text = remember { mutableStateOf(toDo.location ?: "Enter todo address") }
+                        Option(
+                            optionTitle = "Location",
+                            content = {
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
                                         getLocation { place ->
                                             if (place != null) {
                                                 val name = place.displayName
@@ -275,91 +251,98 @@ fun ToDoOptions(
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                            )
-                        }
-                    )
-                }
-                if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
-                    item {
-                        GoogleMap(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(12.dp)),
-                            cameraPositionState = cameraPositionState
-                        ) {
-                            // Add a marker
-                            markerPosition = LatLng(toDo.latitude, toDo.longitude)
-                            markerState.position = markerPosition
-                            cameraPositionState.position = fromLatLngZoom(markerPosition, 10f)
-                            Marker(
-                                title = toDo.location,
-                                state = markerState
-                            )
-                        }
-                    }
-                } else {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .background(
-                                    color = primary0,
+                                    },
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
                                     shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = text.value,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
                                 )
-                        ) {
-                            Text(
-                                "Specify location to view map",
-                                textAlign = TextAlign.Center,
-                                fontFamily = dosisFontFamily,
-                                color = primary4,
+                                }
+                            }
+                        )
+                        if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
+                            Box()
+                            {
+                                GoogleMap(
+                                    modifier = Modifier
+                                        //.weight(1f)
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    cameraPositionState = cameraPositionState
+                                ) {
+                                    // Add a marker
+                                    markerPosition = LatLng(toDo.latitude, toDo.longitude)
+                                    markerState.position = markerPosition
+                                    cameraPositionState.position =
+                                        fromLatLngZoom(markerPosition, 10f)
+                                    Marker(
+                                        title = toDo.location,
+                                        state = markerState
+                                    )
+                                }
+                            }
+                        } else {
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .align(Alignment.Center)
-                                    .wrapContentHeight()
-                            )
+                                    .aspectRatio(1f)
+                                    .background(
+                                        color = primary0,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                Text(
+                                    "Specify location to view map",
+                                    textAlign = TextAlign.Center,
+                                    fontFamily = dosisFontFamily,
+                                    color = primary4,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .align(Alignment.Center)
+                                        .wrapContentHeight()
+                                )
+                            }
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 20.dp)
+                        ) {
+                            if (showDeleteDialog)
+                                DeleteDialog(
+                                    id = toDo.id,
+                                    title = "Delete todo \"${toDo.title}\"?",
+                                    text = "Are you sure you want to delete this todo?",
+                                    onDelete = {
+                                        showDeleteDialog = true
+                                        viewmodel.deleteToDo(toDo)
+                                        navController.popBackStack()
+                                    },
+                                    onDismiss = {
+                                        showDeleteDialog = false
+                                    }
+                                )
+                            Button(
+                                onClick = {
+                                    showDeleteDialog = true
+                                },
+                                colors = ButtonColors(red2, red0, red0, red0)
+                            ) { Text("Delete") }
+                            Button(
+                                onClick = {
+                                    navController.popBackStack()
+                                },
+                                colors = ButtonColors(primary3, primary0, red0, red0)
+                            ) { Text("Done") }
                         }
                     }
                 }
-
-               item {
-                   Row(
-                       horizontalArrangement = Arrangement.SpaceAround,
-                       modifier = Modifier
-                           .fillMaxWidth()
-                           .padding(bottom = 20.dp)
-                   ) {
-                       if (showDeleteDialog)
-                           DeleteDialog(
-                               id = toDo.id,
-                               title = "Delete todo \"${toDo.title}\"?",
-                               text = "Are you sure you want to delete this list?",
-                               onDelete = {
-                                   showDeleteDialog = true
-                                   viewmodel.deleteToDo(toDo)
-                                   navController.popBackStack()
-                               },
-                               onDismiss = {
-                                   showDeleteDialog = false
-                               }
-                           )
-                       Button(
-                           onClick = {
-                               showDeleteDialog = true
-                           },
-                           colors = ButtonColors(red2, red0, red0, red0)
-                       ) { Text("Delete") }
-                       Button(
-                           onClick = {
-                               navController.popBackStack()
-                           },
-                           colors = ButtonColors(primary3, primary0, red0, red0)
-                       ) { Text("Done") }
-                   }
-               }
             }
         }
     }
@@ -394,7 +377,6 @@ private fun TextFieldOption(
     textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
-    
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val focusState = remember { mutableStateOf(false) }

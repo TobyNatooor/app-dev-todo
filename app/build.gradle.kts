@@ -113,4 +113,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.maps.compose)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 }

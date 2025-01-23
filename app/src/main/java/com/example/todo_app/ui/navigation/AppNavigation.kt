@@ -2,7 +2,6 @@ package com.example.todo_app.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import com.example.todo_app.data.AppDatabase
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -23,7 +22,6 @@ import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
-    db: AppDatabase,
     getLocation: ((Place?) -> Unit?) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -36,10 +34,9 @@ fun AppNavigation(
     ) {
         composable("home") {
             val viewModel: HomeViewModel = viewModel(
-                factory = HomeViewModelFactory(db, navController)
+                factory = HomeViewModelFactory(navController)
             )
             HomeScreen(
-                db = db,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(
@@ -67,7 +64,7 @@ fun AppNavigation(
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
             val viewmodel: ToDoListViewModel = viewModel(
                 key = "ToDoListViewModel_$listId",
-                factory = ToDoListViewModelFactory(listId, db, navController)
+                factory = ToDoListViewModelFactory(listId, navController)
             )
             ToDoListScreen(
                 title = title,
@@ -78,15 +75,12 @@ fun AppNavigation(
                         actions = listOf(
                             AppBarAction.Back,
                             AppBarAction.Sort,
-                            //AppBarAction.Search
                         ),
                         onSortClicked = { option -> viewmodel.sortToDos(option) },
                         onBackClicked = { navController.popBackStack() },
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT, SortOption.STATUS)
                         )
                 },
-                db = db,
-                navController = navController
             )
         }
         composable(
@@ -108,12 +102,10 @@ fun AppNavigation(
                     )
                 },
                 getLocation = getLocation,
-                db = db
             )
         }
         composable("smartList") {
             SmartListScreen(
-                db = db,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(

@@ -1,4 +1,4 @@
-package com.example.todo_app.data.Repository
+package com.example.todo_app.repository
 
 import androidx.datastore.core.DataStore;
 import androidx.datastore.preferences.core.Preferences
