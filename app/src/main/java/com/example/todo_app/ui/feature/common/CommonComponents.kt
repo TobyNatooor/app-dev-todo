@@ -54,6 +54,10 @@ import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -634,7 +638,6 @@ fun SearchButton(
     }
 }
 
-// https://dev.to/ethand91/android-jetpack-compose-api-tutorial-1kh5
 @Composable
 fun GiphyDialog() {
     var gifUrl by remember { mutableStateOf<String?>(null) }
@@ -659,7 +662,6 @@ fun GiphyDialog() {
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                // https://stackoverflow.com/questions/77268951/load-gif-from-url-in-jetpack-compose-using-coil
                 if (SDK_INT >= 28 && gifUrl != null) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
@@ -672,8 +674,28 @@ fun GiphyDialog() {
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clip(RoundedCornerShape(6.dp)),
-                        //contentScale = ContentScale.Crop
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .width(200.dp),
+                        Alignment.Center
+                    ) {
+                        Text(
+                            "\uD83D\uDC4D",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .align(Alignment.CenterStart)
+                                .wrapContentHeight(),
+                            style = TextStyle(
+                                fontSize = 160.sp,
+                                color = neutral0,
+                                fontFamily = dosisFontFamily
+                            ),
+                        )
+                    }
                 }
             }
         }
