@@ -88,7 +88,7 @@ fun ToDoOptions(
     var showDatePicker by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deadline by remember {
-        mutableStateOf(if (toDo.deadline == null) "" else formatDeadline(toDo.deadline))
+        mutableStateOf(if (toDo.deadline == null) "Select a date" else formatDeadline(toDo.deadline))
     }
 
     Box(
