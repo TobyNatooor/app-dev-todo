@@ -42,8 +42,8 @@ fun DropdownSettingsMenu(
         textAlign = TextAlign.Center,
         fontFamily = dosisFontFamily
     )
-    val favoriteText = if(isFavorite == true) "Unpin"
-    else "Pin"
+    val favoriteText = if(isFavorite == true) "Remove from Favorites"
+    else "Add to Favorites"
 
     Box(modifier = modifier) {
         IconButton(onClick = { expanded = !expanded }) {

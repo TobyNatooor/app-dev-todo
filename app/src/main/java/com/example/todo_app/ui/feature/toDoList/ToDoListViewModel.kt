@@ -31,7 +31,6 @@ class ToDoListViewModel(
         toDos,
         _sortingOption,
     ) { lists, sortOption ->
-        delay(100)
 
         when (sortOption) {
             SortOption.CREATED -> lists.sortedByDescending { it.created }
