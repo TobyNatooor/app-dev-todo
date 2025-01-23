@@ -26,13 +26,7 @@ fun ToDoListScreen(
     viewmodel: ToDoListViewModel,
     listId: Int,
     appBar: @Composable () -> Unit,
-    db: AppDatabase,
-    navController: NavController
 ) {
-//    val viewmodel: ToDoListViewModel = viewModel(
-//        key = "ToDoListViewModel_$listId",
-//        factory = ToDoListViewModelFactory(listId, db, navController)
-//    )
     val toDosUIState = viewmodel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current
 

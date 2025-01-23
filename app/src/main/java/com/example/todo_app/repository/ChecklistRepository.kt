@@ -6,21 +6,33 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChecklistRepository {
     fun getAll(): Flow<List<CheckList>>
-
+    fun getAllFavorites(): Flow<List<CheckList>>
+    fun getAllNonFavorite(): Flow<List<CheckList>>
+    fun findWithToDosTitle(query: String): Flow<List<CheckList>>
     suspend fun getWithId(id: Int): CheckList
-
     fun isFavorite(id: Int): Flow<Boolean>
-
     suspend fun updateFavorite(id: Int, isFavorite: Boolean)
-
     suspend fun updateTitle(id: Int, newTitle: String)
-
     suspend fun deleteWithId(id: Int)
+    suspend fun insert(list: CheckList)
+    suspend fun update(list: CheckList)
 }
 
 class CheckListRepositoryImpl(private val listDao: CheckListDao): ChecklistRepository {
     override fun getAll(): Flow<List<CheckList>> {
         return listDao.getAll()
+    }
+
+    override fun getAllFavorites(): Flow<List<CheckList>> {
+        return listDao.getAllFavorites()
+    }
+
+    override fun getAllNonFavorite(): Flow<List<CheckList>> {
+        return listDao.getAllNonFavorite()
+    }
+
+    override fun findWithToDosTitle(query: String): Flow<List<CheckList>> {
+        return listDao.findWithTodosTitle(query)
     }
 
     override suspend fun getWithId(id: Int): CheckList {
@@ -41,5 +53,13 @@ class CheckListRepositoryImpl(private val listDao: CheckListDao): ChecklistRepos
 
     override suspend fun deleteWithId(id: Int) {
         listDao.deleteWithId(id)
+    }
+
+    override suspend fun insert(list: CheckList) {
+        listDao.insert(list)
+    }
+
+    override suspend fun update(list: CheckList) {
+        listDao.update(list)
     }
 }

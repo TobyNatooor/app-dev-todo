@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +15,8 @@ import java.time.LocalDateTime
 
 class ToDoOptionsViewModel(
     private val toDoId: Int,
-    private val db: AppDatabase,
-    toDoRepo: ToDoRepository
+    toDoRepo: ToDoRepository,
+    private val listRepo: ChecklistRepository,
 ) : BaseViewModel(toDoRepo) {
 
     private val _toDoState = MutableStateFlow<ToDoUIState>(ToDoUIState.Loading)
@@ -27,11 +28,11 @@ class ToDoOptionsViewModel(
 
     private fun loadToDo() {
         viewModelScope.launch {
-            val toDoFlow: Flow<ToDo> = db.toDoDao().getWithId(toDoId)
+            val toDoFlow: Flow<ToDo> = toDoRepo.getWithId(toDoId)
             toDoFlow.collect { toDo ->
-                val toDos: Flow<List<CheckList>> = db.checkListDao().getAllSortedByName()
+                val toDos: Flow<List<CheckList>> = listRepo.getAll()
                 toDos.collect { checklists ->
-                    _toDoState.value = ToDoUIState.Data(toDo, checklists)
+                    _toDoState.value = ToDoUIState.Data(toDo, checklists.sortedBy { it.title })
                 }
             }
         }
@@ -44,7 +45,7 @@ class ToDoOptionsViewModel(
             } else {
                 updatedToDo
             }
-            db.toDoDao().update(toDoToUpdate.copy(lastModified = LocalDateTime.now()))
+            toDoRepo.update(toDoToUpdate.copy(lastModified = LocalDateTime.now()))
             loadToDo()
         }
     }

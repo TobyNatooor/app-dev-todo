@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     TodoappTheme {
-                        AppNavigation(db, toDoRepo, listRepo, ::getLocation)
+                        AppNavigation(toDoRepo, listRepo, ::getLocation)
                     }
                 }
             }

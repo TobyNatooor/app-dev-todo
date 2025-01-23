@@ -25,7 +25,6 @@ import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
-    db: AppDatabase,
     toDoRepository: ToDoRepository,
     checklistRepository: ChecklistRepository,
     getLocation: ((Place?) -> Unit?) -> Unit,
@@ -40,11 +39,12 @@ fun AppNavigation(
     ) {
         composable("home") {
             val viewModel: HomeViewModel = viewModel(
-                factory = HomeViewModelFactory(db, navController)
+                factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
             )
             HomeScreen(
-                db = db,
                 navController = navController,
+                checklistRepository = checklistRepository,
+                toDoRepository = toDoRepository,
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(
@@ -89,8 +89,6 @@ fun AppNavigation(
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT, SortOption.STATUS)
                         )
                 },
-                db = db,
-                navController = navController
             )
         }
         composable(
@@ -103,6 +101,8 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
+                toDoRepository = toDoRepository,
+                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(
@@ -112,14 +112,12 @@ fun AppNavigation(
                     )
                 },
                 getLocation = getLocation,
-                toDoRepository = toDoRepository,
-                db = db
             )
         }
         composable("smartList") {
             SmartListScreen(
-                db = db,
                 toDoRepository = toDoRepository,
+                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(

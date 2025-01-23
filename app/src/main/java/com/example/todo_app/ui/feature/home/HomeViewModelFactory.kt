@@ -4,15 +4,18 @@ import com.example.todo_app.data.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 
 class HomeViewModelFactory(
-    private val db: AppDatabase,
+    private val checklistRepository: ChecklistRepository,
+    private val toDoRepository: ToDoRepository,
     private val nav: NavController
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(db, nav) as T
+            return HomeViewModel(checklistRepository, toDoRepository, nav) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
