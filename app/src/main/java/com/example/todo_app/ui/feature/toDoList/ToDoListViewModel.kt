@@ -7,6 +7,8 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +22,12 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(
     private val listId: Int,
-    db: AppDatabase,
+    toDoRepo: ToDoRepository,
+    private val listRepo: ChecklistRepository,
     private val nav: NavController
-) : BaseViewModel(db) {
+) : BaseViewModel(toDoRepo) {
 
-    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
+    private val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
 
     private val _sortingOption = MutableStateFlow(SortOption.STATUS)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
@@ -69,7 +72,7 @@ class ToDoListViewModel(
             listId = listId,
         )
         viewModelScope.launch {
-            db.toDoDao().insert(newToDo)
+            toDoRepo.insert(newToDo)
             _addingNewToDo.value = false
         }
     }
@@ -96,19 +99,19 @@ class ToDoListViewModel(
 
     fun updateList(listId: Int, newTitle: String) {
         viewModelScope.launch {
-            db.checkListDao().updateTitle(listId, newTitle)
+            listRepo.updateTitle(listId, newTitle)
         }
     }
 
     fun favoriteClicked(){
         this.viewModelScope.launch {
-            db.checkListDao().updateFavorite(listId, !isFavorite.value)
+            listRepo.updateFavorite(listId, !isFavorite.value)
         }
     }
 
     private fun observeFavoriteStatus() {
         viewModelScope.launch {
-            db.checkListDao().isFavorite(listId)
+            listRepo.isFavorite(listId)
                 .collect { favorite ->
                     _isFavorite.value = favorite
                 }
@@ -117,7 +120,7 @@ class ToDoListViewModel(
 
     fun deleteList(listId: Int) {
         viewModelScope.launch {
-            db.checkListDao().deleteWithId(listId)
+            listRepo.deleteWithId(listId)
             nav.navigate("home")
         }
     }

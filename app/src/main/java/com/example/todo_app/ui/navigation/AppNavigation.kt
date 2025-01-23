@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todo_app.model.SortOption
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.home.HomeScreen
 import com.example.todo_app.ui.feature.home.HomeViewModel
 import com.example.todo_app.ui.feature.home.HomeViewModelFactory
@@ -23,7 +25,8 @@ import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
-    db: AppDatabase,
+    toDoRepository: ToDoRepository,
+    checklistRepository: ChecklistRepository,
     getLocation: ((Place?) -> Unit?) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -36,11 +39,12 @@ fun AppNavigation(
     ) {
         composable("home") {
             val viewModel: HomeViewModel = viewModel(
-                factory = HomeViewModelFactory(db, navController)
+                factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
             )
             HomeScreen(
-                db = db,
                 navController = navController,
+                checklistRepository = checklistRepository,
+                toDoRepository = toDoRepository,
                 appBar = @Composable {
                     AppBar(
                         actions = listOf(
@@ -67,7 +71,7 @@ fun AppNavigation(
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
             val viewmodel: ToDoListViewModel = viewModel(
                 key = "ToDoListViewModel_$listId",
-                factory = ToDoListViewModelFactory(listId, db, navController)
+                factory = ToDoListViewModelFactory(listId, toDoRepository, checklistRepository, navController)
             )
             ToDoListScreen(
                 title = title,
@@ -85,8 +89,6 @@ fun AppNavigation(
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT, SortOption.STATUS)
                         )
                 },
-                db = db,
-                navController = navController
             )
         }
         composable(
@@ -99,6 +101,8 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
+                toDoRepository = toDoRepository,
+                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(
@@ -108,12 +112,12 @@ fun AppNavigation(
                     )
                 },
                 getLocation = getLocation,
-                db = db
             )
         }
         composable("smartList") {
             SmartListScreen(
-                db = db,
+                toDoRepository = toDoRepository,
+                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(

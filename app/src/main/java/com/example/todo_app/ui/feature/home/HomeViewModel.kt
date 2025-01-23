@@ -8,6 +8,8 @@ import androidx.navigation.NavController
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,18 +21,18 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class HomeViewModel(private val db: AppDatabase, private val nav: NavController) : ViewModel() {
+class HomeViewModel(private val listRepo: ChecklistRepository, private val toDoRepo: ToDoRepository, private val nav: NavController) : ViewModel() {
     private val _sortingOption = MutableStateFlow(SortOption.NAME)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
 
-    private val favoriteLists: Flow<List<CheckList>> = db.checkListDao().getAllFavorites()
+    private val favoriteLists: Flow<List<CheckList>> = listRepo.getAllFavorites()
 
     private val _filterQuery = MutableStateFlow("")
     val filteringQuery = _filterQuery.asStateFlow()
 
     private val filteredLists: Flow<List<CheckList>> = filteringQuery.flatMapLatest { query ->
-        if (query.isBlank()) db.checkListDao().getAllNonFavorite()
-        else db.checkListDao().findWithTodosTitle(query)
+        if (query.isBlank()) listRepo.getAllNonFavorite()
+        else listRepo.findWithToDosTitle(query)
     }
 
     private val sortedLists: Flow<List<CheckList>> = combine(
@@ -48,7 +50,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
     }
     private val todos: Flow<List<ToDo>> =  filteringQuery.flatMapLatest { query ->
         if (query.isBlank()) flowOf(ArrayList())
-        else db.toDoDao().findWithTitle(query)
+        else toDoRepo.findWithTitle(query)
     }
 
     private val _mutableHomeState = MutableStateFlow<HomeUIState>(HomeUIState.Loading)
@@ -103,7 +105,7 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
             _mutableNewList.value = NewListState.Empty
 
             if (currentNewListState is NewListState.Data) {
-                db.checkListDao().insert(currentNewListState.list.copy(title = title))
+                listRepo.insert(currentNewListState.list.copy(title = title))
             }
         }
     }
@@ -114,19 +116,19 @@ class HomeViewModel(private val db: AppDatabase, private val nav: NavController)
 
     fun updateList(list: CheckList) {
         this.viewModelScope.launch {
-            db.checkListDao().update(list)
+            listRepo.update(list)
         }
     }
 
     fun deleteList(listId: Int) {
         this.viewModelScope.launch {
-            db.checkListDao().deleteWithId(listId)
+            listRepo.deleteWithId(listId)
         }
     }
 
     fun clickList(list: CheckList) {
         this.viewModelScope.launch {
-            db.checkListDao().update(list.copy(lastModified = LocalDateTime.now()))
+            listRepo.update(list.copy(lastModified = LocalDateTime.now()))
         }
         nav.navigate("todoList/${list.title}/${list.id}")
     }

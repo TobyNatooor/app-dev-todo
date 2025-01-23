@@ -18,19 +18,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.common.*
 import com.example.todo_app.ui.feature.common.LoadingScreen
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    db: AppDatabase,
+    checklistRepository: ChecklistRepository,
+    toDoRepository: ToDoRepository,
     navController: NavController,
     appBar: @Composable () -> Unit
 ) {
     val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(db, navController)
+        factory = HomeViewModelFactory(checklistRepository, toDoRepository, navController)
     )
     val homeUIState = viewModel.homeState.collectAsState().value
     val focusManager = LocalFocusManager.current

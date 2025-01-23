@@ -14,22 +14,24 @@ import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import androidx.compose.foundation.background
-import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 
 @Composable
 fun SmartListScreen(
     modifier: Modifier = Modifier,
-    db: AppDatabase,
+    toDoRepository: ToDoRepository,
+    checklistRepository: ChecklistRepository,
     navController: NavController,
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModel.createFactory(db, navController)
+        factory = SmartListViewModel.createFactory(toDoRepository, checklistRepository, navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current

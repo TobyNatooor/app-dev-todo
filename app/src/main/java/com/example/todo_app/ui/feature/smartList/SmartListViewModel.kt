@@ -8,12 +8,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.todo_app.MyApplication
 import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.data.Repository.UserRepository
+import com.example.todo_app.repository.UserRepository
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,17 +26,18 @@ import java.time.LocalDateTime
 import java.time.Duration
 
 class SmartListViewModel(
-    db: AppDatabase,
+    toDoRepo: ToDoRepository,
+    listRepo: ChecklistRepository,
     private val userRepository: UserRepository,
     private val nav: NavController
-) : BaseViewModel(db) {
+) : BaseViewModel(toDoRepo) {
 
     companion object {
-        fun createFactory(db: AppDatabase, navController: NavController): ViewModelProvider.Factory {
+        fun createFactory(toDoRepo: ToDoRepository, listRepo: ChecklistRepository, navController: NavController): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
                     val application = (this[APPLICATION_KEY] as MyApplication)
-                    SmartListViewModel(db, application.userRepository, navController)
+                    SmartListViewModel(toDoRepo, listRepo, application.userRepository, navController)
                 }
             }
         }
@@ -42,7 +45,7 @@ class SmartListViewModel(
 
     val smartSettings = userRepository.smartSettings
 
-    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAll()
+    private val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
 
     private val filteredList = combine(
         smartSettings,
@@ -67,7 +70,7 @@ class SmartListViewModel(
             }
         }
         viewModelScope.launch {
-            db.checkListDao().getAll().collect { list ->
+            listRepo.getAll().collect { list ->
                 _checkListsState.value = list
             }
         }
