@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.todo_app.MyApplication
 import com.example.todo_app.data.AppDatabase
-import com.example.todo_app.data.Repository.UserRepository
+import com.example.todo_app.repository.UserRepository
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo

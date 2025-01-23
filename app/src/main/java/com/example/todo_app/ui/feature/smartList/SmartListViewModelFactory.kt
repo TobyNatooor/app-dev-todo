@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.todo_app.data.AppDatabase
 import androidx.navigation.NavController
-import com.example.todo_app.data.Repository.UserRepository
+import com.example.todo_app.repository.UserRepository
 
 class SmartListViewModelFactory(
     private val db: AppDatabase,
