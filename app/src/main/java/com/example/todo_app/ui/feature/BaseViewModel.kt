@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 abstract class BaseViewModel: ViewModel() {
-    protected val toDoRepo = ToDoRepoImpl.getInstance()
+    protected val toDoRepo: ToDoRepository = ToDoRepoImpl.getInstance()
 
     fun updateToDoItem(updatedToDo: ToDo) {
         viewModelScope.launch {

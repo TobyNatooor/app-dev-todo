@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.repository.CheckListRepositoryImpl
+import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,7 @@ class ToDoListViewModel(
     private val listId: Int,
     private val nav: NavController
 ) : BaseViewModel() {
-    private val listRepo = CheckListRepositoryImpl.getInstance()
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
     private val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
 

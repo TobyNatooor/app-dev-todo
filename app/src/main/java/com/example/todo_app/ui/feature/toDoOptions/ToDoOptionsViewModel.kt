@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.repository.CheckListRepositoryImpl
+import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ class ToDoOptionsViewModel(
     private val toDoId: Int,
 ) : BaseViewModel() {
 
-    private val listRepo = CheckListRepositoryImpl.getInstance()
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
     private val _toDoState = MutableStateFlow<ToDoUIState>(ToDoUIState.Loading)
     val toDoState: StateFlow<ToDoUIState> = _toDoState

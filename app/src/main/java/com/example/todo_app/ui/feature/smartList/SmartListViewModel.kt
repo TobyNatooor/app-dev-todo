@@ -14,6 +14,7 @@ import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.CheckListRepositoryImpl
+import com.example.todo_app.repository.ChecklistRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,7 @@ class SmartListViewModel(
 
     val smartSettings = userRepository.smartSettings
 
-    private val listRepo = CheckListRepositoryImpl.getInstance()
+    private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
     private val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
 
