@@ -61,11 +61,10 @@ class MainActivity : ComponentActivity() {
         // applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
+
         AppDatabase.initializeDatabase(applicationContext)
         val db = AppDatabase.getDatabase()
 
-        val toDoRepo = ToDoRepoImpl.getInstance()
-        val listRepo = CheckListRepositoryImpl.getInstance()
         Log.d("TESTING", "123")
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
@@ -77,7 +76,7 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     TodoappTheme {
-                        AppNavigation(toDoRepo, listRepo, ::getLocation)
+                        AppNavigation(::getLocation)
                     }
                 }
             }

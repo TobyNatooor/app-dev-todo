@@ -25,8 +25,6 @@ import com.google.android.libraries.places.api.model.Place
 
 @Composable
 fun AppNavigation(
-    toDoRepository: ToDoRepository,
-    checklistRepository: ChecklistRepository,
     getLocation: ((Place?) -> Unit?) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -112,8 +110,6 @@ fun AppNavigation(
         }
         composable("smartList") {
             SmartListScreen(
-                toDoRepository = toDoRepository,
-                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(

@@ -25,13 +25,11 @@ import com.example.todo_app.repository.ToDoRepository
 @Composable
 fun SmartListScreen(
     modifier: Modifier = Modifier,
-    toDoRepository: ToDoRepository,
-    checklistRepository: ChecklistRepository,
     navController: NavController,
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModel.createFactory(toDoRepository, checklistRepository, navController)
+        factory = SmartListViewModel.createFactory(navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current

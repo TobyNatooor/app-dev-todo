@@ -14,7 +14,9 @@ import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,24 +28,24 @@ import java.time.LocalDateTime
 import java.time.Duration
 
 class SmartListViewModel(
-    toDoRepo: ToDoRepository,
-    listRepo: ChecklistRepository,
     private val userRepository: UserRepository,
     private val nav: NavController
 ) : BaseViewModel() {
 
     companion object {
-        fun createFactory(toDoRepo: ToDoRepository, listRepo: ChecklistRepository, navController: NavController): ViewModelProvider.Factory {
+        fun createFactory(navController: NavController): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
                     val application = (this[APPLICATION_KEY] as MyApplication)
-                    SmartListViewModel(toDoRepo, listRepo, application.userRepository, navController)
+                    SmartListViewModel(application.userRepository, navController)
                 }
             }
         }
     }
 
     val smartSettings = userRepository.smartSettings
+
+    private val listRepo = CheckListRepositoryImpl.getInstance()
 
     private val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
 
