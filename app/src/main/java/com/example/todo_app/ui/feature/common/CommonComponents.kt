@@ -82,6 +82,7 @@ import com.android.volley.toolbox.ImageLoader
 import com.example.todo_app.BuildConfig.GIPHY_API_KEY
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.GifRepositoryImpl
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -634,71 +635,13 @@ fun SearchButton(
 }
 
 // https://dev.to/ethand91/android-jetpack-compose-api-tutorial-1kh5
-public interface GifApi {
-    @Headers(
-        "Accept: application/json"
-    )
-
-    @GET("random?api_key=$GIPHY_API_KEY&tag=\"congrats good job party\"")
-    abstract fun getRandomCongratulationGif(): Call<GiphyObject?>?
-}
-
-data class GiphyObject(
-    val data: GiphyData,
-)
-
-data class GiphyData(
-    val type: String,
-    val id: String,
-    val url: String,
-    val images: Original,
-)
-
-data class Original(
-    val original: ImageObject,
-)
-
-data class ImageObject(
-    val height: Int,
-    val width: Int,
-    val url: String,
-)
-
-fun getGif(callback: (String?) -> Unit) {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.giphy.com/v1/gifs/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(GifApi::class.java)
-
-    val call: Call<GiphyObject?>? = api.getRandomCongratulationGif()
-
-
-    call!!.enqueue(object : Callback<GiphyObject?> {
-        override fun onResponse(call: Call<GiphyObject?>, response: Response<GiphyObject?>) {
-            if (response.isSuccessful) {
-                callback(response.body()?.data?.images?.original?.url ?: "")
-            }
-        }
-
-        override fun onFailure(call: Call<GiphyObject?>, t: Throwable) {
-            Log.e("GIF_API", "Error: " + t.message.toString())
-        }
-    })
-}
-
 @Composable
 fun GiphyDialog() {
     var gifUrl by remember { mutableStateOf<String?>(null) }
     var showDialog by remember { mutableStateOf(true) }
 
-    // Fetch the GIF URL
     LaunchedEffect(Unit) {
-        getGif { url ->
-            gifUrl = url // Update the state with the GIF URL
-            Log.d("ABCDEF", "$gifUrl")
-        }
+        GifRepositoryImpl().getRandomCongratulationGif { url -> gifUrl = url }
     }
 
     if (showDialog)
