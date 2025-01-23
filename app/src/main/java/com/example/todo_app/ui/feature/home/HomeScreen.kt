@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import com.example.todo_app.data.AppDatabase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,13 +25,12 @@ import com.example.todo_app.ui.feature.common.LoadingScreen
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    db: AppDatabase,
     navController: NavController,
     appBar: @Composable () -> Unit
 ) {
     val columnState = rememberLazyListState()
     val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(db, navController)
+        factory = HomeViewModelFactory(navController)
     )
     val homeUIState = viewModel.homeState.collectAsState().value
     val focusManager = LocalFocusManager.current

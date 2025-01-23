@@ -1,6 +1,8 @@
 package com.example.todo_app.data
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.todo_app.data.model.CheckListDao
@@ -18,5 +20,27 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
     abstract fun checkListDao(): CheckListDao
     abstract fun folderDao(): FolderDao
-    //abstract fun smartSettingsDao(): SmartSettingsDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        fun initializeDatabase(context: Context) {
+            if (INSTANCE == null) {
+                synchronized(this) {
+                    INSTANCE = Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java,
+                        "app_database"
+                    )
+                        //.fallbackToDestructiveMigration() // Optional, handle migrations as needed
+                        .build()
+                }
+            }
+        }
+
+        fun getDatabase(): AppDatabase {
+            return INSTANCE ?: throw IllegalStateException("Database has not been initialized. Call initializeDatabase(context) first.")
+        }
+    }
 }

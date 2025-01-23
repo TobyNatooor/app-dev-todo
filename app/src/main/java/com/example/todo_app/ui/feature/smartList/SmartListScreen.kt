@@ -10,11 +10,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.ui.feature.common.LoadingScreen
 import com.example.todo_app.ui.theme.TodoappTheme
 import androidx.compose.foundation.background
-import com.example.todo_app.data.Repository.UserRepository
 import com.example.todo_app.ui.theme.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,12 +22,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 @Composable
 fun SmartListScreen(
     modifier: Modifier = Modifier,
-    db: AppDatabase,
     navController: NavController,
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModel.createFactory(db, navController)
+        factory = SmartListViewModel.createFactory(navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current

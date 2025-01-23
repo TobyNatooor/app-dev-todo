@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,7 +58,6 @@ import com.example.todo_app.ui.theme.*
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.libraries.places.api.model.Place
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.navigation.NavHostController
 import com.example.todo_app.ui.feature.common.DeleteDialog
