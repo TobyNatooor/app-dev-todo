@@ -227,39 +227,42 @@ fun ToDoOptions(
                         Option(
                             optionTitle = "Location",
                             content = {
-                                TextFieldOption(
-                                    text.value,
-                                    textState = text,
-                                    hintText = "Enter todo address",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onTextChanged = { text.value = it },
-                                    onFocusChanged = { isFocused ->
-                                        if (isFocused) {
-                                            getLocation { place ->
-                                                if (place != null) {
-                                                    val name = place.displayName
-                                                    val latitude = place.location?.latitude ?: 0.0
-                                                    val longitude = place.location?.longitude ?: 0.0
-                                                    markerPosition = LatLng(latitude, longitude)
-                                                    markerState.position = markerPosition
-                                                    cameraPositionState.position =
-                                                        fromLatLngZoom(markerPosition, 10f)
-                                                    viewmodel.updateToDo(
-                                                        toDo.copy(
-                                                            location = name,
-                                                            latitude = latitude,
-                                                            longitude = longitude,
-                                                        )
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
+                                        getLocation { place ->
+                                            if (place != null) {
+                                                val name = place.displayName
+                                                val latitude = place.location?.latitude ?: 0.0
+                                                val longitude = place.location?.longitude ?: 0.0
+                                                markerPosition = LatLng(latitude, longitude)
+                                                markerState.position = markerPosition
+                                                cameraPositionState.position =
+                                                    fromLatLngZoom(markerPosition, 10f)
+                                                viewmodel.updateToDo(
+                                                    toDo.copy(
+                                                        location = name,
+                                                        latitude = latitude,
+                                                        longitude = longitude,
                                                     )
-                                                    if (name != null) {
-                                                        text.value = name
-                                                    }
+                                                )
+                                                if (name != null) {
+                                                    text.value = name
                                                 }
                                             }
                                         }
-                                    }
+                                    },
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = text.value,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
                                 )
+                                }
                             }
                         )
                         if (toDo.location != null && toDo.latitude != null && toDo.longitude != null) {
