@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -160,18 +161,22 @@ fun ToDoOptions(
                         Option(
                             optionTitle = "Deadline",
                             content = {
-                                TextFieldOption(
-                                    startText = deadline,
-                                    hintText = "Select a date",
-                                    height = 42.dp,
-                                    contentAlign = Alignment.TopStart,
-                                    onFocusChanged = { isFocused ->
-                                        if (isFocused) {
-                                            showDatePicker = true
-                                        }
+                                Button(
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    onClick = {
+                                        showDatePicker = true
                                     },
-                                    onTextChanged = { }
-                                )
+                                    colors = ButtonColors(primary0, primary0, primary0, primary0),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) { Text(
+                                    text = deadline,
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontFamily = dosisFontFamily,
+                                        color = primary4,
+                                    )
+                                    )
+                                }
                             }
                         )
                         if (showDatePicker) {
@@ -369,7 +374,6 @@ private fun TextFieldOption(
     textState: MutableState<String> = remember { mutableStateOf(startText) },
     contentAlign: Alignment
 ) {
-
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val focusState = remember { mutableStateOf(false) }
