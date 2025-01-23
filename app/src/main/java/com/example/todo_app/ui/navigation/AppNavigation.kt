@@ -99,8 +99,6 @@ fun AppNavigation(
 
             ToDoOptionsScreen(
                 toDoId = toDoId,
-                toDoRepository = toDoRepository,
-                checklistRepository = checklistRepository,
                 navController = navController,
                 appBar = @Composable {
                     AppBar(

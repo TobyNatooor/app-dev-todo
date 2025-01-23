@@ -32,13 +32,11 @@ fun ToDoOptionsScreen(
     toDoId: Int,
     appBar: @Composable () -> Unit,
     getLocation: ((Place?) -> Unit?) -> Unit,
-    checklistRepository: ChecklistRepository,
-    toDoRepository: ToDoRepository,
     navController: NavHostController
 ) {
     val viewModel: ToDoOptionsViewModel = viewModel(
         key = "ToDoOptionsViewModel_$toDoId",
-        factory = ToDoOptionsViewModelFactory(toDoId, toDoRepository, checklistRepository)
+        factory = ToDoOptionsViewModelFactory(toDoId)
     )
     val toDoUIState by viewModel.toDoState.collectAsState()
     val focusManager = LocalFocusManager.current

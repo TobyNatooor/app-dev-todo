@@ -8,13 +8,11 @@ import com.example.todo_app.repository.ToDoRepository
 
 class ToDoOptionsViewModelFactory (
     private val toDoId: Int,
-    private val toDoRepository: ToDoRepository,
-    private val checklistRepository: ChecklistRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoOptionsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ToDoOptionsViewModel(toDoId, toDoRepository, checklistRepository) as T
+            return ToDoOptionsViewModel(toDoId) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
