@@ -67,6 +67,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -82,6 +83,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
@@ -671,7 +673,7 @@ data class ImageObject(
     val url: String,
 )
 
-suspend fun getGif(callback: (String?) -> Unit) {
+fun getGif(callback: (String?) -> Unit) {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://api.giphy.com/v1/gifs/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -698,6 +700,7 @@ suspend fun getGif(callback: (String?) -> Unit) {
 @Composable
 fun GiphyDialog() {
     var gifUrl by remember { mutableStateOf<String?>(null) }
+    var showDialog by remember { mutableStateOf(true) }
 
     // Fetch the GIF URL
     LaunchedEffect(Unit) {
@@ -707,22 +710,37 @@ fun GiphyDialog() {
         }
     }
 
-    // https://stackoverflow.com/questions/77268951/load-gif-from-url-in-jetpack-compose-using-coil
-    if (SDK_INT >= 28 && gifUrl != null) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(gifUrl)
-                .decoderFactory(ImageDecoderDecoder.Factory())
-                .build(),
-            contentDescription = null,
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp)),
-            contentScale = ContentScale.Crop
-        )
-        Log.d("ABCDEF", "found")
-    } else {
-        Text("not found")
-        Log.d("ABCDEF", "not found")
-    }
+    if (showDialog)
+        Dialog(
+            onDismissRequest = {
+                showDialog = false
+            }
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Text(
+                    "Congrats!\nYou've completed all your todos!",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                // https://stackoverflow.com/questions/77268951/load-gif-from-url-in-jetpack-compose-using-coil
+                if (SDK_INT >= 28 && gifUrl != null) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(gifUrl)
+                            .decoderFactory(ImageDecoderDecoder.Factory())
+                            .build(),
+                        contentDescription = "gif",
+                        alignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(6.dp)),
+                        //contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
 }
-
