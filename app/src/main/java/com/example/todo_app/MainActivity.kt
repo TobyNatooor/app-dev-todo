@@ -61,13 +61,11 @@ class MainActivity : ComponentActivity() {
         // applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "ToDoDB"
-        ).build()
+        AppDatabase.initializeDatabase(applicationContext)
+        val db = AppDatabase.getDatabase()
 
         val toDoRepo = ToDoRepoImpl(db.toDoDao())
-        val listRepo = CheckListRepositoryImpl(db.checkListDao())
+        val listRepo = CheckListRepositoryImpl.getInstance()
         Log.d("TESTING", "123")
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
