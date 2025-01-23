@@ -9,6 +9,7 @@ import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -20,6 +21,8 @@ class ToDoOptionsViewModel(
 
     private val _toDoState = MutableStateFlow<ToDoUIState>(ToDoUIState.Loading)
     val toDoState: StateFlow<ToDoUIState> = _toDoState
+
+    override val toDos: Flow<List<ToDo>> = flowOf()
 
     init {
         loadToDo()

@@ -44,7 +44,7 @@ class SmartListViewModel(
 
     private val listRepo: ChecklistRepository = CheckListRepositoryImpl.getInstance()
 
-    private val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
+    override val toDos: Flow<List<ToDo>> = toDoRepo.getAll()
 
     private val filteredList = combine(
         smartSettings,

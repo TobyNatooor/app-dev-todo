@@ -74,6 +74,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import androidx.compose.foundation.text.KeyboardActions
+import com.example.todo_app.ui.feature.common.GiphyDialog
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -86,6 +87,7 @@ fun SmartList(
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
     val settings = viewmodel.smartSettings.collectAsState()
+    val shouldShowCongratsGif = viewmodel.shouldShowCongratsGifState.collectAsState()
 
     SettingsDialog(
         settings = settings,
@@ -99,6 +101,9 @@ fun SmartList(
         modifier = modifier
             .fillMaxSize()
     ) {
+        if (shouldShowCongratsGif.value)
+            GiphyDialog()
+
         LazyColumn(
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(14.dp),
