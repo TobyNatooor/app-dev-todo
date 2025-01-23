@@ -64,6 +64,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -670,21 +671,27 @@ fun GiphyDialog() {
                 },
             ) {
                 Card(
-                    modifier = Modifier.aspectRatio(1f)
+                    modifier = Modifier.aspectRatio(1f),
+                    colors = CardColors(primary4, primary4, primary4, primary4)
                 ) {
-                    Text(
-                        "Congrats!\nYou've completed all your todos!",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            color = neutral0,
-                            fontFamily = dosisFontFamily
-                        ),
-                    )
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.padding(16.dp)
                     ) {
+                        Text(
+                            "Congrats!\nYou've completed all your todos!",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                color = primary0,
+                                fontFamily = dosisFontFamily
+                            ),
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
                         if (SDK_INT >= 28) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
@@ -694,9 +701,11 @@ fun GiphyDialog() {
                                 contentDescription = "gif",
                                 alignment = Alignment.Center,
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp)
-                                    .clip(RoundedCornerShape(6.dp))
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(color = neutral4)
+
                             )
                         } else {
                             Text(
@@ -713,6 +722,7 @@ fun GiphyDialog() {
                                 ),
                             )
                         }
+                    }
                     }
                 }
             }
@@ -733,7 +743,7 @@ fun GiphyDialog() {
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth(),
                             style = TextStyle(
-                                color = neutral0,
+                                color = primary3,
                                 fontFamily = dosisFontFamily
                             ),
                         )
