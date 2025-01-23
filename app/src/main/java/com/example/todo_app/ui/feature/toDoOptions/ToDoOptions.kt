@@ -157,29 +157,6 @@ fun ToDoOptions(
                                 )
                             }
                         )
-                        if (showDatePicker) {
-                            DatePickerModal(
-                                onDateSelected = { selectedDate ->
-                                    if (selectedDate != null) {
-                                        val date = Date(selectedDate)
-                                        val formattedDate = SimpleDateFormat(
-                                            "yyyy-MM-dd",
-                                            Locale.getDefault()
-                                        ).format(date)
-                                        val localDate = LocalDate.parse(
-                                            formattedDate,
-                                            DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                        )
-                                        val localDateTime =
-                                            LocalDateTime.of(localDate, LocalTime.of(0, 0, 0))
-                                        deadline = formatDeadline(localDateTime)
-                                        viewmodel.updateToDo(toDo.copy(deadline = localDateTime))
-                                    }
-                                    showDatePicker = false
-                                },
-                                onDismiss = { showDatePicker = false }
-                            )
-                        }
                         Option(
                             optionTitle = "Deadline",
                             content = {
@@ -195,9 +172,34 @@ fun ToDoOptions(
                                     },
                                     onTextChanged = { }
                                 )
-                            },
-                            modifier = Modifier.weight(0.5f)
+                            }
                         )
+                        if (showDatePicker) {
+                            DatePickerModal(
+                                onDateSelected = { selectedDate ->
+                                    if (selectedDate != null) {
+                                        val date = Date(selectedDate)
+                                        val formattedDate = SimpleDateFormat(
+                                            "yyyy-MM-dd",
+                                            Locale.getDefault()
+                                        ).format(date)
+                                        val localDate = LocalDate.parse(
+                                            formattedDate,
+                                            DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                        )
+                                        val localDateTime =
+                                            LocalDateTime.of(
+                                                localDate,
+                                                LocalTime.of(0, 0, 0)
+                                            )
+                                        deadline = formatDeadline(localDateTime)
+                                        viewmodel.updateToDo(toDo.copy(deadline = localDateTime))
+                                    }
+                                    showDatePicker = false
+                                },
+                                onDismiss = { showDatePicker = false }
+                            )
+                        }
                         Option(
                             optionTitle = "Description",
                             content = {
