@@ -296,6 +296,9 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                     color = neutral1,
                                     shape = RoundedCornerShape(12.dp)
                                 )
+                                .clickable {
+                                    viewModel.clickToDoOptions(toDo.id)
+                                }
                         ) {
                             Text(
                                 "Specify location to view map",
@@ -327,6 +330,9 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp)
+                                .clickable {
+                                    viewModel.clickToDoOptions(toDo.id)
+                                }
                         ) {
                             Text(
                                 text = formatDeadline(toDo.deadline),
@@ -356,6 +362,9 @@ private fun ToDoItem(viewModel: ToDoListViewModel, toDo: ToDo, index: Int = 0) {
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp)
+                                .clickable {
+                                    viewModel.clickToDoOptions(toDo.id)
+                                }
                         ) {
                             Text(
                                 text = if (toDo.description.length > 30) {
