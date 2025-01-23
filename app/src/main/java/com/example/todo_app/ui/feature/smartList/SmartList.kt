@@ -117,6 +117,7 @@ fun SmartList(
                         contentDescription = "Settings",
                         tint = primary2,
                         modifier = Modifier
+                            .padding(end = 24.dp)
                             .size(32.dp)
                             .aspectRatio(1f)
                             .clickable {

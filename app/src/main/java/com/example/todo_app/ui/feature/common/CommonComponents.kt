@@ -58,6 +58,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -546,7 +547,10 @@ fun SearchButton(
 ) {
     val showSearchField = remember { mutableStateOf(getQuery() != "") }
     val seachFieldFocus = remember { mutableStateOf(getQuery() != "") }
-    Row{
+    Row(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+    ){
         IconButton(onClick = { 
             if(!showSearchField.value) {
                 seachFieldFocus.value = true
@@ -558,7 +562,9 @@ fun SearchButton(
                 Icons.Filled.Search,
                 contentDescription = "Search",
                 tint = neutral1,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .size(32.dp)
             )
         }
         if(showSearchField.value) {
@@ -613,13 +619,14 @@ fun SearchButton(
                         showSearchField.value = false
                         onSearchClicked?.invoke("")
                     },
-                        modifier = Modifier
-                            .padding(bottom = 20.dp)
                         ) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = "Close",
-                            tint = neutral1
+                            tint = neutral1,
+                            modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxHeight()
                         )
                     }
                 }
