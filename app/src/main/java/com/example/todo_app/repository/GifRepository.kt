@@ -25,11 +25,11 @@ public interface GifApi {
 }
 
 interface GifRepository {
-    abstract fun getRandomCongratulationGif(callback: (String?) -> Unit)
+    abstract fun getRandomCongratulationGif(callback: (Response<GiphyResponse?>) -> Unit)
 }
 
 class GifRepositoryImpl : GifRepository {
-    override fun getRandomCongratulationGif(callback: (String?) -> Unit) {
+    override fun getRandomCongratulationGif(callback: (Response<GiphyResponse?>) -> Unit) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.giphy.com/v1/gifs/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -48,7 +48,8 @@ class GifRepositoryImpl : GifRepository {
                 response: Response<GiphyResponse?>
             ) {
                 if (response.isSuccessful) {
-                    callback(response.body()?.data?.images?.original?.url ?: "")
+                    // callback(response.body()?.data?.images?.original?.url ?: "")
+                    callback(response)
                 }
             }
 

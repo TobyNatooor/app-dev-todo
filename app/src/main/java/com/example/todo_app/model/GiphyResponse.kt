@@ -2,6 +2,7 @@ package com.example.todo_app.model
 
 data class GiphyResponse(
     val data: Data,
+    val meta: Meta,
 ) {
     data class Data(
         val type: String,
@@ -19,4 +20,7 @@ data class GiphyResponse(
             )
         }
     }
+    data class Meta(
+        val status: Int,
+    )
 }
