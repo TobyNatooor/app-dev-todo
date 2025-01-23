@@ -125,7 +125,7 @@ fun ToDoOptions(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         modifier = Modifier
-                            .padding(horizontal = 32.dp)
+                            .padding(start = 32.dp, end = 32.dp, top = 20.dp)
                             .fillMaxSize()
                     ) {
                         Option(
