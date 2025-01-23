@@ -97,7 +97,7 @@ fun ToDoOptions(
         Text(
             color = neutral1,
             fontFamily = dosisFontFamily,
-            text = "Edit Task",
+            text = "Edit ${toDo.title}",
             textAlign = TextAlign.Center,
             style = TextStyle(fontSize = 54.sp),
             modifier = Modifier
@@ -126,11 +126,11 @@ fun ToDoOptions(
                 // To-Do title
                 item {
                     Option(
-                        optionTitle = "Task title",
+                        optionTitle = "Todo title",
                         content = {
                             TextFieldOption(
                                 startText = toDo.title.toString(),
-                                hintText = "Enter task title",
+                                hintText = "Enter todo title",
                                 height = 42.dp,
                                 contentAlign = Alignment.Center,
                                 onTextChanged = { title -> viewmodel.updateToDo(toDo.copy(title = title)) }
@@ -224,7 +224,7 @@ fun ToDoOptions(
                         content = {
                             TextFieldOption(
                                 startText = toDo.description,
-                                hintText = "Enter task description",
+                                hintText = "Enter todo description",
                                 height = 150.dp,
                                 contentAlign = Alignment.TopStart,
                                 onTextChanged = { description ->
@@ -334,7 +334,7 @@ fun ToDoOptions(
                            DeleteDialog(
                                id = toDo.id,
                                title = "Delete todo \"${toDo.title}\"?",
-                               text = "Are you sure you want to delete this list?",
+                               text = "Are you sure you want to delete this todo?",
                                onDelete = {
                                    showDeleteDialog = true
                                    viewmodel.deleteToDo(toDo)
