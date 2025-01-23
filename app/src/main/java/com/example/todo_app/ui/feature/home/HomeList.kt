@@ -86,8 +86,6 @@ fun HomeList(
                 })
             }
     ) {
-
-        GiphyDialog()
         // Lists
         LazyColumn(
             state = columnState,

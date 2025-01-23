@@ -61,6 +61,7 @@ import com.example.todo_app.ui.feature.common.DeleteDialog
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenu
 import com.example.todo_app.ui.feature.common.FavoriteButton
 import com.example.todo_app.ui.feature.common.DropdownSettingsMenuItem
+import com.example.todo_app.ui.feature.common.GiphyDialog
 import com.example.todo_app.ui.feature.common.NameList
 import com.example.todo_app.ui.feature.common.ToDoCheckBox
 import com.example.todo_app.ui.theme.*
@@ -87,6 +88,9 @@ fun ToDoList(
         modifier = modifier
             .fillMaxSize()
     ) {
+        if (viewmodel.shouldShowCongratsGifState.value)
+            GiphyDialog()
+
         LazyColumn(
             state = scrollState,
             modifier = Modifier
