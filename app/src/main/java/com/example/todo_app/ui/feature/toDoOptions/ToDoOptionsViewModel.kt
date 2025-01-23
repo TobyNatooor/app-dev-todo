@@ -17,7 +17,7 @@ class ToDoOptionsViewModel(
     private val toDoId: Int,
     toDoRepo: ToDoRepository,
     private val listRepo: ChecklistRepository,
-) : BaseViewModel(toDoRepo) {
+) : BaseViewModel() {
 
     private val _toDoState = MutableStateFlow<ToDoUIState>(ToDoUIState.Loading)
     val toDoState: StateFlow<ToDoUIState> = _toDoState

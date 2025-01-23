@@ -69,7 +69,7 @@ fun AppNavigation(
             val listId = backStackEntry.arguments?.getInt("listId") ?: -1
             val viewmodel: ToDoListViewModel = viewModel(
                 key = "ToDoListViewModel_$listId",
-                factory = ToDoListViewModelFactory(listId, toDoRepository, checklistRepository, navController)
+                factory = ToDoListViewModelFactory(listId, navController)
             )
             ToDoListScreen(
                 title = title,

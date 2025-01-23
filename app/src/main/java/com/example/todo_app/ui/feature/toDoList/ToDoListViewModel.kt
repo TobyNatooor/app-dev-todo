@@ -9,7 +9,9 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
+import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.delay
@@ -24,10 +26,9 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(
     private val listId: Int,
-    toDoRepo: ToDoRepository,
-    private val listRepo: ChecklistRepository,
     private val nav: NavController
-) : BaseViewModel(toDoRepo) {
+) : BaseViewModel() {
+    private val listRepo = CheckListRepositoryImpl.getInstance()
 
     private val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
 

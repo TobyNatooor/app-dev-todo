@@ -30,7 +30,7 @@ class SmartListViewModel(
     listRepo: ChecklistRepository,
     private val userRepository: UserRepository,
     private val nav: NavController
-) : BaseViewModel(toDoRepo) {
+) : BaseViewModel() {
 
     companion object {
         fun createFactory(toDoRepo: ToDoRepository, listRepo: ChecklistRepository, navController: NavController): ViewModelProvider.Factory {

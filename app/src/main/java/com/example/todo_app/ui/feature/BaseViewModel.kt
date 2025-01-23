@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
+import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,10 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-abstract class BaseViewModel(
-    protected val toDoRepo: ToDoRepository
-) : ViewModel() {
-
+abstract class BaseViewModel: ViewModel() {
+    protected val toDoRepo = ToDoRepoImpl.getInstance()
     //protected val _mutableToDosState = MutableStateFlow<ToDosUIState>(ToDosUIState.Loading)
     //val toDosState: StateFlow<ToDosUIState> = _mutableToDosState.asStateFlow()
 
