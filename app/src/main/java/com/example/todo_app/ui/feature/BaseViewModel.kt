@@ -19,8 +19,8 @@ import java.time.LocalDateTime
 abstract class BaseViewModel: ViewModel() {
     protected val toDoRepo: ToDoRepository = ToDoRepoImpl.getInstance()
 
-    protected val _shouldShowCongratsGif = MutableStateFlow(false)
-    public val shouldShowCongratsGifState: StateFlow<Boolean> = _shouldShowCongratsGif.asStateFlow()
+    private val _shouldShowCongratsGif = MutableStateFlow(false)
+    val shouldShowCongratsGifState: StateFlow<Boolean> = _shouldShowCongratsGif.asStateFlow()
 
     protected abstract val toDos: Flow<List<ToDo>>
 
