@@ -1,6 +1,9 @@
 package com.example.todo_app.ui.feature.common
 
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -69,16 +72,40 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
+import coil.compose.AsyncImage
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import com.android.volley.toolbox.ImageLoader
+import com.example.todo_app.BuildConfig.GIPHY_API_KEY
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.ui.feature.BaseViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Path
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -576,9 +603,9 @@ fun SearchButton(
                             .weight(1f)
                             .focusRequester(focusRequester)
                             .onFocusChanged { focusState ->
-                                if(showSearchField.value && !focusState.isFocused && seachFieldFocus.value) {
+                                if (showSearchField.value && !focusState.isFocused && seachFieldFocus.value) {
                                     focusRequester.requestFocus()
-                                }else if(focusState.isFocused && !seachFieldFocus.value) {
+                                } else if (focusState.isFocused && !seachFieldFocus.value) {
                                     seachFieldFocus.value = true
                                 }
                             }
@@ -612,3 +639,90 @@ fun SearchButton(
         }
     }
 }
+
+// https://dev.to/ethand91/android-jetpack-compose-api-tutorial-1kh5
+public interface GifApi {
+    @Headers(
+        "Accept: application/json"
+    )
+
+    @GET("random?api_key=$GIPHY_API_KEY")
+    abstract fun getRandomGif(): Call<GiphyObject?>?
+}
+
+data class GiphyObject(
+    val data: GiphyData,
+)
+
+data class GiphyData(
+    val type: String,
+    val id: String,
+    val url: String,
+    val images: Original,
+)
+
+data class Original(
+    val original: ImageObject,
+)
+
+data class ImageObject(
+    val height: Int,
+    val width: Int,
+    val url: String,
+)
+
+suspend fun getGif(callback: (String?) -> Unit) {
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://api.giphy.com/v1/gifs/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val api = retrofit.create(GifApi::class.java)
+
+    val call: Call<GiphyObject?>? = api.getRandomGif()
+
+
+    call!!.enqueue(object : Callback<GiphyObject?> {
+        override fun onResponse(call: Call<GiphyObject?>, response: Response<GiphyObject?>) {
+            if (response.isSuccessful) {
+                callback(response.body()?.data?.images?.original?.url ?: "")
+            }
+        }
+
+        override fun onFailure(call: Call<GiphyObject?>, t: Throwable) {
+            Log.e("GIF_API", "Error: " + t.message.toString())
+        }
+    })
+}
+
+@Composable
+fun GiphyDialog() {
+    var gifUrl by remember { mutableStateOf<String?>(null) }
+
+    // Fetch the GIF URL
+    LaunchedEffect(Unit) {
+        getGif { url ->
+            gifUrl = url // Update the state with the GIF URL
+            Log.d("ABCDEF", "$gifUrl")
+        }
+    }
+
+    // https://stackoverflow.com/questions/77268951/load-gif-from-url-in-jetpack-compose-using-coil
+    if (SDK_INT >= 28 && gifUrl != null) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(gifUrl)
+                .decoderFactory(ImageDecoderDecoder.Factory())
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp)),
+            contentScale = ContentScale.Crop
+        )
+        Log.d("ABCDEF", "found")
+    } else {
+        Text("not found")
+        Log.d("ABCDEF", "not found")
+    }
+}
+
