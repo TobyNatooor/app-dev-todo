@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         Places.initialize(applicationContext, MAPS_API_KEY)
 
         // UNCOMMENT WHEN TESTING
-        applicationContext.deleteDatabase("ToDoDB")
+        // applicationContext.deleteDatabase("ToDoDB")
 
         Log.d("TESTING", "xyz")
 

@@ -196,7 +196,6 @@ fun ToDoOptions(
                                     onTextChanged = { }
                                 )
                             },
-                            modifier = Modifier.weight(0.5f)
                         )
                         Option(
                             optionTitle = "Description",
