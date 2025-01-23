@@ -14,6 +14,7 @@ import com.example.todo_app.ui.feature.BaseViewModel
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.SmartSettings
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.ToDoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,16 +26,17 @@ import java.time.Duration
 
 class SmartListViewModel(
     db: AppDatabase,
+    toDoRepo: ToDoRepository,
     private val userRepository: UserRepository,
     private val nav: NavController
-) : BaseViewModel(db) {
+) : BaseViewModel(toDoRepo) {
 
     companion object {
-        fun createFactory(db: AppDatabase, navController: NavController): ViewModelProvider.Factory {
+        fun createFactory(db: AppDatabase, toDoRepo: ToDoRepository, navController: NavController): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
                     val application = (this[APPLICATION_KEY] as MyApplication)
-                    SmartListViewModel(db, application.userRepository, navController)
+                    SmartListViewModel(db, toDoRepo, application.userRepository, navController)
                 }
             }
         }

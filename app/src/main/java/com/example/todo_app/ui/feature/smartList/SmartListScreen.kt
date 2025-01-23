@@ -19,16 +19,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
+import com.example.todo_app.repository.ToDoRepository
 
 @Composable
 fun SmartListScreen(
     modifier: Modifier = Modifier,
     db: AppDatabase,
+    toDoRepository: ToDoRepository,
     navController: NavController,
     appBar: @Composable () -> Unit,
 ) {
     val viewModel: SmartListViewModel = viewModel(
-        factory = SmartListViewModel.createFactory(db, navController)
+        factory = SmartListViewModel.createFactory(db, toDoRepository, navController)
     )
     val toDosUIState = viewModel.toDosState.collectAsState().value
     val focusManager = LocalFocusManager.current
