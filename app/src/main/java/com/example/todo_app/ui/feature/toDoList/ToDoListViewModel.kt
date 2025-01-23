@@ -7,6 +7,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
+import com.example.todo_app.repository.ToDoRepository
 import com.example.todo_app.ui.feature.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +21,11 @@ import kotlinx.coroutines.launch
 
 class ToDoListViewModel(
     private val listId: Int,
-    db: AppDatabase,
+    toDoRepo: ToDoRepository,
     private val nav: NavController
-) : BaseViewModel(db) {
+) : BaseViewModel(toDoRepo) {
 
-    private val toDos: Flow<List<ToDo>> = db.toDoDao().getAllWithListId(listId)
+    private val toDos: Flow<List<ToDo>> = toDoRepo.getAllWithListId(listId)
 
     private val _sortingOption = MutableStateFlow(SortOption.STATUS)
     val sortedOption: StateFlow<SortOption> = _sortingOption.asStateFlow()
@@ -69,7 +70,7 @@ class ToDoListViewModel(
             listId = listId,
         )
         viewModelScope.launch {
-            db.toDoDao().insert(newToDo)
+            toDoRepo.insert(newToDo)
             _addingNewToDo.value = false
         }
     }

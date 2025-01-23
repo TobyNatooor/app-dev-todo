@@ -9,19 +9,23 @@ class ToDoRepoImpl(private val toDoDao: ToDoDao): ToDoRepository {
         return toDoDao.getWithId(id)
     }
 
-    override fun getAllToDo(): Flow<List<ToDo>> {
+    override fun getAllWithListId(listId: Int): Flow<List<ToDo>> {
+        return toDoDao.getAllWithListId(listId)
+    }
+
+    override fun getAll(): Flow<List<ToDo>> {
         return toDoDao.getAll()
     }
 
-    override suspend fun addToDo(toDo: ToDo) {
+    override suspend fun insert(toDo: ToDo) {
         toDoDao.insert(toDo)
     }
 
-    override suspend fun updateToDo(toDo: ToDo) {
+    override suspend fun update(toDo: ToDo) {
         toDoDao.update(toDo)
     }
 
-    override suspend fun deleteToDo(toDo: ToDo) {
+    override suspend fun delete(toDo: ToDo) {
         toDoDao.delete(toDo)
     }
 }
