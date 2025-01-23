@@ -648,8 +648,8 @@ public interface GifApi {
         "Accept: application/json"
     )
 
-    @GET("random?api_key=$GIPHY_API_KEY")
-    abstract fun getRandomGif(): Call<GiphyObject?>?
+    @GET("random?api_key=$GIPHY_API_KEY&tag=\"congrats good job party\"")
+    abstract fun getRandomCongratulationGif(): Call<GiphyObject?>?
 }
 
 data class GiphyObject(
@@ -681,7 +681,7 @@ fun getGif(callback: (String?) -> Unit) {
 
     val api = retrofit.create(GifApi::class.java)
 
-    val call: Call<GiphyObject?>? = api.getRandomGif()
+    val call: Call<GiphyObject?>? = api.getRandomCongratulationGif()
 
 
     call!!.enqueue(object : Callback<GiphyObject?> {
