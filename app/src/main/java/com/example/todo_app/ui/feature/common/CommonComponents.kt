@@ -301,7 +301,6 @@ fun ToDoCheckBox(
         ToDoStatus.CANCELED -> Icons.Filled.Close
         else -> Icons.Filled.Check
     }
-    Log.d("ABCDEF", "${toDo.title} ${imageVector}")
 
     val showDialog = remember { mutableStateOf(false) }
 
