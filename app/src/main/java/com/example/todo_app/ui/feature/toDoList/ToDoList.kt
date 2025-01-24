@@ -471,63 +471,6 @@ private fun ToDoTextField(
     }
 }
 
-/*@Composable
-fun ToDoCheckBox(
-    toDo: ToDo,
-    viewModel: ToDoListViewModel,
-    size: Dp = 28.dp,
-    modifier: Modifier = Modifier
-) {
-    Box {
-        Box(
-            modifier = modifier
-                .align(Alignment.Center)
-                .padding(8.dp)
-                .size(size)
-                .background(
-                    color = if (toDo.status.isDone()) green1 else neutral1,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable {
-                    viewModel.updateToDoItem(
-                        toDo.copy(status = toDo.status.check())
-                    )
-                }
-        )
-        if (toDo.status.isDone()) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Check Icon",
-                tint = green4,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(size * 1.1f)
-            )
-        }
-    }
-}*/
-
-@Composable
-fun ToDoOptionsButton(
-    toDo: ToDo,
-    viewModel: ToDoListViewModel,
-    modifier: Modifier = Modifier
-) {
-    val focusManager = LocalFocusManager.current
-
-    Icon(
-        imageVector = Icons.Rounded.MoreVert,
-        contentDescription = "ToDo Options Icon",
-        tint = neutral0,
-        modifier = modifier
-            .padding(8.dp)
-            .clickable {
-                viewModel.clickToDoOptions(toDoId = toDo.id)
-                focusManager.clearFocus()
-            }
-    )
-}
-
 @Composable
 private fun NewToDoItem(viewModel: ToDoListViewModel, listId: Int) {
     Box(

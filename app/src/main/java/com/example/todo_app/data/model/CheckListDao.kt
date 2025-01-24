@@ -13,9 +13,6 @@ interface CheckListDao {
     @Insert
     suspend fun insert(list: CheckList): Long
 
-    //@Insert
-    //suspend fun insert(list: List<CheckList>)
-
     @Update
     suspend fun update(list: CheckList)
 

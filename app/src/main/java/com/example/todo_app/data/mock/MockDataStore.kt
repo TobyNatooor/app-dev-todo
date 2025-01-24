@@ -84,7 +84,5 @@ class MockDataStore {
         for (toDo in todoData) {
             db.toDoDao().insert(toDo)
         }
-        //db.checkListDao().insert(listData)
-        //db.toDoDao().insert(todoData)
     }
 }
