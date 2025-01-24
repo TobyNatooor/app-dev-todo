@@ -49,6 +49,9 @@ abstract class BaseViewModel: ViewModel() {
         return true
     }
 
+    fun dismissCongratsGif() {
+        _shouldShowCongratsGif.value = false
+    }
 }
 
 sealed class ToDosUIState {

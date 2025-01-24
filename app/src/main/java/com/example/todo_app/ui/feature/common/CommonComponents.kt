@@ -651,10 +651,9 @@ fun SearchButton(
 }
 
 @Composable
-fun GiphyDialog() {
+fun GiphyDialog(onDismiss: () -> Unit) {
     var gifUrl by remember { mutableStateOf<String?>(null) }
     var gifStatus by remember { mutableStateOf<Int?>(null) }
-    var showDialog by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         GifRepositoryImpl().getRandomCongratulationGif { response ->
@@ -663,11 +662,11 @@ fun GiphyDialog() {
         }
     }
 
-    if (showDialog && gifStatus != null)
+    if (gifStatus != null)
         if (gifUrl != null && gifStatus == 200) {
             Dialog(
                 onDismissRequest = {
-                    showDialog = false
+                    onDismiss()
                 },
             ) {
                 Card(
@@ -729,7 +728,7 @@ fun GiphyDialog() {
         } else {
             Dialog(
                 onDismissRequest = {
-                    showDialog = false
+                    onDismiss()
                 }
             ) {
                 Card(
