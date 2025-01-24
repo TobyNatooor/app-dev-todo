@@ -92,6 +92,3 @@ private fun query(
         return "How did you mess this up?"
     }
 }
-private fun youDoneFuckedUp(): String {
-    return "How did you mess this up?"
-}

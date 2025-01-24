@@ -12,11 +12,12 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
-public interface GifApi {
+private interface GifApi {
     @Headers(
         "Accept: application/json"
     )
 
+    // The giphy endpoint is here: https://developers.giphy.com/docs/api/endpoint#random
     @GET("random")
     abstract fun getRandomGif(
         @Query("api_key") apiKey: String,
@@ -25,7 +26,7 @@ public interface GifApi {
 }
 
 interface GifRepository {
-    abstract fun getRandomCongratulationGif(callback: (Response<GiphyResponse?>) -> Unit)
+    fun getRandomCongratulationGif(callback: (Response<GiphyResponse?>) -> Unit)
 }
 
 class GifRepositoryImpl : GifRepository {
@@ -48,7 +49,6 @@ class GifRepositoryImpl : GifRepository {
                 response: Response<GiphyResponse?>
             ) {
                 if (response.isSuccessful) {
-                    // callback(response.body()?.data?.images?.original?.url ?: "")
                     callback(response)
                 }
             }

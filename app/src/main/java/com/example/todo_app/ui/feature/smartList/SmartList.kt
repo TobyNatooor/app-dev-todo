@@ -112,7 +112,6 @@ fun SmartList(
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                //.padding(horizontal = 32.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -350,63 +349,6 @@ private fun ToDoItem(viewModel: SmartListViewModel, toDo: ToDo, index: Int = 0) 
 fun formatDeadline(deadline: LocalDateTime?): String {
     if (deadline == null) return "00/00/00"
     return deadline.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
-}
-
-/*@Composable
-fun ToDoCheckBox(
-    toDo: ToDo,
-    viewModel: SmartListViewModel,
-    size: Dp = 28.dp,
-    modifier: Modifier = Modifier
-) {
-    Box {
-        Box(
-            modifier = modifier
-                .align(Alignment.Center)
-                .padding(8.dp)
-                .size(size)
-                .background(
-                    color = if (toDo.status.isDone()) green1 else neutral1,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable {
-                    viewModel.updateToDoItem(
-                        toDo.copy(status = toDo.status.check())
-                    )
-                }
-        )
-        if (toDo.status.isDone()) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Check Icon",
-                tint = green4,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(size * 1.1f)
-            )
-        }
-    }
-}*/
-
-@Composable
-fun ToDoOptionsButton(
-    toDo: ToDo,
-    viewModel: SmartListViewModel,
-    modifier: Modifier = Modifier
-) {
-    val focusManager = LocalFocusManager.current
-
-    Icon(
-        imageVector = Icons.Rounded.MoreVert,
-        contentDescription = "ToDo Options Icon",
-        tint = neutral0,
-        modifier = modifier
-            .padding(8.dp)
-            .clickable {
-                viewModel.clickToDoOptions(toDoId = toDo.id)
-                focusManager.clearFocus()
-            }
-    )
 }
 
 @Composable

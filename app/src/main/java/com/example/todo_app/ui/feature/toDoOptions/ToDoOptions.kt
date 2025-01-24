@@ -531,7 +531,7 @@ private fun DropdownMenuOption(
     }
 }
 
-// https://developer.android.com/develop/ui/compose/components/datepickers
+// Date picker composable from: https://developer.android.com/develop/ui/compose/components/datepickers
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(

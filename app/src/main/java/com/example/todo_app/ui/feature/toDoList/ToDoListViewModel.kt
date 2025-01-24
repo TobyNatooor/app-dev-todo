@@ -4,11 +4,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDo
-import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.ui.feature.BaseViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,21 +73,9 @@ class ToDoListViewModel(
         _sortingOption.value = sortBy
     }
 
-    /*override fun updateToDoItem(updatedToDo: ToDo) {
-        viewModelScope.launch {
-            db.toDoDao().update(updatedToDo)
-        }
-    }*/
-
     fun clickToDoOptions(toDoId: Int) {
         nav.navigate("toDoOptions/${toDoId}")
     }
-
-    /*override fun deleteToDo(toDo: ToDo) {
-        viewModelScope.launch {
-            db.toDoDao().delete(toDo)
-        }
-    }*/
 
     fun updateList(listId: Int, newTitle: String) {
         viewModelScope.launch {

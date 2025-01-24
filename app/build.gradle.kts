@@ -6,7 +6,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
-//
+// Source: https://developers.google.com/maps/documentation/android-sdk/start
 secrets {
     // To add your Maps API key to this project:
     // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.

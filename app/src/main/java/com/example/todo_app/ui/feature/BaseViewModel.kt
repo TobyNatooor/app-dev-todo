@@ -3,12 +3,10 @@ package com.example.todo_app.ui.feature
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app.data.AppDatabase
 import com.example.todo_app.model.ToDo
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
-import com.example.todo_app.ui.feature.home.NewListState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

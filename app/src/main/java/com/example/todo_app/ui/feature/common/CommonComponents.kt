@@ -56,7 +56,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.text.KeyboardActions
@@ -69,43 +68,22 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
-import com.android.volley.toolbox.ImageLoader
-import com.example.todo_app.BuildConfig.GIPHY_API_KEY
 import com.example.todo_app.model.SortOption
 import com.example.todo_app.model.ToDoStatus
 import com.example.todo_app.repository.GifRepositoryImpl
 import com.example.todo_app.ui.feature.BaseViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Path
-import java.net.HttpURLConnection
-import java.net.URL
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -323,7 +301,6 @@ fun ToDoCheckBox(
         ToDoStatus.CANCELED -> Icons.Filled.Close
         else -> Icons.Filled.Check
     }
-    Log.d("ABCDEF", "${toDo.title} ${imageVector}")
 
     val showDialog = remember { mutableStateOf(false) }
 

@@ -14,7 +14,7 @@ import com.example.todo_app.model.CheckList
 import com.example.todo_app.model.Folder
 import com.example.todo_app.model.ToDo
 
-@Database(entities = [ToDo::class, CheckList::class, Folder::class/*SmartSettings::class */], version = 2)
+@Database(entities = [ToDo::class, CheckList::class, Folder::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
@@ -31,10 +31,8 @@ abstract class AppDatabase : RoomDatabase() {
                     INSTANCE = Room.databaseBuilder(
                         context.applicationContext,
                         AppDatabase::class.java,
-                        "ToDoDB"
-                    )
-                        //.fallbackToDestructiveMigration() // Optional, handle migrations as needed
-                        .build()
+                        "app_database"
+                    ).build()
                 }
             }
         }

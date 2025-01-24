@@ -3,7 +3,6 @@ package com.example.todo_app
 import android.app.Activity
 import com.example.todo_app.data.AppDatabase
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +10,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.example.todo_app.BuildConfig.MAPS_API_KEY
-import com.example.todo_app.data.mock.MockDataStore
 import com.example.todo_app.ui.navigation.AppNavigation
 import com.example.todo_app.ui.theme.TodoappTheme
 import com.google.android.libraries.places.api.Places
@@ -44,7 +42,6 @@ class MainActivity : ComponentActivity() {
             .build(this)
         locationActivityCallback = { place ->
             callback(place)
-            Log.d("PLACEPLACE", "$place")
         }
         findingLocationActivity.launch(intent)
     }
@@ -57,12 +54,9 @@ class MainActivity : ComponentActivity() {
         // UNCOMMENT WHEN TESTING
         // applicationContext.deleteDatabase("ToDoDB")
 
-        Log.d("TESTING", "xyz")
-
         AppDatabase.initializeDatabase(applicationContext)
-        val db = AppDatabase.getDatabase()
+        // val db = AppDatabase.getDatabase()
 
-        Log.d("TESTING", "123")
         enableEdgeToEdge()
         lifecycleScope.launch(Dispatchers.IO) {
             // Should not be in release
@@ -78,6 +72,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        Log.d("TESTING", "abc")
     }
 }
