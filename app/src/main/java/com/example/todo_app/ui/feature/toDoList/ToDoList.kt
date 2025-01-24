@@ -83,14 +83,18 @@ fun ToDoList(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val addingToDo = viewmodel.addingNewToDo.collectAsState()
     val isFavorite = viewmodel.isFavorite.collectAsState()
-    val shouldShowCongratsGif = viewmodel.shouldShowCongratsGifState.collectAsState()
+    val shouldShowCongratsGif by viewmodel.shouldShowCongratsGifState.collectAsState()
 
     Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        if (shouldShowCongratsGif.value)
-            GiphyDialog()
+        if (shouldShowCongratsGif)
+            GiphyDialog(
+                onDismiss = {
+                    viewmodel.dismissCongratsGif()
+                }
+            )
 
         LazyColumn(
             state = scrollState,

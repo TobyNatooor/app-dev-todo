@@ -87,7 +87,7 @@ fun SmartList(
     val scrollState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
     val settings = viewmodel.smartSettings.collectAsState()
-    val shouldShowCongratsGif = viewmodel.shouldShowCongratsGifState.collectAsState()
+    val shouldShowCongratsGif by viewmodel.shouldShowCongratsGifState.collectAsState()
 
     SettingsDialog(
         settings = settings,
@@ -101,8 +101,12 @@ fun SmartList(
         modifier = modifier
             .fillMaxSize()
     ) {
-        if (shouldShowCongratsGif.value)
-            GiphyDialog()
+        if (shouldShowCongratsGif)
+            GiphyDialog(
+                onDismiss = {
+                    viewmodel.dismissCongratsGif()
+                }
+            )
 
         LazyColumn(
             state = scrollState,
