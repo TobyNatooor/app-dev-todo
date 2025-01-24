@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    // Location finder code is heavily inspired by its documentation:
+    // https://developers.google.com/maps/documentation/places/android-sdk/autocomplete-tutorial
     private var locationActivityCallback: ((Place?) -> Unit)? = null
 
     private val findingLocationActivity =
