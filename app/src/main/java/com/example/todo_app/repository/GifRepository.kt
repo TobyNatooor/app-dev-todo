@@ -39,7 +39,7 @@ class GifRepositoryImpl : GifRepository {
 
         val call: Call<GiphyResponse?>? = api.getRandomGif(
             apiKey = GIPHY_API_KEY,
-            tags = "congrats good job party"
+            tags = "congratulation congrats goodjob"
         )
 
         call!!.enqueue(object : Callback<GiphyResponse?> {
