@@ -42,7 +42,7 @@ class HomeViewModel(private val nav: NavController) : ViewModel() {
         filteredLists,
         _sortingOption,
     ) { lists, sortOption ->
-        delay(100)
+        //delay(100)
 
         when (sortOption) {
             SortOption.CREATED -> lists.sortedByDescending { it.created }
