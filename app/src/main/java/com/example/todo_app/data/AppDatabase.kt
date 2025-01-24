@@ -31,7 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
                     INSTANCE = Room.databaseBuilder(
                         context.applicationContext,
                         AppDatabase::class.java,
-                        "app_database"
+                        "ToDoDB"
                     )
                         //.fallbackToDestructiveMigration() // Optional, handle migrations as needed
                         .build()
