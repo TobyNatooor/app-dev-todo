@@ -3,6 +3,8 @@ package com.example.todo_app.ui.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -36,6 +38,7 @@ fun AppNavigation(
             val viewModel: HomeViewModel = viewModel(
                 factory = HomeViewModelFactory(navController)
             )
+            val searchQuery by viewModel.filteringQuery.collectAsState()
             HomeScreen(
                 navController = navController,
                 appBar = @Composable {
@@ -47,7 +50,7 @@ fun AppNavigation(
                         ),
                         onSortClicked = { option -> viewModel.sortLists(option) },
                         onSearchClicked = { query -> viewModel.searchForTodos(query) },
-                        getQuery = { viewModel.getQuery() },
+                        getQuery = { searchQuery },
                         sortOptions = listOf(SortOption.NAME, SortOption.CREATED, SortOption.RECENT)
                     )
                 }

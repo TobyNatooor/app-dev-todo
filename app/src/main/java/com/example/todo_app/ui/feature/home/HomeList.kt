@@ -137,7 +137,7 @@ fun HomeList(
                         val listsWithoutNewList: MutableList<CheckList> = lists.toMutableList()
 
                         val cards: List<GridCard> = buildList {
-                            if (viewModel.getQuery().isEmpty()) {
+                            if (searchQuery.isEmpty()) {
                                 add(GridCard
                                     .SmartListGridCard(viewModel)
                                 )
@@ -343,9 +343,8 @@ abstract class GridCard(open val viewModel: HomeViewModel) {
 
                     if (this@GridCard is CheckListType.CheckListGridCard) {
                         todos.filter { it.title.isNotEmpty() }.forEach { todo ->
-                            val search = viewModel.getQuery()
                             Text(
-                                if (search.isNotEmpty()) {
+                                if (searchQuery.isNotEmpty()) {
                                     getTodoTitleWithHighlight(todo.title, searchQuery)
                                 } else {
                                     AnnotatedString(todo.title)

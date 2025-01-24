@@ -10,7 +10,6 @@ import com.example.todo_app.repository.CheckListRepositoryImpl
 import com.example.todo_app.repository.ChecklistRepository
 import com.example.todo_app.repository.ToDoRepoImpl
 import com.example.todo_app.repository.ToDoRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +41,6 @@ class HomeViewModel(private val nav: NavController) : ViewModel() {
         filteredLists,
         _sortingOption,
     ) { lists, sortOption ->
-        //delay(100)
 
         when (sortOption) {
             SortOption.CREATED -> lists.sortedByDescending { it.created }
@@ -74,10 +72,6 @@ class HomeViewModel(private val nav: NavController) : ViewModel() {
                 _mutableHomeState.value = homeUIState
             }
         }
-    }
-
-    fun getQuery(): String{
-        return filteringQuery.value
     }
 
     fun getTodosByListId(listId: Int): List<ToDo> {
